@@ -418,7 +418,6 @@ $courses = $db->fetchAll(
                             <?php echo Security::csrfField(); ?>
                             <input type="hidden" name="course_id" value="<?php echo $edit_course['id']; ?>">
                             <input type="hidden" name="year" value="<?php echo $y; ?>">
-                            <input type="hidden" name="delete_syllabus_pdf" value="1">
                         </form>
                     <?php endfor; ?>
                 <?php endif; ?>
@@ -426,5 +425,25 @@ $courses = $db->fetchAll(
         </div>
     </div>
 <?php endif; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('courseSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            var q = this.value.toLowerCase().trim();
+            var rows = document.querySelectorAll('#coursesTable tbody tr');
+            rows.forEach(function(row) {
+                var text = row.innerText.toLowerCase();
+                if (text.includes(q)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
 
 <?php include_once __DIR__ . '/../includes/footer.php'; ?>
