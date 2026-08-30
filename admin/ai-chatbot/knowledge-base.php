@@ -1,5 +1,5 @@
 <?php
-require_once 'C:/xampp/htdocs/project/core/bootstrap.php';
+require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requirePermission('manage_chatbot_kb');
 
 $db = Database::getInstance();

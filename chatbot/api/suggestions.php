@@ -4,7 +4,7 @@
  */
 
 header('Content-Type: application/json');
-require_once 'C:/xampp/htdocs/project/core/bootstrap.php';
+require_once __DIR__ . '/../../core/bootstrap.php';
 
 $query = trim($_GET['q'] ?? '');
 

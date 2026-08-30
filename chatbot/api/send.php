@@ -4,8 +4,8 @@
  */
 
 header('Content-Type: application/json');
-require_once 'C:/xampp/htdocs/project/core/bootstrap.php';
-require_once 'C:/xampp/htdocs/project/chatbot/services/ChatService.php';
+require_once __DIR__ . '/../../core/bootstrap.php';
+require_once __DIR__ . '/../services/ChatService.php';
 
 try {
     $rawInput = file_get_contents('php://input');

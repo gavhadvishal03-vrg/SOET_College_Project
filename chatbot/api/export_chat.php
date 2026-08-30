@@ -3,8 +3,8 @@
  * 🤖 CampusAI — Export Conversation Transcript Endpoint
  */
 
-require_once 'C:/xampp/htdocs/project/core/bootstrap.php';
-require_once 'C:/xampp/htdocs/project/chatbot/services/ChatService.php';
+require_once __DIR__ . '/../../core/bootstrap.php';
+require_once __DIR__ . '/../services/ChatService.php';
 
 $token = trim($_GET['session_token'] ?? '');
 if (empty($token)) {
