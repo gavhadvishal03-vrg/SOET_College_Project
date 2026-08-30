@@ -841,6 +841,162 @@ body {
     border-color: var(--secondary-color);
 }
 
+/* ==========================================================================
+   📱 MASTER ADAPTIVE & RESPONSIVE ENGINE (PCs, Laptops, Tablets, Mobiles)
+   ========================================================================== */
+
+/* Universal Layout & Media Protection */
+img, video, iframe, svg, canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+pre, code {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+}
+
+.card {
+    word-wrap: break-word;
+}
+
+/* 🖥️ 1. Ultra-Wide Displays, Projectors & 4K Monitors (>= 1600px) */
+@media (min-width: 1600px) {
+    .container-fluid, .container {
+        max-width: 1720px !important;
+    }
+    .hero-title {
+        font-size: 4rem !important;
+    }
+}
+
+/* 💻 2. Standard Laptops & Desktop Displays (1200px - 1599px) */
+@media (min-width: 1200px) and (max-width: 1599px) {
+    .hero-title {
+        font-size: 3.2rem !important;
+    }
+    .dept-card {
+        height: 280px;
+    }
+}
+
+/* 📟 3. Tablets & iPads in Portrait / Landscape (768px - 1199px) */
+@media (min-width: 768px) and (max-width: 1199px) {
+    .hero-title {
+        font-size: 2.5rem !important;
+    }
+    .hero-subtitle {
+        font-size: 1.1rem !important;
+    }
+    .hero-section {
+        height: 60vh !important;
+        min-height: 420px;
+    }
+    .admin-sidebar {
+        min-height: auto !important;
+    }
+    .dept-card {
+        height: 260px;
+    }
+    .visitor-counter-badge {
+        font-size: 11px !important;
+        gap: 8px !important;
+    }
+}
+
+/* 📱 4. Mobile Phones & Small Touch Devices (<= 767px) */
+@media (max-width: 767px) {
+    body {
+        font-size: 14.5px;
+    }
+
+    .hero-section {
+        height: auto !important;
+        padding: 60px 0 !important;
+        min-height: 360px;
+    }
+
+    .hero-title {
+        font-size: 2.1rem !important;
+        line-height: 1.25 !important;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem !important;
+        margin-bottom: 20px !important;
+    }
+
+    .display-4, .display-5 {
+        font-size: 2rem !important;
+    }
+
+    .navbar-brand img {
+        height: 38px !important;
+    }
+
+    .navbar-brand span {
+        font-size: 18px !important;
+    }
+
+    /* Stacked Full-Width Buttons for Mobile */
+    .btn-toolbar, .d-flex.gap-2 {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-toolbar .btn, .d-flex.gap-2 .btn {
+        width: 100%;
+        margin-bottom: 6px;
+    }
+
+    /* Adaptive Card Padding & Spacing */
+    .card-body {
+        padding: 1.25rem !important;
+    }
+
+    .dept-card {
+        height: 240px;
+    }
+
+    /* Mobile Visitor Counter Badge */
+    .visitor-counter-badge {
+        font-size: 10.5px !important;
+        padding: 6px 12px !important;
+        border-radius: 12px !important;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Floating Back To Top Button Position for Mobile */
+    #backToTopBtn {
+        bottom: 85px;
+        right: 16px;
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+}
+
+/* 📱 5. Extra Small Mobiles & Foldable Devices (<= 480px) */
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.75rem !important;
+    }
+    .card-header h5, .card-header h6 {
+        font-size: 14px !important;
+    }
+    .spotlight-trigger span {
+        display: none !important;
+    }
+}
+
 /* Clean Print Stylesheet */
 @media print {
     .navbar, footer, #soet-chatbot-trigger, #soet-chatbot-window, .btn-toolbar, .admin-sidebar, #backToTopBtn, .spotlight-modal {
