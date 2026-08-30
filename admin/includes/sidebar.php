@@ -164,6 +164,11 @@ $current_sidebar_page = basename($_SERVER['PHP_SELF']);
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link <?php echo $current_sidebar_page === 'navigation.php' ? 'active text-white' : 'text-white-50'; ?>" href="<?php echo APP_URL; ?>/admin/modules/navigation.php">
+                        <i class="fa-solid fa-compass me-2 text-warning"></i> Navigation Menu
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link <?php echo $current_sidebar_page === 'settings.php' ? 'active text-white' : 'text-white-50'; ?>" href="<?php echo APP_URL; ?>/admin/modules/settings.php">
                         <i class="fa-solid fa-gears me-2 text-warning"></i> Portal Settings
                     </a>
