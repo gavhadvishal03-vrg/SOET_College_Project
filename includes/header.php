@@ -72,20 +72,20 @@ $logo_src = !empty($header_settings['site_logo'])
 <body>
 
 <!-- Header Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="border-bottom: 4px solid var(--secondary-color); box-shadow: 0 4px 20px rgba(0,0,0,0.15); background-color: var(--primary-color);">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="<?php echo APP_URL; ?>/index.php">
-            <img src="<?php echo $logo_src; ?>" alt="SOET Logo" class="me-3" style="height: 65px; object-fit: contain;">
+<nav class="navbar navbar-expand-xl navbar-dark sticky-top" style="border-bottom: 4px solid var(--secondary-color); box-shadow: 0 4px 20px rgba(0,0,0,0.15); background-color: var(--primary-color);">
+    <div class="container-fluid px-3 px-lg-4 px-xl-5">
+        <a class="navbar-brand d-flex align-items-center me-2 me-xl-4" href="<?php echo APP_URL; ?>/index.php">
+            <img src="<?php echo $logo_src; ?>" alt="SOET Logo" class="me-2 me-xl-3" style="height: 52px; object-fit: contain;">
             <div>
-                <span class="d-block lh-1 text-uppercase" style="font-size: 28px; font-weight: 800; color: var(--secondary-color); letter-spacing: 1px; font-family: 'Outfit', sans-serif;">SOET</span>
-                <span class="d-block text-white font-semibold" style="font-size: 13px; font-weight: 700; letter-spacing: 0.5px; opacity: 0.95; font-family: 'Inter', sans-serif; margin-top: 3px;">MGM University</span>
+                <span class="d-block lh-1 text-uppercase" style="font-size: 24px; font-weight: 800; color: var(--secondary-color); letter-spacing: 1px; font-family: 'Outfit', sans-serif;">SOET</span>
+                <span class="d-block text-white font-semibold" style="font-size: 11px; font-weight: 700; letter-spacing: 0.5px; opacity: 0.95; font-family: 'Inter', sans-serif; margin-top: 2px;">MGM University</span>
             </div>
         </a>
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="mainNavbar">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+            <ul class="navbar-nav ms-auto mb-2 mb-xl-0 align-items-center gap-1">
                 <li class="nav-item">
                     <a class="nav-link <?php echo $current_page === 'index.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/index.php">Home</a>
                 </li>
@@ -127,19 +127,19 @@ $logo_src = !empty($header_settings['site_logo'])
                 </li>
 
                 <!-- Spotlight Search Trigger (Ctrl+K) -->
-                <li class="nav-item ms-lg-2">
-                    <button class="btn btn-outline-light btn-sm rounded-pill px-3 spotlight-trigger d-flex align-items-center gap-2" id="spotlightTriggerBtn" title="Instant Quick Search (Press Ctrl+K)">
+                <li class="nav-item ms-xl-1">
+                    <button class="btn btn-outline-light btn-sm rounded-pill px-2.5 spotlight-trigger d-flex align-items-center gap-1.5" id="spotlightTriggerBtn" title="Instant Quick Search (Press Ctrl+K)">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <span class="d-none d-xl-inline">Search</span>
+                        <span class="d-none d-xxl-inline">Search</span>
                         <kbd class="bg-dark text-white-50 border border-secondary border-opacity-25 px-1 rounded" style="font-size: 10px;">Ctrl+K</kbd>
                     </button>
                 </li>
 
-                <li class="nav-item ms-lg-2">
-                    <a class="btn btn-admission text-center" href="<?php echo APP_URL; ?>/admissions.php"><i class="fa-solid fa-right-to-bracket me-1"></i> Admissions</a>
+                <li class="nav-item ms-xl-1">
+                    <a class="btn btn-admission text-center py-1.5 px-3" href="<?php echo APP_URL; ?>/admissions.php"><i class="fa-solid fa-right-to-bracket me-1"></i> Admissions</a>
                 </li>
-                <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
-                    <a class="btn btn-admin-portal text-center" href="<?php echo APP_URL; ?>/admin/login.php"><i class="fa-solid fa-user-shield me-1"></i> Admin Portal</a>
+                <li class="nav-item ms-xl-1 mt-2 mt-xl-0">
+                    <a class="btn btn-admin-portal text-center py-1.5 px-3" href="<?php echo APP_URL; ?>/admin/login.php"><i class="fa-solid fa-user-shield me-1"></i> Admin Portal</a>
                 </li>
             </ul>
         </div>

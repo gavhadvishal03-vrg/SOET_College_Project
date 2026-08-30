@@ -42,17 +42,34 @@ body {
 }
 
 .navbar .nav-link {
-    color: rgba(255, 255, 255, 0.85) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
     font-weight: 500;
-    font-size: 15px;
-    padding: 8px 15px !important;
+    font-size: 14px;
+    padding: 6px 10px !important;
     transition: var(--transition);
     border-radius: 4px;
+    white-space: nowrap;
 }
 
 .navbar .nav-link:hover, .navbar .nav-link.active {
     color: #ffffff !important;
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Button & Action Link Compact Rules */
+.btn-admission, .btn-admin-portal, .spotlight-trigger {
+    white-space: nowrap;
+}
+
+@media (min-width: 1200px) and (max-width: 1440px) {
+    .navbar .nav-link {
+        font-size: 13.5px !important;
+        padding: 5px 7px !important;
+    }
+    .spotlight-trigger, .btn-admission, .btn-admin-portal {
+        font-size: 12.5px !important;
+        padding: 5px 10px !important;
+    }
 }
 
 /* Nav Pills Component (Admin Panel & Tabs) */
