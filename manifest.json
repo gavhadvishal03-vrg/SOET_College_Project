@@ -1,0 +1,18 @@
+{
+  "name": "SOET MGM University Portal",
+  "short_name": "SOET MGMU",
+  "description": "Official Academic & Admissions Portal for School of Engineering & Technology, MGM University",
+  "start_url": "/index.php",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#1e3a8a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/images/logo.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

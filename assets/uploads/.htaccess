@@ -1,0 +1,22 @@
+# =====================================================================
+# Prevent Execution of Scripts in Uploads Directory
+# Security Mitigation against File Upload Vulnerabilities
+# =====================================================================
+
+# Disable PHP and CGI execution in upload directory
+<FilesMatch "\.(php|php3|php4|php5|phtml|pl|py|jsp|asp|sh|cgi)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Only allow standard image and document extensions
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|pdf|doc|docx)$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+</FilesMatch>

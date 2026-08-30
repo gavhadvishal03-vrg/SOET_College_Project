@@ -1,0 +1,16 @@
+# Environments & Uploads cache
+uploads/cache/
+*.log
+.DS_Store
+Thumbs.db
+node_modules/
+.env.local
+
+# Keep uploads structure
+!uploads/
+!uploads/**
+
+# IDE
+.idea/
+*.suo
+*.user

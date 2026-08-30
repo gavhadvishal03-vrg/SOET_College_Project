@@ -1,0 +1,33 @@
+# =====================================================================
+# Apache Server Configuration & Security Directives
+# SOET College Website & Content Management System
+# =====================================================================
+
+# Disable Directory Browsing
+Options -Indexes
+
+# Set Default Encoding
+AddDefaultCharset UTF-8
+
+# Prevent Direct Access to Sensitive Configs, Logs, and SQL Files
+<FilesMatch "\.(sql|log|md|env|json|git|gitignore)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Enable Rewrite Engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Handle Headers Security
+    <IfModule mod_headers.c>
+        Header set X-Content-Type-Options "nosniff"
+        Header set X-Frame-Options "SAMEORIGIN"
+        Header set X-XSS-Protection "1; mode=block"
+    </IfModule>
+</IfModule>

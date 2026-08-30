@@ -1,0 +1,579 @@
+/* 🤖 CampusAI — SOET Intelligent Chatbot UI Stylesheet */
+
+:root {
+    --cb-primary: #1e3a8a;
+    --cb-secondary: #f59e0b;
+    --cb-accent: #3b82f6;
+    --cb-bg-dark: #0f172a;
+    --cb-surface: #ffffff;
+    --cb-text-dark: #1e293b;
+    --cb-text-muted: #64748b;
+    --cb-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    --cb-radius: 20px;
+}
+
+/* Floating Trigger Button */
+#soet-chatbot-trigger {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 99999;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--cb-primary), #3b82f6);
+    color: #ffffff;
+    border: 3px solid #ffffff;
+    box-shadow: 0 10px 25px rgba(30, 58, 138, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#soet-chatbot-trigger:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 15px 35px rgba(30, 58, 138, 0.6);
+}
+
+#soet-chatbot-trigger .campus-ai-icon {
+    font-size: 30px;
+    line-height: 1;
+}
+
+#soet-chatbot-trigger .badge-ping {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    background-color: #10b981;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ping {
+    75%, 100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+
+/* Main Chatbot Window Drawer */
+#soet-chatbot-window {
+    position: fixed;
+    bottom: 96px;
+    right: 24px;
+    z-index: 99998;
+    width: 420px;
+    max-width: calc(100vw - 32px);
+    height: 640px;
+    max-height: calc(100vh - 120px);
+    background: #ffffff;
+    border-radius: var(--cb-radius);
+    box-shadow: var(--cb-shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#soet-chatbot-window.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+}
+
+/* Maximized / Expanded Studio Mode */
+#soet-chatbot-window.maximized {
+    width: 750px;
+    max-width: calc(100vw - 32px);
+    height: calc(100vh - 110px);
+    max-height: calc(100vh - 110px);
+    bottom: 90px;
+    right: 24px;
+    border-radius: 20px;
+}
+
+/* Chat Header */
+.soet-cb-header {
+    background: linear-gradient(135deg, #0f172a, #1e3a8a);
+    color: #ffffff;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.soet-cb-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.soet-cb-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--cb-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.soet-cb-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.soet-cb-lang-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.soet-cb-lang-btn.active {
+    background: var(--cb-secondary);
+    color: #0f172a;
+    border-color: var(--cb-secondary);
+}
+
+.soet-cb-icon-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 15px;
+    cursor: pointer;
+    padding: 4px;
+    transition: all 0.2s;
+}
+
+.soet-cb-icon-btn:hover {
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+/* Chat Messages Container */
+.soet-cb-messages {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Scrollbar Styling */
+.soet-cb-messages::-webkit-scrollbar {
+    width: 5px;
+}
+
+.soet-cb-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.soet-cb-messages::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+/* Bubbles */
+.cb-msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 90%;
+    animation: fadeInMsg 0.3s ease-out forwards;
+}
+
+@keyframes fadeInMsg {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.cb-msg.user {
+    align-self: flex-end;
+}
+
+.cb-msg.bot {
+    align-self: flex-start;
+}
+
+.cb-msg-bubble {
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+}
+
+.cb-msg.user .cb-msg-bubble {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+}
+
+.cb-msg.bot .cb-msg-bubble {
+    background: #ffffff;
+    color: var(--cb-text-dark);
+    border: 1px solid #e2e8f0;
+    border-bottom-left-radius: 4px;
+}
+
+/* Bot bubble content styling */
+.cb-msg.bot .cb-msg-bubble h3,
+.cb-msg.bot .cb-msg-bubble h4,
+.cb-msg.bot .cb-msg-bubble h5 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cb-primary);
+    margin-bottom: 6px;
+}
+
+.cb-msg.bot .cb-msg-bubble strong {
+    color: #1e40af;
+}
+
+.cb-msg.bot .cb-msg-bubble ul,
+.cb-msg.bot .cb-msg-bubble ol {
+    padding-left: 18px;
+    margin-bottom: 6px;
+}
+
+.cb-msg.bot .cb-msg-bubble li {
+    margin-bottom: 3px;
+    font-size: 13px;
+}
+
+.cb-msg.bot .cb-msg-bubble code {
+    font-size: 12px;
+}
+
+.cb-msg.bot .cb-msg-bubble table {
+    width: 100%;
+    margin: 8px 0;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.cb-msg.bot .cb-msg-bubble table th,
+.cb-msg.bot .cb-msg-bubble table td {
+    padding: 6px 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.cb-msg.bot .cb-msg-bubble table th {
+    background: #f1f5f9;
+    font-weight: 600;
+}
+
+/* Action buttons under bot bubble */
+.cb-msg-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
+    font-size: 11px;
+    color: var(--cb-text-muted);
+}
+
+.cb-action-btn {
+    background: none;
+    border: none;
+    color: var(--cb-text-muted);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.cb-action-btn:hover {
+    color: var(--cb-primary);
+    background: #f1f5f9;
+}
+
+/* Dynamic Contextual Follow-Up Chips */
+.cb-msg-followups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.cb-followup-chip {
+    background: #ffffff;
+    color: #1e3a8a;
+    border: 1px solid #bfdbfe;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 11.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.cb-followup-chip:hover {
+    background: var(--cb-primary);
+    color: #ffffff;
+    border-color: var(--cb-primary);
+    transform: translateY(-1px);
+}
+
+/* Quick Suggestion Chips */
+.soet-cb-suggestions {
+    padding: 8px 16px;
+    background: #ffffff;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.soet-cb-suggestions::-webkit-scrollbar {
+    display: none;
+}
+
+.cb-chip {
+    white-space: nowrap;
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    padding: 5px 12px;
+    border-radius: 16px;
+    font-size: 11.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cb-chip:hover {
+    background: var(--cb-primary);
+    color: #ffffff;
+    border-color: var(--cb-primary);
+}
+
+/* Chat Input Bar */
+.soet-cb-input-bar {
+    padding: 12px 16px;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.soet-cb-input {
+    flex: 1;
+    border: 1px solid #cbd5e1;
+    border-radius: 24px;
+    padding: 10px 16px;
+    font-size: 13.5px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.soet-cb-input:focus {
+    border-color: var(--cb-primary);
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+}
+
+.soet-cb-send-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--cb-primary);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.soet-cb-send-btn:hover {
+    background: #1d4ed8;
+}
+
+.soet-cb-mic-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.soet-cb-mic-btn.listening {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #ef4444;
+    animation: micPulse 1s infinite;
+}
+
+@keyframes micPulse {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* Typing Indicator */
+.typing-dots {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+}
+
+.typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #94a3b8;
+    animation: typing 1.4s infinite ease-in-out both;
+}
+
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typing {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+
+/* Code Block Styling */
+.code-block-wrapper {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.code-block-header {
+    font-size: 11px !important;
+}
+
+/* Source Badge Styling */
+.source-badge {
+    font-size: 11px !important;
+}
+
+.source-badge .badge {
+    font-size: 10.5px !important;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    #soet-chatbot-window,
+    #soet-chatbot-window.maximized {
+        width: calc(100vw - 16px);
+        right: 8px;
+        bottom: 80px;
+        height: calc(100vh - 100px);
+        max-height: calc(100vh - 100px);
+        border-radius: 16px;
+    }
+
+    #soet-chatbot-trigger {
+        width: 56px;
+        height: 56px;
+        right: 16px;
+        bottom: 16px;
+    }
+}
+
+/* Dark Mode Theme */
+#soet-chatbot-window.dark-mode {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+#soet-chatbot-window.dark-mode .soet-cb-messages {
+    background: #0b0f19;
+}
+
+#soet-chatbot-window.dark-mode .cb-msg.bot .cb-msg-bubble {
+    background: #1e293b;
+    color: #f1f5f9;
+    border-color: #334155;
+}
+
+#soet-chatbot-window.dark-mode .cb-msg.bot .cb-msg-bubble strong {
+    color: #93c5fd;
+}
+
+#soet-chatbot-window.dark-mode .cb-msg.bot .cb-msg-bubble table {
+    background: #1e293b;
+    color: #f1f5f9;
+}
+
+#soet-chatbot-window.dark-mode .cb-msg.bot .cb-msg-bubble table th {
+    background: #334155;
+    color: #ffffff;
+    border-color: #475569;
+}
+
+#soet-chatbot-window.dark-mode .cb-msg.bot .cb-msg-bubble table td {
+    border-color: #334155;
+}
+
+#soet-chatbot-window.dark-mode .cb-followup-chip {
+    background: #1e293b;
+    color: #93c5fd;
+    border-color: #3b82f6;
+}
+
+#soet-chatbot-window.dark-mode .soet-cb-suggestions {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+#soet-chatbot-window.dark-mode .cb-chip {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-color: #475569;
+}
+
+#soet-chatbot-window.dark-mode .soet-cb-input-bar {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+#soet-chatbot-window.dark-mode .soet-cb-input {
+    background: #1e293b;
+    color: #ffffff;
+    border-color: #475569;
+}
+
+#soet-chatbot-window.dark-mode .soet-cb-mic-btn {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-color: #475569;
+}
+

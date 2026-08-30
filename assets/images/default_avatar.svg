@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+    <rect width="100%" height="100%" fill="#0d233a"/>
+    <circle cx="150" cy="110" r="50" fill="#ffc107"/>
+    <path d="M60 250 C 60 190, 240 190, 240 250 Z" fill="#ffc107"/>
+    <text x="150" y="280" font-family="Arial" font-size="14" fill="#ffffff" text-anchor="middle">SOET MGM UNIVERSITY</text>
+</svg>

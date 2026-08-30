@@ -1,0 +1,838 @@
+/* SOET College Website - Custom Stylesheet */
+:root {
+    --primary-color: #0d233a; /* Dark Navy Blue */
+    --primary-hover: #163654;
+    --secondary-color: #bfa15f; /* Gold accent */
+    --accent-color: #e6b00f;
+    --bg-light: #f8f9fa;
+    --bg-dark: #0b1528;
+    --text-dark: #212529;
+    --text-muted: #6c757d;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+    --transition: all 0.3s ease-in-out;
+}
+
+body {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    color: var(--text-dark);
+    background-color: #ffffff;
+    overflow-x: hidden;
+}
+
+/* Header & Navigation */
+.navbar {
+    background-color: var(--primary-color) !important;
+    padding: 15px 0;
+    transition: var(--transition);
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    color: #ffffff !important;
+    letter-spacing: 0.5px;
+}
+
+.navbar-brand span {
+    color: var(--secondary-color);
+}
+
+.navbar .nav-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-weight: 500;
+    font-size: 15px;
+    padding: 8px 15px !important;
+    transition: var(--transition);
+    border-radius: 4px;
+}
+
+.navbar .nav-link:hover, .navbar .nav-link.active {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Nav Pills Component (Admin Panel & Tabs) */
+.nav-pills .nav-link {
+    color: #0d233a !important;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.nav-pills .nav-link:hover {
+    background-color: rgba(13, 35, 58, 0.08);
+    color: #0d233a !important;
+}
+
+.nav-pills .nav-link.active {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+}
+
+.nav-link.btn-admission {
+    background-color: var(--secondary-color);
+    color: var(--primary-color) !important;
+    border-radius: 20px;
+    font-weight: 600;
+    padding: 8px 20px !important;
+    margin-left: 10px;
+}
+
+.nav-link.btn-admission:hover {
+    background-color: #ffffff;
+    color: var(--primary-color) !important;
+}
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+    height: 75vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(13, 35, 58, 0.9) 0%, rgba(11, 21, 40, 0.6) 100%);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.hero-title span {
+    color: var(--secondary-color);
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+/* Custom Cards */
+.custom-card {
+    border: none;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.custom-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+
+.custom-card-header {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    padding: 20px;
+    font-weight: 600;
+    border-bottom: 3px solid var(--secondary-color);
+}
+
+/* Department Cards */
+.dept-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+}
+
+.dept-card:hover {
+    transform: translateY(-5px);
+}
+
+.dept-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to top, rgba(13, 35, 58, 0.95) 20%, rgba(13, 35, 58, 0.2) 100%);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    color: #ffffff;
+}
+
+/* Notices Slider & Feed */
+.notice-board {
+    border-top: 4px solid var(--secondary-color);
+}
+
+.notice-item {
+    padding: 15px;
+    border-bottom: 1px solid #e9ecef;
+    transition: var(--transition);
+}
+
+.notice-item:hover {
+    background-color: var(--bg-light);
+}
+
+.notice-badge {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 6px;
+    border-radius: 3px;
+}
+
+/* Placements Testimonial */
+.placement-badge {
+    background-color: rgba(191, 161, 95, 0.15);
+    color: var(--secondary-color);
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+/* Page Section Headers */
+.section-header {
+    text-align: center;
+    margin-bottom: 50px;
+    position: relative;
+}
+
+.section-header h2 {
+    font-weight: 800;
+    color: var(--primary-color);
+    font-size: 2.25rem;
+    margin-bottom: 15px;
+}
+
+.section-header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.section-header::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background-color: var(--secondary-color);
+    margin: 20px auto 0;
+    border-radius: 2px;
+}
+
+/* Footer styling */
+.main-footer {
+    background-color: var(--primary-color);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 70px 0 30px;
+    border-top: 5px solid var(--secondary-color);
+}
+
+.main-footer h5 {
+    color: #ffffff;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+.main-footer a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.main-footer a:hover {
+    color: var(--secondary-color);
+    padding-left: 5px;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 25px;
+    margin-top: 50px;
+    font-size: 14px;
+}
+
+/* Form Styling */
+.form-control, .form-select {
+    padding: 12px 18px;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    transition: var(--transition);
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 3px rgba(13, 35, 58, 0.15);
+    border-color: var(--primary-color);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.btn-secondary-custom {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: var(--primary-color);
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-secondary-custom:hover {
+    background-color: #a3854a;
+    border-color: #a3854a;
+    color: #ffffff;
+}
+
+/* Floating AI Chatbot UI styling */
+.chatbot-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    font-family: 'Inter', sans-serif;
+}
+
+.chatbot-toggle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    border: 2px solid var(--secondary-color);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 5px 25px rgba(13, 35, 58, 0.3);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.chatbot-toggle:hover {
+    transform: scale(1.08);
+}
+
+.chatbot-window {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 370px;
+    height: 500px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform: translateY(20px);
+    opacity: 0;
+}
+
+.chatbot-window.active {
+    display: flex;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.chatbot-header {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--secondary-color);
+}
+
+.chatbot-header h6 {
+    margin: 0;
+    font-weight: 700;
+}
+
+.chatbot-header span {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.chatbot-close {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: var(--transition);
+}
+
+.chatbot-close:hover {
+    opacity: 1;
+}
+
+.chatbot-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background-color: #f7f9fb;
+}
+
+.chat-msg {
+    margin-bottom: 12px;
+    display: flex;
+}
+
+.chat-msg.bot {
+    justify-content: flex-start;
+}
+
+.chat-msg.user {
+    justify-content: flex-end;
+}
+
+.msg-bubble {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.chat-msg.bot .msg-bubble {
+    background-color: #ffffff;
+    color: var(--text-dark);
+    border-bottom-left-radius: 2px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.chat-msg.user .msg-bubble {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border-bottom-right-radius: 2px;
+}
+
+.chatbot-prompts {
+    padding: 10px 15px;
+    background-color: #ffffff;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.prompt-btn {
+    background: none;
+    border: 1px solid var(--secondary-color);
+    color: var(--primary-color);
+    padding: 5px 12px;
+    font-size: 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.prompt-btn:hover {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.chatbot-input-area {
+    padding: 12px 15px;
+    background-color: #ffffff;
+    border-top: 1px solid #eee;
+    display: flex;
+    align-items: center;
+}
+
+.chatbot-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    padding: 5px 0;
+}
+
+.chatbot-send {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 5px;
+    transition: var(--transition);
+}
+
+.chatbot-send:hover {
+    color: var(--secondary-color);
+}
+
+/* Admin Dashboard Design CSS overrides */
+.admin-sidebar {
+    background-color: var(--primary-color);
+    border-right: 3px solid var(--secondary-color);
+    min-height: 100vh;
+}
+
+.admin-sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.75) !important;
+    border-radius: 0;
+    border-left: 4px solid transparent;
+    padding: 12px 20px !important;
+}
+
+.admin-sidebar .nav-link:hover, .admin-sidebar .nav-link.active {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-left: 4px solid var(--secondary-color);
+}
+
+.admin-stat-card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.admin-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Timeline / Status workflows */
+.workflow-step {
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 20px;
+}
+
+.workflow-step::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--secondary-color);
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 3px rgba(191, 161, 95, 0.2);
+}
+
+.workflow-step.active::before {
+    background-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(13, 35, 58, 0.2);
+}
+
+.workflow-step::after {
+    content: '';
+    position: absolute;
+    left: 13px;
+    top: 20px;
+    bottom: -15px;
+    width: 2px;
+    background-color: #dee2e6;
+}
+
+.workflow-step:last-child::after {
+    display: none;
+}
+
+/* ==========================================================================
+   Master High-Contrast Option Buttons & Action Controls (Admin & Public Site)
+   ========================================================================== */
+
+/* Universal Button Base Visibility */
+.btn {
+    font-weight: 600 !important;
+    letter-spacing: 0.2px;
+    transition: all 0.2s ease-in-out !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Nav Pills (Admin Navigation Options Bar) */
+.nav-pills {
+    background-color: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 6px !important;
+    border-radius: 8px !important;
+    gap: 6px !important;
+}
+
+.nav-pills .nav-item {
+    margin-bottom: 2px !important;
+}
+
+.nav-pills .nav-link {
+    color: #1e293b !important;
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    font-weight: 600 !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.nav-pills .nav-link:hover {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+    border-color: #94a3b8 !important;
+}
+
+.nav-pills .nav-link.active {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+    border-color: #0d6efd !important;
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.25) !important;
+}
+
+/* High-Contrast Outline Buttons */
+.btn-outline-primary {
+    color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    background-color: #f0f7ff !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+}
+
+.btn-outline-secondary {
+    color: #334155 !important;
+    border-color: #94a3b8 !important;
+    background-color: #f8fafc !important;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #475569 !important;
+    color: #ffffff !important;
+    border-color: #475569 !important;
+}
+
+.btn-outline-success {
+    color: #0d9488 !important;
+    border-color: #0d9488 !important;
+    background-color: #f0fdf4 !important;
+}
+
+.btn-outline-success:hover {
+    background-color: #0d9488 !important;
+    color: #ffffff !important;
+}
+
+.btn-outline-danger {
+    color: #dc2626 !important;
+    border-color: #dc2626 !important;
+    background-color: #fef2f2 !important;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc2626 !important;
+    color: #ffffff !important;
+}
+
+.btn-outline-warning {
+    color: #854d0e !important;
+    border-color: #eab308 !important;
+    background-color: #fefce8 !important;
+}
+
+.btn-outline-warning:hover {
+    background-color: #eab308 !important;
+    color: #000000 !important;
+}
+
+/* Table Action Buttons */
+.table .btn {
+    padding: 4px 10px !important;
+    font-size: 13px !important;
+    border-radius: 4px !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+}
+
+/* Sidebar Navigation Items */
+.admin-sidebar .nav-link {
+    color: #94a3b8 !important;
+    border-left: 4px solid transparent !important;
+}
+
+.admin-sidebar .nav-link:hover, 
+.admin-sidebar .nav-link.active {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-left: 4px solid #ffc107 !important;
+}
+
+/* Public Website Navbar Links */
+.navbar-dark .navbar-nav .nav-link:not(.btn) {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 600;
+}
+
+.navbar-dark .navbar-nav .nav-link:not(.btn):hover, 
+.navbar-dark .navbar-nav .nav-link:not(.btn).active {
+    color: #ffc107 !important;
+}
+
+/* Explicit High-Contrast Header Action Buttons */
+.navbar .btn-admission {
+    background-color: #bfa15f !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    border-radius: 25px !important;
+    padding: 8px 20px !important;
+    border: 2px solid #bfa15f !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
+}
+
+.navbar .btn-admission:hover {
+    background-color: #ffffff !important;
+    color: #0d233a !important;
+    border-color: #ffffff !important;
+}
+
+.navbar .btn-admin-portal {
+    background-color: #ffc107 !important;
+    color: #0d233a !important;
+    font-weight: 700 !important;
+    border-radius: 25px !important;
+    padding: 8px 20px !important;
+    border: 2px solid #ffc107 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15) !important;
+}
+
+.navbar .btn-admin-portal:hover {
+    background-color: #ffffff !important;
+    color: #0d233a !important;
+    border-color: #ffffff !important;
+}
+
+/* Card Hover Elevation & Modern Utility Effects */
+.hover-elevate {
+    transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.hover-elevate:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(13, 35, 58, 0.12) !important;
+}
+
+.shadow-xs {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+}
+
+/* Back to Top Floating Button */
+#backToTopBtn {
+    position: fixed;
+    bottom: 90px;
+    right: 25px;
+    z-index: 99;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #0d233a;
+    color: #ffc107;
+    border: 2px solid #bfa15f;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#backToTopBtn:hover {
+    background-color: #bfa15f;
+    color: #0d233a;
+    transform: scale(1.1);
+}
+
+/* Spotlight Command Palette (Ctrl+K) Styles */
+.spotlight-modal .modal-content {
+    background: rgba(15, 23, 42, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(16px);
+}
+
+.spotlight-item {
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.spotlight-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--secondary-color);
+    transform: translateX(4px);
+}
+
+.spotlight-trigger {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.spotlight-trigger:hover {
+    background: var(--secondary-color);
+    color: #0d233a;
+    border-color: var(--secondary-color);
+}
+
+/* Clean Print Stylesheet */
+@media print {
+    .navbar, footer, #soet-chatbot-trigger, #soet-chatbot-window, .btn-toolbar, .admin-sidebar, #backToTopBtn, .spotlight-modal {
+        display: none !important;
+    }
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+    .card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+    }
+}
