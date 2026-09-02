@@ -68,8 +68,8 @@ $contact_bg = !empty($settings['contact_hero_image']) ? uploadUrl('settings', $s
             
             <div class="d-flex flex-column gap-4">
                 <div class="d-flex align-items-start gap-3">
-                    <div class="p-3 rounded bg-warning bg-opacity-15 text-warning">
-                        <i class="fa-solid fa-location-dot fa-lg"></i>
+                    <div class="p-3 rounded-3 shadow-xs d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 50px; height: 50px; background: linear-gradient(135deg, #0d233a, #163654); border: 2px solid #bfa15f;">
+                        <i class="fa-solid fa-location-dot fa-lg text-warning"></i>
                     </div>
                     <div>
                         <h6 class="fw-bold text-primary-color mb-1">Campus Location</h6>
@@ -78,8 +78,8 @@ $contact_bg = !empty($settings['contact_hero_image']) ? uploadUrl('settings', $s
                 </div>
 
                 <div class="d-flex align-items-start gap-3">
-                    <div class="p-3 rounded bg-warning bg-opacity-15 text-warning">
-                        <i class="fa-solid fa-phone fa-lg"></i>
+                    <div class="p-3 rounded-3 shadow-xs d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 50px; height: 50px; background: linear-gradient(135deg, #0d233a, #163654); border: 2px solid #bfa15f;">
+                        <i class="fa-solid fa-phone-volume fa-lg text-warning"></i>
                     </div>
                     <div>
                         <h6 class="fw-bold text-primary-color mb-1">Contact Desk</h6>
@@ -88,8 +88,8 @@ $contact_bg = !empty($settings['contact_hero_image']) ? uploadUrl('settings', $s
                 </div>
 
                 <div class="d-flex align-items-start gap-3">
-                    <div class="p-3 rounded bg-warning bg-opacity-15 text-warning">
-                        <i class="fa-solid fa-envelope fa-lg"></i>
+                    <div class="p-3 rounded-3 shadow-xs d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 50px; height: 50px; background: linear-gradient(135deg, #0d233a, #163654); border: 2px solid #bfa15f;">
+                        <i class="fa-solid fa-envelope-open-text fa-lg text-warning"></i>
                     </div>
                     <div>
                         <h6 class="fw-bold text-primary-color mb-1">Email Helpline</h6>
