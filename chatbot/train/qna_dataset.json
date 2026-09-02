@@ -1,0 +1,382 @@
+{
+  "source_document": "CampusAI_Chatbot_QnA_Master_Guide.pdf",
+  "document_title": "SOET MGM University CampusAI Chatbot Master Knowledge & QnA Reference Guide",
+  "total_canonical_questions": 63,
+  "sections": [
+    {
+      "category": "ai_tech",
+      "category_name": "General AI & Emerging Technologies",
+      "items": [
+        {
+          "question": "What is artificial intelligence (AI)?",
+          "type": "General",
+          "answer": "Artificial Intelligence (AI) is the branch of computer science dedicated to developing software systems capable of performing tasks that typically require human cognition, such as reasoning, problem-solving, visual perception, and decision-making."
+        },
+        {
+          "question": "What is machine learning (ML)?",
+          "type": "General",
+          "answer": "Machine learning is a subset of AI where mathematical algorithms learn statistical patterns from historical data to make predictions or automated decisions without being explicitly programmed."
+        },
+        {
+          "question": "What is ChatGPT?",
+          "type": "General",
+          "answer": "ChatGPT is an artificial intelligence conversational model developed by OpenAI. Built on Large Language Models (LLMs), it engages in natural dialogue, writes and debugs code, and synthesizes complex information."
+        },
+        {
+          "question": "What is cloud computing?",
+          "type": "General",
+          "answer": "Cloud computing delivers on-demand computing services—including virtual servers, database storage, networking, and software—over the Internet with flexible pay-as-you-go pricing (e.g., AWS, Microsoft Azure, Google Cloud)."
+        },
+        {
+          "question": "What is cybersecurity?",
+          "type": "General",
+          "answer": "Cybersecurity is the practice of protecting computer systems, cloud networks, digital devices, and sensitive organizational data from unauthorized access, cyberattacks, theft, and damage."
+        },
+        {
+          "question": "What is the Internet of Things (IoT)?",
+          "type": "General",
+          "answer": "The Internet of Things (IoT) refers to an interconnected network of physical devices embedded with sensors, microcontrollers, and wireless connectivity that autonomously collect and exchange operational data in real time."
+        },
+        {
+          "question": "What is blockchain technology?",
+          "type": "General",
+          "answer": "Blockchain is a decentralized, cryptographically secured distributed digital ledger that chronologically records transactions across a peer-to-peer network, ensuring tamper-proof immutability without requiring a central intermediary."
+        },
+        {
+          "question": "What is data science?",
+          "type": "General",
+          "answer": "Data science is an interdisciplinary field combining statistics, advanced mathematics, domain expertise, and machine learning programming to discover actionable patterns and predictive insights from structured and unstructured data."
+        },
+        {
+          "question": "What is quantum computing?",
+          "type": "General",
+          "answer": "Quantum computing harnesses fundamental principles of quantum mechanics—such as superposition and quantum entanglement—to solve specialized mathematical and optimization problems exponentially faster than classical supercomputers."
+        },
+        {
+          "question": "What is digital transformation?",
+          "type": "General",
+          "answer": "Digital transformation is the strategic integration of modern digital technology across all operational areas of an organization, fundamentally modernizing operational efficiency and customer value delivery."
+        }
+      ]
+    },
+    {
+      "category": "programming",
+      "category_name": "Programming & Software Engineering",
+      "items": [
+        {
+          "question": "What is Python?",
+          "type": "Technical",
+          "answer": "Python is a high-level, interpreted programming language known for its concise syntax and dynamic typing. It is widely used across backend web development, data science, scientific computing, automation, and artificial intelligence."
+        },
+        {
+          "question": "What is Java and how does it achieve portability?",
+          "type": "Technical",
+          "answer": "Java is an object-oriented, class-based language built on the 'Write Once, Run Anywhere' (WORA) philosophy. Compiled Java bytecode executes within a Java Virtual Machine (JVM), ensuring seamless cross-platform execution."
+        },
+        {
+          "question": "What is C++ and where is it primarily used?",
+          "type": "Technical",
+          "answer": "C++ is a high-performance compiled language that combines low-level memory control with object-oriented abstractions. It is the industry standard for game engines, operating system components, embedded firmware, and low-latency financial systems."
+        },
+        {
+          "question": "What is the difference between HTML and CSS?",
+          "type": "Technical",
+          "answer": "HTML (HyperText Markup Language) constructs the structural content and semantic hierarchy of a webpage, whereas CSS (Cascading Style Sheets) specifies visual presentation, layout styling, typography, colors, and responsive animations."
+        },
+        {
+          "question": "What is JavaScript and Node.js?",
+          "type": "Technical",
+          "answer": "JavaScript is a dynamic, lightweight scripting language that powers interactive frontend user experiences. With Node.js, JavaScript executes server-side, enabling unified full-stack web application development."
+        },
+        {
+          "question": "What is Object-Oriented Programming (OOP) and its core pillars?",
+          "type": "Technical",
+          "answer": "Object-Oriented Programming (OOP) is a software design paradigm structured around reusable classes and stateful objects, governed by four core pillars: Encapsulation, Abstraction, Inheritance, and Polymorphism."
+        },
+        {
+          "question": "What is the difference between a class and an object?",
+          "type": "Technical",
+          "answer": "A class is an abstract architectural blueprint defining member properties and methods, while an object is a concrete, self-contained instance instantiated in memory holding actual state data."
+        },
+        {
+          "question": "What is an Application Programming Interface (API) and REST?",
+          "type": "Technical",
+          "answer": "An API is a defined set of communication protocols enabling independent software applications to interact. A REST API leverages standard HTTP methods (GET, POST, PUT, DELETE) and stateless JSON data exchange."
+        },
+        {
+          "question": "What is Git and how does GitHub complement it?",
+          "type": "Technical",
+          "answer": "Git is a distributed command-line version control system that tracks source code revisions locally, while GitHub is a cloud platform that hosts remote Git repositories, facilitating pull requests, code reviews, and team collaboration."
+        },
+        {
+          "question": "What is Docker and containerization?",
+          "type": "Technical",
+          "answer": "Docker packages applications and their exact runtime dependencies into lightweight, isolated containers, guaranteeing consistent execution across local development, staging servers, and cloud production environments."
+        }
+      ]
+    },
+    {
+      "category": "databases",
+      "category_name": "Databases, Data Structures & Systems",
+      "items": [
+        {
+          "question": "What is a Database Management System (DBMS)?",
+          "type": "Technical",
+          "answer": "A DBMS is system software that manages structured data storage, retrieval, and concurrency while enforcing ACID transaction properties (Atomicity, Consistency, Isolation, Durability)."
+        },
+        {
+          "question": "What is the difference between a primary key and a foreign key?",
+          "type": "Technical",
+          "answer": "A primary key uniquely identifies each individual row within its own table (strictly non-null and unique), whereas a foreign key references a primary key in another table to establish referential relationships."
+        },
+        {
+          "question": "What is database normalization and why is it important?",
+          "type": "Technical",
+          "answer": "Normalization is the systematic design process of structuring database tables (from 1NF to BCNF) to eliminate redundant data duplication and prevent insertion, update, and deletion anomalies."
+        },
+        {
+          "question": "What is CRUD in database applications?",
+          "type": "Technical",
+          "answer": "CRUD is an industry acronym for Create, Read, Update, and Delete—the four foundational operations implemented across persistent database storage and RESTful software APIs."
+        },
+        {
+          "question": "What is an Operating System (OS)?",
+          "type": "Technical",
+          "answer": "An operating system is fundamental system software that coordinates computer hardware, allocates CPU processing time, manages RAM memory and storage I/O, and provides an execution platform for user applications."
+        },
+        {
+          "question": "What is binary search algorithm?",
+          "type": "Technical",
+          "answer": "Binary search is an efficient O(log n) divide-and-conquer algorithm that locates a target value in a sorted collection by repeatedly halving the search interval."
+        },
+        {
+          "question": "What is an IP address?",
+          "type": "Technical",
+          "answer": "An IP address (IPv4/IPv6) is a unique numerical network identifier assigned to every hardware device connected to an IP-based computer network for routing packets."
+        }
+      ]
+    },
+    {
+      "category": "academics",
+      "category_name": "Academic Programs, Branches & Curriculum",
+      "items": [
+        {
+          "question": "What degree programs and engineering branches are offered at SOET?",
+          "type": "Website",
+          "answer": "SOET offers 8 approved programs: B.Tech in Civil, Computer Science & Engineering (CSE), CSE (AI & ML), CSE (Cyber Security), ECE, Mechanical Engineering, an Integrated 6-Year B.Tech (after 10th), and M.Tech in CSE."
+        },
+        {
+          "question": "What are the details of the B.Tech Computer Science & Engineering (CSE) program?",
+          "type": "Website + Technical",
+          "answer": "B.Tech CSE is a 4-year (8 semesters) program with an approved intake of 120 seats. The curriculum covers Data Structures, Algorithms, Operating Systems, Database Management, Cloud Computing, and Full-Stack Development."
+        },
+        {
+          "question": "Does SOET offer specialized programs in Artificial Intelligence and Machine Learning?",
+          "type": "Website + General",
+          "answer": "Yes, SOET offers B.Tech in CSE (Artificial Intelligence & Machine Learning) with an approved intake of 60 seats. Coursework includes Neural Networks, Deep Learning, Computer Vision, and Natural Language Processing."
+        },
+        {
+          "question": "What program is available for students interested in Cyber Security?",
+          "type": "Website + Technical",
+          "answer": "SOET offers B.Tech in CSE (Cyber Security & Digital Forensics) (60 seats intake), emphasizing Network Security, Ethical Hacking, Cryptographic Protocols, Digital Forensics, and Threat Intelligence."
+        },
+        {
+          "question": "What programs are available after 10th Class?",
+          "type": "Website",
+          "answer": "SOET offers an Integrated 6-Year B.Tech Program (INT-BTECH) with an intake of 60 seats, allowing SSC (10th) passed students to complete both diploma-level foundations and a full engineering degree."
+        },
+        {
+          "question": "What post-graduate (M.Tech) engineering programs are available?",
+          "type": "Website",
+          "answer": "The college offers M.Tech in Computer Science & Engineering (MTECH-CSE), a 2-year (4 semesters) advanced research degree with an annual intake capacity of 30 seats."
+        },
+        {
+          "question": "What programming languages are taught in the engineering curricula?",
+          "type": "Website + Technical",
+          "answer": "Students undergo hands-on laboratory training in C, C++, Core & Advanced Java, Python for Data Science, SQL, HTML5/CSS3, JavaScript, PHP, and modern cloud deployment environments."
+        }
+      ]
+    },
+    {
+      "category": "seats",
+      "category_name": "Real-Time Seat Availability & Intake Metrics",
+      "items": [
+        {
+          "question": "What is the total approved student intake across all SOET programs?",
+          "type": "Database",
+          "answer": "The total approved student intake capacity across all 8 B.Tech and M.Tech programs is 510 seats per academic year."
+        },
+        {
+          "question": "What is the current seat availability and vacancy status?",
+          "type": "Database",
+          "answer": "Currently, 508 seats remain vacant out of 510 total intake capacity (2 seats confirmed filled in B.Tech CSE). Admissions are officially Open across all departments."
+        },
+        {
+          "question": "How many seats are vacant specifically in B.Tech Computer Science & Engineering (CSE)?",
+          "type": "Database",
+          "answer": "In B.Tech CSE, 118 seats are vacant out of an approved intake capacity of 120 seats (2 seats confirmed filled)."
+        },
+        {
+          "question": "How many seats are available in AI/ML and Cyber Security specializations?",
+          "type": "Database",
+          "answer": "Both B.Tech CSE (AIML) and B.Tech CSE (Cyber Security) currently have 60 vacant seats each out of 60 approved seats (100% vacancy available)."
+        },
+        {
+          "question": "How many seats are vacant in core branches (Civil, Mechanical, ECE)?",
+          "type": "Database",
+          "answer": "Currently, 59 seats are vacant in ECE (out of 60), 60 seats are vacant in Mechanical (out of 60), and 60 seats are vacant in Civil Engineering (out of 60)."
+        },
+        {
+          "question": "How many total students are currently enrolled and registered?",
+          "type": "Database",
+          "answer": "Official admission database records confirm 2 enrolled students in B.Tech CSE, with overall enrollment actively progressing during the ongoing admission counseling rounds."
+        }
+      ]
+    },
+    {
+      "category": "admissions",
+      "category_name": "Admissions, Eligibility & Application Process",
+      "items": [
+        {
+          "question": "What are the eligibility requirements for B.Tech engineering admissions?",
+          "type": "Website",
+          "answer": "Applicants must have passed 10+2 (HSC) with Physics and Mathematics as compulsory subjects, obtaining at least 45% aggregate marks (40% for reserved categories). Valid scores in MHT-CET or JEE Main are required."
+        },
+        {
+          "question": "Can non-CET candidates apply for direct institute-level quota admission?",
+          "type": "Website",
+          "answer": "Yes, candidates without MHT-CET or JEE Main scores can apply for Institute Level / Management Quota seats based on their 12th Standard PCM aggregate marks (minimum 45% for general, 40% for reserved category)."
+        },
+        {
+          "question": "How can prospective students apply for admission?",
+          "type": "Website",
+          "answer": "Candidates can submit their application online through the official admissions portal at /admissions.php or visit the SOET Admission Counseling Cell at the university campus in person."
+        },
+        {
+          "question": "What documents are required during the admission process?",
+          "type": "Website",
+          "answer": "Required documents include 10th and 12th marksheets, MHT-CET/JEE score card, School Leaving Certificate (TC), Domicile/Nationality Certificate, and Caste/Validity certificates (if applying under reserved categories)."
+        },
+        {
+          "question": "Are admissions currently open for the academic year?",
+          "type": "Website + Database",
+          "answer": "Yes, admissions for the 2026 academic year are currently Open across all engineering branches, with 508 vacant seats available for counseling."
+        }
+      ]
+    },
+    {
+      "category": "fees",
+      "category_name": "Fee Structure & Scholarships",
+      "items": [
+        {
+          "question": "What is the annual tuition fee structure for B.Tech programs?",
+          "type": "Website",
+          "answer": "Annual tuition fees are: ₹150,000/year for B.Tech CSE, AIML, and Cyber Security; ₹140,000/year for ECE; and ₹130,000/year for Mechanical and Civil Engineering."
+        },
+        {
+          "question": "What are the fees for the Integrated B.Tech and M.Tech programs?",
+          "type": "Website",
+          "answer": "The Integrated 6-Year B.Tech Program is priced at ₹110,000/year, and the M.Tech in CSE is priced at ₹100,000/year."
+        },
+        {
+          "question": "What scholarships and financial assistance are available?",
+          "type": "Website",
+          "answer": "Government of Maharashtra scholarships (SC, ST, OBC, VJNT, EBC, SEBC) are supported via the MahaDBT portal. Additionally, MGM University awards institutional merit-based scholarships to high-performing students."
+        },
+        {
+          "question": "How can tuition fees be paid?",
+          "type": "Website",
+          "answer": "Tuition fees can be paid online via Net Banking, Debit/Credit Card, or UPI on the student ERP portal, or offline via Demand Draft (DD) favoring 'MGM University SOET' at the campus accounts counter."
+        }
+      ]
+    },
+    {
+      "category": "faculty",
+      "category_name": "Faculty Directory & Institutional Leadership",
+      "items": [
+        {
+          "question": "Who leads SOET MGM University?",
+          "type": "Website",
+          "answer": "SOET MGM University is led by Dr. Parminder Kaur Dhingra, Dean & Director. Under her leadership, the institution focuses on industry-aligned curricula, accredited research labs, and top-tier student placements."
+        },
+        {
+          "question": "Who are the Department Heads (HODs) at SOET?",
+          "type": "Website",
+          "answer": "The Computer Science & Engineering Department is headed by Dr. Sharad S. Gore, and the Mechanical Engineering Department is headed by Mr. Siddiqui Javed A."
+        },
+        {
+          "question": "What are the qualifications and experience of the teaching faculty?",
+          "type": "Website",
+          "answer": "Faculty members hold post-graduate (M.Tech/M.E.) and doctoral (Ph.D.) degrees with an average academic and research experience of 8 to 20+ years in emerging technological domains."
+        },
+        {
+          "question": "Which faculty members teach computer programming and AI?",
+          "type": "Website + Technical",
+          "answer": "Mrs. Deshmukh Rupali R. (M.Tech, specializing in Python & Image Processing) and Ms. Bhagat Chetana B. (M.Tech, specializing in Software Engineering & Java) guide computer programming and software development."
+        },
+        {
+          "question": "Where can students and parents view complete faculty profiles?",
+          "type": "Website",
+          "answer": "The comprehensive faculty directory—including contact emails, designations, and research publications—is published online on this website at /faculty.php."
+        }
+      ]
+    },
+    {
+      "category": "placements",
+      "category_name": "Training, Placements & Industry Partners",
+      "items": [
+        {
+          "question": "What placement opportunities are available for engineering students?",
+          "type": "Website",
+          "answer": "The Training & Placement Cell facilitates campus recruitment with leading multinational IT and engineering corporations, achieving an average package of ₹4.8 LPA and top packages up to ₹14 LPA."
+        },
+        {
+          "question": "Which major corporations recruit students from SOET?",
+          "type": "Website",
+          "answer": "Top recruiters include TCS, Infosys, Wipro, Capgemini, Tech Mahindra, Cognizant, L&T Infotech, and prominent core engineering firms in Maharashtra industrial hubs."
+        },
+        {
+          "question": "What is the training and placement preparation process?",
+          "type": "Website",
+          "answer": "Students receive rigorous aptitude training, technical coding practice (Data Structures & Algorithms), soft skills enhancement, and mock technical/HR interview rounds starting from the pre-final year."
+        },
+        {
+          "question": "Are industry internships mandatory and supported?",
+          "type": "Website",
+          "answer": "Yes, students complete mandatory industry internships during summer and winter vacations, organized in collaboration with university industry partners and MoU organizations."
+        }
+      ]
+    },
+    {
+      "category": "facilities",
+      "category_name": "Campus Life, Facilities & Location",
+      "items": [
+        {
+          "question": "What campus facilities and infrastructure support technical education?",
+          "type": "Website",
+          "answer": "The campus features modern ICT-enabled smart classrooms, gigabit Wi-Fi connectivity, an Olympic-grade Sports Complex, boys and girls hostels, hygienic canteens, and an Innovation & Incubation Center."
+        },
+        {
+          "question": "What specialized laboratories are available on campus?",
+          "type": "Website",
+          "answer": "Laboratories include High-Performance Computing Labs, Artificial Intelligence & Machine Learning Lab, Cyber Forensics Sandbox, IoT & Robotics Lab, and Advanced CAD/CAM Simulation Centers."
+        },
+        {
+          "question": "Does the university campus have a central library?",
+          "type": "Website",
+          "answer": "Yes, the central library offers over 50,000 books, subscriptions to national/international research journals, digital access to IEEE/ScienceDirect databases, and spacious reading halls."
+        },
+        {
+          "question": "Where is SOET MGM University located and what is the address?",
+          "type": "Website",
+          "answer": "SOET is located at: MGM Campus, N-6, CIDCO, Chhatrapati Sambhajinagar (Aurangabad), Maharashtra - 431003, India."
+        },
+        {
+          "question": "What are the official contact numbers and email helplines?",
+          "type": "Website",
+          "answer": "Admission Helpline: +91-9371714253 / +91-240-2480570 | Official Email: admissionsoet@mgmu.ac.in / soet@mgmu.ac.in."
+        }
+      ]
+    }
+  ]
+}
