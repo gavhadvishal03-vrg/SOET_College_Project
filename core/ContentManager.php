@@ -49,14 +49,18 @@ class ContentManager
             $sql .= " AND f.department_id = ?";
             $params[] = $departmentId;
         }
-        $sql .= " ORDER BY d.id ASC,
+        $sql .= " ORDER BY 
                   CASE 
-                      WHEN f.designation LIKE '%Director%' THEN 1
-                      WHEN f.designation LIKE '%Head%' OR f.designation LIKE '%HOD%' THEN 2
-                      WHEN f.designation LIKE '%Professor%' AND f.designation NOT LIKE '%Associate%' AND f.designation NOT LIKE '%Assistant%' THEN 3
-                      WHEN f.designation LIKE '%Associate%' THEN 4
-                      WHEN f.designation LIKE '%Assistant%' THEN 5
-                      ELSE 6 
+                      WHEN d.code = 'DIRECTOR' OR f.designation LIKE '%Director%' OR f.designation LIKE '%Dean%' THEN 1 
+                      ELSE 2 
+                  END ASC,
+                  d.id ASC,
+                  CASE 
+                      WHEN f.designation LIKE '%Head%' OR f.designation LIKE '%HOD%' THEN 1
+                      WHEN f.designation LIKE '%Professor%' AND f.designation NOT LIKE '%Associate%' AND f.designation NOT LIKE '%Assistant%' THEN 2
+                      WHEN f.designation LIKE '%Associate%' THEN 3
+                      WHEN f.designation LIKE '%Assistant%' THEN 4
+                      ELSE 5 
                   END ASC,
                   f.experience_years DESC,
                   f.name ASC";

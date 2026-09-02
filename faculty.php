@@ -57,14 +57,26 @@ $faculty_list = $cms->getFaculty($selected_dept);
             </div>
         <?php else: ?>
             <?php foreach ($faculty_list as $fac): ?>
-                <div class="col-md-6 col-lg-3 faculty-card-col" 
+                <?php $isDirector = (stripos($fac['designation'], 'Director') !== false || stripos($fac['department_name'], 'Director') !== false); ?>
+                <div class="<?php echo $isDirector ? 'col-12 col-lg-6 mb-3' : 'col-md-6 col-lg-3'; ?> faculty-card-col" 
                      data-name="<?php echo strtolower(htmlspecialchars($fac['name'])); ?>"
                      data-dept="<?php echo strtolower(htmlspecialchars($fac['department_name'])); ?>"
                      data-spec="<?php echo strtolower(htmlspecialchars($fac['specialization'] ?: '')); ?>"
                      data-qual="<?php echo strtolower(htmlspecialchars($fac['qualification'] ?: '')); ?>">
-                    <div class="card custom-card h-100 text-center p-3 border-0 shadow-sm hover-elevate">
-                        <div class="text-center my-3">
-                            <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm" style="width: 110px; height: 110px; overflow: hidden; border: 3px solid var(--secondary-color);">
+                    <div class="card custom-card h-100 text-center p-3 border-0 shadow-sm hover-elevate <?php echo $isDirector ? 'border-warning' : ''; ?>" 
+                         style="<?php echo $isDirector ? 'border: 2px solid #bfa15f !important; box-shadow: 0 12px 32px rgba(191, 161, 95, 0.28) !important; background: linear-gradient(145deg, #ffffff, #fffcf5);' : ''; ?>">
+                        
+                        <?php if ($isDirector): ?>
+                            <div class="position-absolute top-0 start-50 translate-middle-x mt-2">
+                                <span class="badge bg-danger text-white px-3 py-1.5 rounded-pill shadow-sm" style="font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">
+                                    <i class="fa-solid fa-crown text-warning me-1"></i> INSTITUTE DIRECTORATE
+                                </span>
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="text-center <?php echo $isDirector ? 'mt-4 mb-3' : 'my-3'; ?>">
+                            <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm" 
+                                 style="width: <?php echo $isDirector ? '130px' : '110px'; ?>; height: <?php echo $isDirector ? '130px' : '110px'; ?>; overflow: hidden; border: <?php echo $isDirector ? '4px solid #bfa15f' : '3px solid var(--secondary-color)'; ?>;">
                                 <?php if (!empty($fac['image_path'])): ?>
                                     <img src="<?php echo uploadUrl('faculty', $fac['image_path']); ?>" alt="<?php echo htmlspecialchars($fac['name']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
                                 <?php else: ?>
@@ -73,8 +85,8 @@ $faculty_list = $cms->getFaculty($selected_dept);
                             </div>
                         </div>
                         <div class="card-body p-1">
-                            <h5 class="fw-bold text-primary-color mb-1"><?php echo htmlspecialchars($fac['name']); ?></h5>
-                            <span class="badge bg-warning text-dark mb-2"><?php echo htmlspecialchars($fac['designation']); ?></span>
+                            <h5 class="<?php echo $isDirector ? 'fw-extrabold text-primary-color fs-4' : 'fw-bold text-primary-color'; ?> mb-1"><?php echo htmlspecialchars($fac['name']); ?></h5>
+                            <span class="badge <?php echo $isDirector ? 'bg-danger text-white' : 'bg-warning text-dark'; ?> mb-2"><?php echo htmlspecialchars($fac['designation']); ?></span>
                             <span class="d-block text-secondary small fw-semibold mb-3"><?php echo htmlspecialchars($fac['department_name']); ?></span>
                             
                             <hr class="my-2 bg-light">
