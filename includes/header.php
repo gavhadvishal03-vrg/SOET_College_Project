@@ -86,6 +86,23 @@ try {
     $dbNavMain = [];
 }
 ?>
+<!-- Top Utility & Announcement Bar -->
+<div class="py-1 px-3 text-white small d-none d-md-block" style="background-color: #071321; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 12px;">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <span><i class="fa-solid fa-graduation-cap text-warning me-1.5"></i><strong>NAAC Grade A+ Accredited University</strong></span>
+            <span class="text-white-50">|</span>
+            <span><i class="fa-solid fa-phone text-warning me-1"></i> Helpline: <strong>+91-0240-2403333</strong></span>
+            <span class="text-white-50">|</span>
+            <span><i class="fa-solid fa-envelope text-warning me-1"></i> <strong>soet@mgmu.ac.in</strong></span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <span class="badge bg-warning text-dark font-semibold py-1 px-2"><i class="fa-solid fa-bullhorn me-1"></i> Admissions 2026-27 Open</span>
+            <a href="<?php echo APP_URL; ?>/admissions.php" class="text-warning text-decoration-none font-semibold hover-underline"><i class="fa-solid fa-paper-plane me-1"></i> Apply Online</a>
+        </div>
+    </div>
+</div>
+
 <!-- Header Navigation -->
 <nav class="navbar navbar-expand-xl navbar-dark sticky-top py-2" style="border-bottom: 3px solid var(--secondary-color); box-shadow: 0 4px 20px rgba(0,0,0,0.15); background-color: var(--primary-color);">
     <div class="container-fluid px-2 px-md-3 px-xl-4">
