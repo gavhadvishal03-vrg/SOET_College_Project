@@ -66,11 +66,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_course'])) {
     $fee_year_3 = (float)($_POST['fee_year_3'] ?? 150000.00);
     $fee_year_4 = (float)($_POST['fee_year_4'] ?? 150000.00);
 
-    $image_path = $edit_course ? $edit_course['image_path'] : null;
-    $syl_pdf_1 = $edit_course ? ($edit_course['syllabus_pdf_year_1'] ?? null) : null;
-    $syl_pdf_2 = $edit_course ? ($edit_course['syllabus_pdf_year_2'] ?? null) : null;
-    $syl_pdf_3 = $edit_course ? ($edit_course['syllabus_pdf_year_3'] ?? null) : null;
-    $syl_pdf_4 = $edit_course ? ($edit_course['syllabus_pdf_year_4'] ?? null) : null;
+    $existing_course = $course_id ? $db->fetchOne("SELECT * FROM courses WHERE id = ?", [$course_id]) : null;
+    $image_path = $existing_course ? $existing_course['image_path'] : null;
+    $syl_pdf_1 = $existing_course ? ($existing_course['syllabus_pdf_year_1'] ?? null) : null;
+    $syl_pdf_2 = $existing_course ? ($existing_course['syllabus_pdf_year_2'] ?? null) : null;
+    $syl_pdf_3 = $existing_course ? ($existing_course['syllabus_pdf_year_3'] ?? null) : null;
+    $syl_pdf_4 = $existing_course ? ($existing_course['syllabus_pdf_year_4'] ?? null) : null;
 
     // Upload Course Cover Image
     if (isset($_FILES['course_image']) && $_FILES['course_image']['error'] === UPLOAD_ERR_OK) {

@@ -61,7 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_faculty'])) {
     } elseif (empty($name) || empty($designation) || empty($dept_id) || empty($email)) {
         setFlash('danger', 'Please enter all mandatory fields.');
     } else {
-        $uploaded_image = $edit_fac ? $edit_fac['image_path'] : null;
+        $existing_fac = $fac_id ? $db->fetchOne("SELECT image_path FROM faculty WHERE id = ?", [$fac_id]) : null;
+        $uploaded_image = $existing_fac ? $existing_fac['image_path'] : null;
         $valid_upload = true;
 
         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
@@ -226,7 +227,7 @@ $faculty_list = $db->fetchAll(
         <div class="col-md-8">
             <div class="card border-0 shadow-sm p-4">
                 <h4 class="fw-bold text-primary-color mb-4"><i class="fa-solid fa-user-tie text-warning me-2"></i><?php echo $edit_fac ? 'Edit Faculty Details' : 'Add Faculty Member'; ?></h4>
-                <form method="POST" action="faculty.php" enctype="multipart/form-data">
+                <form method="POST" action="faculty.php<?php echo $edit_fac ? '?action=edit&id=' . $edit_fac['id'] : ''; ?>" enctype="multipart/form-data">
                     <?php echo Security::csrfField(); ?>
                     <?php if ($edit_fac): ?>
                         <input type="hidden" name="fac_id" value="<?php echo $edit_fac['id']; ?>">
