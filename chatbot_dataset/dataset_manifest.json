@@ -1,0 +1,976 @@
+{
+  "dataset_name": "CampusAI 60,000 Q&A Master Training Dataset",
+  "total_records": 60000,
+  "categories": {
+    "General": 10000,
+    "Technical": 10000,
+    "Website": 10000,
+    "Database": 10000,
+    "Hybrid": 10000,
+    "Day-to-Day": 10000
+  },
+  "total_batches": 120,
+  "batch_size": 500,
+  "batches": [
+    {
+      "batch_number": 1,
+      "category": "General",
+      "file": "general_00001_00500.json",
+      "start_id": "GEN-00001",
+      "end_id": "GEN-00500",
+      "count": 500
+    },
+    {
+      "batch_number": 2,
+      "category": "General",
+      "file": "general_00501_01000.json",
+      "start_id": "GEN-00501",
+      "end_id": "GEN-01000",
+      "count": 500
+    },
+    {
+      "batch_number": 3,
+      "category": "General",
+      "file": "general_01001_01500.json",
+      "start_id": "GEN-01001",
+      "end_id": "GEN-01500",
+      "count": 500
+    },
+    {
+      "batch_number": 4,
+      "category": "General",
+      "file": "general_01501_02000.json",
+      "start_id": "GEN-01501",
+      "end_id": "GEN-02000",
+      "count": 500
+    },
+    {
+      "batch_number": 5,
+      "category": "General",
+      "file": "general_02001_02500.json",
+      "start_id": "GEN-02001",
+      "end_id": "GEN-02500",
+      "count": 500
+    },
+    {
+      "batch_number": 6,
+      "category": "General",
+      "file": "general_02501_03000.json",
+      "start_id": "GEN-02501",
+      "end_id": "GEN-03000",
+      "count": 500
+    },
+    {
+      "batch_number": 7,
+      "category": "General",
+      "file": "general_03001_03500.json",
+      "start_id": "GEN-03001",
+      "end_id": "GEN-03500",
+      "count": 500
+    },
+    {
+      "batch_number": 8,
+      "category": "General",
+      "file": "general_03501_04000.json",
+      "start_id": "GEN-03501",
+      "end_id": "GEN-04000",
+      "count": 500
+    },
+    {
+      "batch_number": 9,
+      "category": "General",
+      "file": "general_04001_04500.json",
+      "start_id": "GEN-04001",
+      "end_id": "GEN-04500",
+      "count": 500
+    },
+    {
+      "batch_number": 10,
+      "category": "General",
+      "file": "general_04501_05000.json",
+      "start_id": "GEN-04501",
+      "end_id": "GEN-05000",
+      "count": 500
+    },
+    {
+      "batch_number": 11,
+      "category": "General",
+      "file": "general_05001_05500.json",
+      "start_id": "GEN-05001",
+      "end_id": "GEN-05500",
+      "count": 500
+    },
+    {
+      "batch_number": 12,
+      "category": "General",
+      "file": "general_05501_06000.json",
+      "start_id": "GEN-05501",
+      "end_id": "GEN-06000",
+      "count": 500
+    },
+    {
+      "batch_number": 13,
+      "category": "General",
+      "file": "general_06001_06500.json",
+      "start_id": "GEN-06001",
+      "end_id": "GEN-06500",
+      "count": 500
+    },
+    {
+      "batch_number": 14,
+      "category": "General",
+      "file": "general_06501_07000.json",
+      "start_id": "GEN-06501",
+      "end_id": "GEN-07000",
+      "count": 500
+    },
+    {
+      "batch_number": 15,
+      "category": "General",
+      "file": "general_07001_07500.json",
+      "start_id": "GEN-07001",
+      "end_id": "GEN-07500",
+      "count": 500
+    },
+    {
+      "batch_number": 16,
+      "category": "General",
+      "file": "general_07501_08000.json",
+      "start_id": "GEN-07501",
+      "end_id": "GEN-08000",
+      "count": 500
+    },
+    {
+      "batch_number": 17,
+      "category": "General",
+      "file": "general_08001_08500.json",
+      "start_id": "GEN-08001",
+      "end_id": "GEN-08500",
+      "count": 500
+    },
+    {
+      "batch_number": 18,
+      "category": "General",
+      "file": "general_08501_09000.json",
+      "start_id": "GEN-08501",
+      "end_id": "GEN-09000",
+      "count": 500
+    },
+    {
+      "batch_number": 19,
+      "category": "General",
+      "file": "general_09001_09500.json",
+      "start_id": "GEN-09001",
+      "end_id": "GEN-09500",
+      "count": 500
+    },
+    {
+      "batch_number": 20,
+      "category": "General",
+      "file": "general_09501_10000.json",
+      "start_id": "GEN-09501",
+      "end_id": "GEN-10000",
+      "count": 500
+    },
+    {
+      "batch_number": 21,
+      "category": "Technical",
+      "file": "technical_00001_00500.json",
+      "start_id": "TECH-00001",
+      "end_id": "TECH-00500",
+      "count": 500
+    },
+    {
+      "batch_number": 22,
+      "category": "Technical",
+      "file": "technical_00501_01000.json",
+      "start_id": "TECH-00501",
+      "end_id": "TECH-01000",
+      "count": 500
+    },
+    {
+      "batch_number": 23,
+      "category": "Technical",
+      "file": "technical_01001_01500.json",
+      "start_id": "TECH-01001",
+      "end_id": "TECH-01500",
+      "count": 500
+    },
+    {
+      "batch_number": 24,
+      "category": "Technical",
+      "file": "technical_01501_02000.json",
+      "start_id": "TECH-01501",
+      "end_id": "TECH-02000",
+      "count": 500
+    },
+    {
+      "batch_number": 25,
+      "category": "Technical",
+      "file": "technical_02001_02500.json",
+      "start_id": "TECH-02001",
+      "end_id": "TECH-02500",
+      "count": 500
+    },
+    {
+      "batch_number": 26,
+      "category": "Technical",
+      "file": "technical_02501_03000.json",
+      "start_id": "TECH-02501",
+      "end_id": "TECH-03000",
+      "count": 500
+    },
+    {
+      "batch_number": 27,
+      "category": "Technical",
+      "file": "technical_03001_03500.json",
+      "start_id": "TECH-03001",
+      "end_id": "TECH-03500",
+      "count": 500
+    },
+    {
+      "batch_number": 28,
+      "category": "Technical",
+      "file": "technical_03501_04000.json",
+      "start_id": "TECH-03501",
+      "end_id": "TECH-04000",
+      "count": 500
+    },
+    {
+      "batch_number": 29,
+      "category": "Technical",
+      "file": "technical_04001_04500.json",
+      "start_id": "TECH-04001",
+      "end_id": "TECH-04500",
+      "count": 500
+    },
+    {
+      "batch_number": 30,
+      "category": "Technical",
+      "file": "technical_04501_05000.json",
+      "start_id": "TECH-04501",
+      "end_id": "TECH-05000",
+      "count": 500
+    },
+    {
+      "batch_number": 31,
+      "category": "Technical",
+      "file": "technical_05001_05500.json",
+      "start_id": "TECH-05001",
+      "end_id": "TECH-05500",
+      "count": 500
+    },
+    {
+      "batch_number": 32,
+      "category": "Technical",
+      "file": "technical_05501_06000.json",
+      "start_id": "TECH-05501",
+      "end_id": "TECH-06000",
+      "count": 500
+    },
+    {
+      "batch_number": 33,
+      "category": "Technical",
+      "file": "technical_06001_06500.json",
+      "start_id": "TECH-06001",
+      "end_id": "TECH-06500",
+      "count": 500
+    },
+    {
+      "batch_number": 34,
+      "category": "Technical",
+      "file": "technical_06501_07000.json",
+      "start_id": "TECH-06501",
+      "end_id": "TECH-07000",
+      "count": 500
+    },
+    {
+      "batch_number": 35,
+      "category": "Technical",
+      "file": "technical_07001_07500.json",
+      "start_id": "TECH-07001",
+      "end_id": "TECH-07500",
+      "count": 500
+    },
+    {
+      "batch_number": 36,
+      "category": "Technical",
+      "file": "technical_07501_08000.json",
+      "start_id": "TECH-07501",
+      "end_id": "TECH-08000",
+      "count": 500
+    },
+    {
+      "batch_number": 37,
+      "category": "Technical",
+      "file": "technical_08001_08500.json",
+      "start_id": "TECH-08001",
+      "end_id": "TECH-08500",
+      "count": 500
+    },
+    {
+      "batch_number": 38,
+      "category": "Technical",
+      "file": "technical_08501_09000.json",
+      "start_id": "TECH-08501",
+      "end_id": "TECH-09000",
+      "count": 500
+    },
+    {
+      "batch_number": 39,
+      "category": "Technical",
+      "file": "technical_09001_09500.json",
+      "start_id": "TECH-09001",
+      "end_id": "TECH-09500",
+      "count": 500
+    },
+    {
+      "batch_number": 40,
+      "category": "Technical",
+      "file": "technical_09501_10000.json",
+      "start_id": "TECH-09501",
+      "end_id": "TECH-10000",
+      "count": 500
+    },
+    {
+      "batch_number": 41,
+      "category": "Website",
+      "file": "website_00001_00500.json",
+      "start_id": "WEB-00001",
+      "end_id": "WEB-00500",
+      "count": 500
+    },
+    {
+      "batch_number": 42,
+      "category": "Website",
+      "file": "website_00501_01000.json",
+      "start_id": "WEB-00501",
+      "end_id": "WEB-01000",
+      "count": 500
+    },
+    {
+      "batch_number": 43,
+      "category": "Website",
+      "file": "website_01001_01500.json",
+      "start_id": "WEB-01001",
+      "end_id": "WEB-01500",
+      "count": 500
+    },
+    {
+      "batch_number": 44,
+      "category": "Website",
+      "file": "website_01501_02000.json",
+      "start_id": "WEB-01501",
+      "end_id": "WEB-02000",
+      "count": 500
+    },
+    {
+      "batch_number": 45,
+      "category": "Website",
+      "file": "website_02001_02500.json",
+      "start_id": "WEB-02001",
+      "end_id": "WEB-02500",
+      "count": 500
+    },
+    {
+      "batch_number": 46,
+      "category": "Website",
+      "file": "website_02501_03000.json",
+      "start_id": "WEB-02501",
+      "end_id": "WEB-03000",
+      "count": 500
+    },
+    {
+      "batch_number": 47,
+      "category": "Website",
+      "file": "website_03001_03500.json",
+      "start_id": "WEB-03001",
+      "end_id": "WEB-03500",
+      "count": 500
+    },
+    {
+      "batch_number": 48,
+      "category": "Website",
+      "file": "website_03501_04000.json",
+      "start_id": "WEB-03501",
+      "end_id": "WEB-04000",
+      "count": 500
+    },
+    {
+      "batch_number": 49,
+      "category": "Website",
+      "file": "website_04001_04500.json",
+      "start_id": "WEB-04001",
+      "end_id": "WEB-04500",
+      "count": 500
+    },
+    {
+      "batch_number": 50,
+      "category": "Website",
+      "file": "website_04501_05000.json",
+      "start_id": "WEB-04501",
+      "end_id": "WEB-05000",
+      "count": 500
+    },
+    {
+      "batch_number": 51,
+      "category": "Website",
+      "file": "website_05001_05500.json",
+      "start_id": "WEB-05001",
+      "end_id": "WEB-05500",
+      "count": 500
+    },
+    {
+      "batch_number": 52,
+      "category": "Website",
+      "file": "website_05501_06000.json",
+      "start_id": "WEB-05501",
+      "end_id": "WEB-06000",
+      "count": 500
+    },
+    {
+      "batch_number": 53,
+      "category": "Website",
+      "file": "website_06001_06500.json",
+      "start_id": "WEB-06001",
+      "end_id": "WEB-06500",
+      "count": 500
+    },
+    {
+      "batch_number": 54,
+      "category": "Website",
+      "file": "website_06501_07000.json",
+      "start_id": "WEB-06501",
+      "end_id": "WEB-07000",
+      "count": 500
+    },
+    {
+      "batch_number": 55,
+      "category": "Website",
+      "file": "website_07001_07500.json",
+      "start_id": "WEB-07001",
+      "end_id": "WEB-07500",
+      "count": 500
+    },
+    {
+      "batch_number": 56,
+      "category": "Website",
+      "file": "website_07501_08000.json",
+      "start_id": "WEB-07501",
+      "end_id": "WEB-08000",
+      "count": 500
+    },
+    {
+      "batch_number": 57,
+      "category": "Website",
+      "file": "website_08001_08500.json",
+      "start_id": "WEB-08001",
+      "end_id": "WEB-08500",
+      "count": 500
+    },
+    {
+      "batch_number": 58,
+      "category": "Website",
+      "file": "website_08501_09000.json",
+      "start_id": "WEB-08501",
+      "end_id": "WEB-09000",
+      "count": 500
+    },
+    {
+      "batch_number": 59,
+      "category": "Website",
+      "file": "website_09001_09500.json",
+      "start_id": "WEB-09001",
+      "end_id": "WEB-09500",
+      "count": 500
+    },
+    {
+      "batch_number": 60,
+      "category": "Website",
+      "file": "website_09501_10000.json",
+      "start_id": "WEB-09501",
+      "end_id": "WEB-10000",
+      "count": 500
+    },
+    {
+      "batch_number": 61,
+      "category": "Database",
+      "file": "database_00001_00500.json",
+      "start_id": "DB-00001",
+      "end_id": "DB-00500",
+      "count": 500
+    },
+    {
+      "batch_number": 62,
+      "category": "Database",
+      "file": "database_00501_01000.json",
+      "start_id": "DB-00501",
+      "end_id": "DB-01000",
+      "count": 500
+    },
+    {
+      "batch_number": 63,
+      "category": "Database",
+      "file": "database_01001_01500.json",
+      "start_id": "DB-01001",
+      "end_id": "DB-01500",
+      "count": 500
+    },
+    {
+      "batch_number": 64,
+      "category": "Database",
+      "file": "database_01501_02000.json",
+      "start_id": "DB-01501",
+      "end_id": "DB-02000",
+      "count": 500
+    },
+    {
+      "batch_number": 65,
+      "category": "Database",
+      "file": "database_02001_02500.json",
+      "start_id": "DB-02001",
+      "end_id": "DB-02500",
+      "count": 500
+    },
+    {
+      "batch_number": 66,
+      "category": "Database",
+      "file": "database_02501_03000.json",
+      "start_id": "DB-02501",
+      "end_id": "DB-03000",
+      "count": 500
+    },
+    {
+      "batch_number": 67,
+      "category": "Database",
+      "file": "database_03001_03500.json",
+      "start_id": "DB-03001",
+      "end_id": "DB-03500",
+      "count": 500
+    },
+    {
+      "batch_number": 68,
+      "category": "Database",
+      "file": "database_03501_04000.json",
+      "start_id": "DB-03501",
+      "end_id": "DB-04000",
+      "count": 500
+    },
+    {
+      "batch_number": 69,
+      "category": "Database",
+      "file": "database_04001_04500.json",
+      "start_id": "DB-04001",
+      "end_id": "DB-04500",
+      "count": 500
+    },
+    {
+      "batch_number": 70,
+      "category": "Database",
+      "file": "database_04501_05000.json",
+      "start_id": "DB-04501",
+      "end_id": "DB-05000",
+      "count": 500
+    },
+    {
+      "batch_number": 71,
+      "category": "Database",
+      "file": "database_05001_05500.json",
+      "start_id": "DB-05001",
+      "end_id": "DB-05500",
+      "count": 500
+    },
+    {
+      "batch_number": 72,
+      "category": "Database",
+      "file": "database_05501_06000.json",
+      "start_id": "DB-05501",
+      "end_id": "DB-06000",
+      "count": 500
+    },
+    {
+      "batch_number": 73,
+      "category": "Database",
+      "file": "database_06001_06500.json",
+      "start_id": "DB-06001",
+      "end_id": "DB-06500",
+      "count": 500
+    },
+    {
+      "batch_number": 74,
+      "category": "Database",
+      "file": "database_06501_07000.json",
+      "start_id": "DB-06501",
+      "end_id": "DB-07000",
+      "count": 500
+    },
+    {
+      "batch_number": 75,
+      "category": "Database",
+      "file": "database_07001_07500.json",
+      "start_id": "DB-07001",
+      "end_id": "DB-07500",
+      "count": 500
+    },
+    {
+      "batch_number": 76,
+      "category": "Database",
+      "file": "database_07501_08000.json",
+      "start_id": "DB-07501",
+      "end_id": "DB-08000",
+      "count": 500
+    },
+    {
+      "batch_number": 77,
+      "category": "Database",
+      "file": "database_08001_08500.json",
+      "start_id": "DB-08001",
+      "end_id": "DB-08500",
+      "count": 500
+    },
+    {
+      "batch_number": 78,
+      "category": "Database",
+      "file": "database_08501_09000.json",
+      "start_id": "DB-08501",
+      "end_id": "DB-09000",
+      "count": 500
+    },
+    {
+      "batch_number": 79,
+      "category": "Database",
+      "file": "database_09001_09500.json",
+      "start_id": "DB-09001",
+      "end_id": "DB-09500",
+      "count": 500
+    },
+    {
+      "batch_number": 80,
+      "category": "Database",
+      "file": "database_09501_10000.json",
+      "start_id": "DB-09501",
+      "end_id": "DB-10000",
+      "count": 500
+    },
+    {
+      "batch_number": 81,
+      "category": "Hybrid",
+      "file": "hybrid_00001_00500.json",
+      "start_id": "HYB-00001",
+      "end_id": "HYB-00500",
+      "count": 500
+    },
+    {
+      "batch_number": 82,
+      "category": "Hybrid",
+      "file": "hybrid_00501_01000.json",
+      "start_id": "HYB-00501",
+      "end_id": "HYB-01000",
+      "count": 500
+    },
+    {
+      "batch_number": 83,
+      "category": "Hybrid",
+      "file": "hybrid_01001_01500.json",
+      "start_id": "HYB-01001",
+      "end_id": "HYB-01500",
+      "count": 500
+    },
+    {
+      "batch_number": 84,
+      "category": "Hybrid",
+      "file": "hybrid_01501_02000.json",
+      "start_id": "HYB-01501",
+      "end_id": "HYB-02000",
+      "count": 500
+    },
+    {
+      "batch_number": 85,
+      "category": "Hybrid",
+      "file": "hybrid_02001_02500.json",
+      "start_id": "HYB-02001",
+      "end_id": "HYB-02500",
+      "count": 500
+    },
+    {
+      "batch_number": 86,
+      "category": "Hybrid",
+      "file": "hybrid_02501_03000.json",
+      "start_id": "HYB-02501",
+      "end_id": "HYB-03000",
+      "count": 500
+    },
+    {
+      "batch_number": 87,
+      "category": "Hybrid",
+      "file": "hybrid_03001_03500.json",
+      "start_id": "HYB-03001",
+      "end_id": "HYB-03500",
+      "count": 500
+    },
+    {
+      "batch_number": 88,
+      "category": "Hybrid",
+      "file": "hybrid_03501_04000.json",
+      "start_id": "HYB-03501",
+      "end_id": "HYB-04000",
+      "count": 500
+    },
+    {
+      "batch_number": 89,
+      "category": "Hybrid",
+      "file": "hybrid_04001_04500.json",
+      "start_id": "HYB-04001",
+      "end_id": "HYB-04500",
+      "count": 500
+    },
+    {
+      "batch_number": 90,
+      "category": "Hybrid",
+      "file": "hybrid_04501_05000.json",
+      "start_id": "HYB-04501",
+      "end_id": "HYB-05000",
+      "count": 500
+    },
+    {
+      "batch_number": 91,
+      "category": "Hybrid",
+      "file": "hybrid_05001_05500.json",
+      "start_id": "HYB-05001",
+      "end_id": "HYB-05500",
+      "count": 500
+    },
+    {
+      "batch_number": 92,
+      "category": "Hybrid",
+      "file": "hybrid_05501_06000.json",
+      "start_id": "HYB-05501",
+      "end_id": "HYB-06000",
+      "count": 500
+    },
+    {
+      "batch_number": 93,
+      "category": "Hybrid",
+      "file": "hybrid_06001_06500.json",
+      "start_id": "HYB-06001",
+      "end_id": "HYB-06500",
+      "count": 500
+    },
+    {
+      "batch_number": 94,
+      "category": "Hybrid",
+      "file": "hybrid_06501_07000.json",
+      "start_id": "HYB-06501",
+      "end_id": "HYB-07000",
+      "count": 500
+    },
+    {
+      "batch_number": 95,
+      "category": "Hybrid",
+      "file": "hybrid_07001_07500.json",
+      "start_id": "HYB-07001",
+      "end_id": "HYB-07500",
+      "count": 500
+    },
+    {
+      "batch_number": 96,
+      "category": "Hybrid",
+      "file": "hybrid_07501_08000.json",
+      "start_id": "HYB-07501",
+      "end_id": "HYB-08000",
+      "count": 500
+    },
+    {
+      "batch_number": 97,
+      "category": "Hybrid",
+      "file": "hybrid_08001_08500.json",
+      "start_id": "HYB-08001",
+      "end_id": "HYB-08500",
+      "count": 500
+    },
+    {
+      "batch_number": 98,
+      "category": "Hybrid",
+      "file": "hybrid_08501_09000.json",
+      "start_id": "HYB-08501",
+      "end_id": "HYB-09000",
+      "count": 500
+    },
+    {
+      "batch_number": 99,
+      "category": "Hybrid",
+      "file": "hybrid_09001_09500.json",
+      "start_id": "HYB-09001",
+      "end_id": "HYB-09500",
+      "count": 500
+    },
+    {
+      "batch_number": 100,
+      "category": "Hybrid",
+      "file": "hybrid_09501_10000.json",
+      "start_id": "HYB-09501",
+      "end_id": "HYB-10000",
+      "count": 500
+    },
+    {
+      "batch_number": 101,
+      "category": "Day-to-Day",
+      "file": "day_to_day_00001_00500.json",
+      "start_id": "DAY-00001",
+      "end_id": "DAY-00500",
+      "count": 500
+    },
+    {
+      "batch_number": 102,
+      "category": "Day-to-Day",
+      "file": "day_to_day_00501_01000.json",
+      "start_id": "DAY-00501",
+      "end_id": "DAY-01000",
+      "count": 500
+    },
+    {
+      "batch_number": 103,
+      "category": "Day-to-Day",
+      "file": "day_to_day_01001_01500.json",
+      "start_id": "DAY-01001",
+      "end_id": "DAY-01500",
+      "count": 500
+    },
+    {
+      "batch_number": 104,
+      "category": "Day-to-Day",
+      "file": "day_to_day_01501_02000.json",
+      "start_id": "DAY-01501",
+      "end_id": "DAY-02000",
+      "count": 500
+    },
+    {
+      "batch_number": 105,
+      "category": "Day-to-Day",
+      "file": "day_to_day_02001_02500.json",
+      "start_id": "DAY-02001",
+      "end_id": "DAY-02500",
+      "count": 500
+    },
+    {
+      "batch_number": 106,
+      "category": "Day-to-Day",
+      "file": "day_to_day_02501_03000.json",
+      "start_id": "DAY-02501",
+      "end_id": "DAY-03000",
+      "count": 500
+    },
+    {
+      "batch_number": 107,
+      "category": "Day-to-Day",
+      "file": "day_to_day_03001_03500.json",
+      "start_id": "DAY-03001",
+      "end_id": "DAY-03500",
+      "count": 500
+    },
+    {
+      "batch_number": 108,
+      "category": "Day-to-Day",
+      "file": "day_to_day_03501_04000.json",
+      "start_id": "DAY-03501",
+      "end_id": "DAY-04000",
+      "count": 500
+    },
+    {
+      "batch_number": 109,
+      "category": "Day-to-Day",
+      "file": "day_to_day_04001_04500.json",
+      "start_id": "DAY-04001",
+      "end_id": "DAY-04500",
+      "count": 500
+    },
+    {
+      "batch_number": 110,
+      "category": "Day-to-Day",
+      "file": "day_to_day_04501_05000.json",
+      "start_id": "DAY-04501",
+      "end_id": "DAY-05000",
+      "count": 500
+    },
+    {
+      "batch_number": 111,
+      "category": "Day-to-Day",
+      "file": "day_to_day_05001_05500.json",
+      "start_id": "DAY-05001",
+      "end_id": "DAY-05500",
+      "count": 500
+    },
+    {
+      "batch_number": 112,
+      "category": "Day-to-Day",
+      "file": "day_to_day_05501_06000.json",
+      "start_id": "DAY-05501",
+      "end_id": "DAY-06000",
+      "count": 500
+    },
+    {
+      "batch_number": 113,
+      "category": "Day-to-Day",
+      "file": "day_to_day_06001_06500.json",
+      "start_id": "DAY-06001",
+      "end_id": "DAY-06500",
+      "count": 500
+    },
+    {
+      "batch_number": 114,
+      "category": "Day-to-Day",
+      "file": "day_to_day_06501_07000.json",
+      "start_id": "DAY-06501",
+      "end_id": "DAY-07000",
+      "count": 500
+    },
+    {
+      "batch_number": 115,
+      "category": "Day-to-Day",
+      "file": "day_to_day_07001_07500.json",
+      "start_id": "DAY-07001",
+      "end_id": "DAY-07500",
+      "count": 500
+    },
+    {
+      "batch_number": 116,
+      "category": "Day-to-Day",
+      "file": "day_to_day_07501_08000.json",
+      "start_id": "DAY-07501",
+      "end_id": "DAY-08000",
+      "count": 500
+    },
+    {
+      "batch_number": 117,
+      "category": "Day-to-Day",
+      "file": "day_to_day_08001_08500.json",
+      "start_id": "DAY-08001",
+      "end_id": "DAY-08500",
+      "count": 500
+    },
+    {
+      "batch_number": 118,
+      "category": "Day-to-Day",
+      "file": "day_to_day_08501_09000.json",
+      "start_id": "DAY-08501",
+      "end_id": "DAY-09000",
+      "count": 500
+    },
+    {
+      "batch_number": 119,
+      "category": "Day-to-Day",
+      "file": "day_to_day_09001_09500.json",
+      "start_id": "DAY-09001",
+      "end_id": "DAY-09500",
+      "count": 500
+    },
+    {
+      "batch_number": 120,
+      "category": "Day-to-Day",
+      "file": "day_to_day_09501_10000.json",
+      "start_id": "DAY-09501",
+      "end_id": "DAY-10000",
+      "count": 500
+    }
+  ]
+}
