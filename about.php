@@ -26,7 +26,7 @@ $director_img = !empty($settings['director_image']) ? uploadUrl('settings', $set
     <div class="row g-5">
         <!-- Text details -->
         <div class="col-lg-7">
-            <h2 class="fw-bold text-primary-color mb-3">Our History and Vision</h2>
+            <h2 id="history" class="fw-bold text-primary-color mb-3">Our History and Vision</h2>
             <p class="lead text-secondary mb-4">Empowering students through cutting-edge technology and engineering wisdom since 2012.</p>
             
             <p class="text-muted">The School of Engineering and Technology (SOET) was established with the core objective of producing highly skilled, industry-ready engineering professionals. Over the last decade, we have grown into one of the top engineering schools in the region, recognized for academic excellence, state-of-the-art labs, and brilliant placement outcomes.</p>

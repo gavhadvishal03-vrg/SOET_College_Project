@@ -151,6 +151,15 @@ body {
     opacity: 0.9;
 }
 
+/* Navbar Desktop Dropdown Hover */
+@media (min-width: 1200px) {
+    .navbar-nav .nav-item.dropdown:hover .dropdown-menu {
+        display: block;
+        margin-top: 0;
+        animation: fadeIn 0.2s ease-in-out;
+    }
+}
+
 /* Custom Cards */
 .custom-card {
     border: none;
