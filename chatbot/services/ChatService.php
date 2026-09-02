@@ -115,8 +115,8 @@ class ChatService
                     $finalSource = 'TRAINING_KNOWLEDGE';
                 }
             } else {
-                // NO-HALLUCINATION FALLBACK RULE: Never fabricate website information
-                $finalAnswer = "That information is not currently available in the website's database or knowledge base.";
+                // NO-HALLUCINATION FALLBACK RULE 15: Never fabricate website information
+                $finalAnswer = "That information is not currently available in the website database, content, or knowledge base.";
                 $finalSource = 'WEBSITE';
                 $this->logUnanswered($sessionId, $cleanMessage, $intent, $confidence);
             }
