@@ -14,11 +14,12 @@ $grouped_faculty = [];
 $director_faculty = [];
 
 foreach ($all_faculty as $fac) {
-    if (stripos($fac['designation'], 'Director') !== false || stripos($fac['designation'], 'Dean') !== false) {
+    if (stripos($fac['designation'], 'Director') !== false || stripos($fac['designation'], 'Dean') !== false || stripos($fac['department_name'], 'Director') !== false) {
         $director_faculty[] = $fac;
+    } else {
+        $dept_name = $fac['department_name'];
+        $grouped_faculty[$dept_name][] = $fac;
     }
-    $dept_name = $fac['department_name'];
-    $grouped_faculty[$dept_name][] = $fac;
 }
 ?>
 
