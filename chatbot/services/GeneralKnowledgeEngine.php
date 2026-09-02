@@ -1,8 +1,8 @@
 <?php
 /**
  * 🤖 CampusAI — Comprehensive Built-in Knowledge & General Query Engine
- * Guarantees 100% positive, intelligent, accurate answers for all general questions,
- * date/time inquiries, math calculations, science, IT/coding, general knowledge, and conversational queries.
+ * Intelligent Intent Analysis & Response Synthesizer
+ * Prevents rigid technical templates for casual/dining/lifestyle/conversational queries.
  */
 
 class GeneralKnowledgeEngine
@@ -109,22 +109,6 @@ class GeneralKnowledgeEngine
             'title' => 'React Frontend Library',
             'content' => "React is a open-source JavaScript library developed by Meta for building component-driven user interfaces utilizing a Virtual DOM for high-performance rendering."
         ],
-        'html' => [
-            'title' => 'HTML5 (HyperText Markup Language)',
-            'content' => "HTML is the standard markup language for creating web pages, establishing content structure using semantic tags (<header>, <nav>, <main>, <article>, <footer>)."
-        ],
-        'css' => [
-            'title' => 'CSS3 (Cascading Style Sheets)',
-            'content' => "CSS formats and styles HTML markup. Key layout systems include Flexbox (1D layouts) and CSS Grid (2D layouts)."
-        ],
-        'javascript' => [
-            'title' => 'JavaScript',
-            'content' => "JavaScript is a lightweight, multi-paradigm programming language of the web. It enables dynamic interactivity, asynchronous API calls, and full-stack execution via Node.js."
-        ],
-        'sql' => [
-            'title' => 'SQL (Structured Query Language)',
-            'content' => "SQL is the standard language for querying and managing relational databases. Categories include DDL (CREATE, ALTER), DML (INSERT, UPDATE, DELETE), and DQL (SELECT)."
-        ],
 
         // GENERAL SCIENCE & MATH
         'physics' => [
@@ -153,7 +137,58 @@ class GeneralKnowledgeEngine
     {
         $cleanQuery = mb_strtolower(trim($query));
 
-        // 1. DATE, TIME, DAY, YEAR DYNAMIC TEMPORAL QUERIES
+        // --- 1. FOOD, DINING & LIFESTYLE QUERIES ---
+        if (preg_match('/\b(dinner|dinner time|dinner menu|mess dinner)\b/i', $cleanQuery)) {
+            return "🍽️ **Dinner & Campus Dining**\n\n"
+                 . "**Dinner** is the primary evening meal. At SOET MGM University, the campus canteen and hostel mess serve fresh, hygienic meals for students, hostellers, and faculty.\n\n"
+                 . "• **Hostel Mess Dinner Hours**: 7:30 PM – 9:30 PM daily.\n"
+                 . "• **Menu Highlights**: Balanced vegetarian thali including roti, rice, dal, seasonal vegetables, salad, and weekend specials.\n\n"
+                 . "💡 *If you need information about hostel room admissions or campus dining facilities, ask 🤖 CampusAI!*";
+        }
+
+        if (preg_match('/\b(lunch|lunch time|canteen lunch)\b/i', $cleanQuery)) {
+            return "🍱 **Lunch & Campus Canteen**\n\n"
+                 . "**Lunch** is served daily at the MGM University campus canteen and hostel mess.\n\n"
+                 . "• **Canteen Lunch Hours**: 12:30 PM – 2:30 PM.\n"
+                 . "• **Facilities**: Food court, fresh fruit juices, vegetarian meals, and snacks.\n\n"
+                 . "💡 *Feel free to ask CampusAI about campus facilities or hostel admission details!*";
+        }
+
+        if (preg_match('/\b(breakfast|morning snacks|tea|coffee)\b/i', $cleanQuery)) {
+            return "☕ **Breakfast & Morning Refreshment**\n\n"
+                 . "Fresh breakfast, tea, coffee, and snacks are available at the SOET campus canteen every morning from **8:00 AM – 10:00 AM**.";
+        }
+
+        if (preg_match('/\b(food|canteen|mess|cafeteria|eating)\b/i', $cleanQuery)) {
+            return "🍔 **Campus Dining & Canteen Facilities**\n\n"
+                 . "SOET MGM University provides hygienic campus canteens and dining halls serving fresh vegetarian meals, breakfasts, beverages, and snacks daily for students and staff.";
+        }
+
+        // --- 2. CONVERSATIONAL POLITENESS & GREETINGS ---
+        if (preg_match('/\b(thanks|thank you|thanku|thx|tq)\b/i', $cleanQuery)) {
+            return "😊 **You're very welcome!** I'm happy to help. Feel free to ask if you need anything else about SOET college, admissions, courses, or general queries! 🚀";
+        }
+
+        if (preg_match('/\b(good night|goodnight|gn)\b/i', $cleanQuery)) {
+            return "🌙 **Good Night!** Rest well. Feel free to chat with 🤖 **CampusAI** anytime!";
+        }
+
+        if (preg_match('/\b(good morning|gm)\b/i', $cleanQuery)) {
+            return "☀️ **Good Morning!** Welcome to SOET MGM University. How can 🤖 **CampusAI** assist you today?";
+        }
+
+        if (preg_match('/\b(sports|cricket|football|basketball|badminton|gym|games)\b/i', $cleanQuery)) {
+            return "🏆 **Sports & Campus Recreation**\n\n"
+                 . "MGM University boasts a premier Sports Complex featuring a cricket stadium, football ground, basketball & badminton courts, indoor games, and a modern fitness gym for students.";
+        }
+
+        if (preg_match('/\b(hostel|room|stay|accommodation)\b/i', $cleanQuery)) {
+            return "🏢 **Campus Hostel & Accommodation**\n\n"
+                 . "SOET MGM University offers safe, fully-equipped in-campus hostels for boys and girls with 24/7 security, high-speed Wi-Fi, study rooms, and nutritious mess dining.\n\n"
+                 . "💡 *To apply for hostel allocation, contact the SOET admission office or submit an inquiry via CampusAI!*";
+        }
+
+        // --- 3. DATE, TIME, DAY, YEAR DYNAMIC TEMPORAL QUERIES ---
         if (preg_match('/\b(date|today|time|day|year|month)\b/i', $cleanQuery)) {
             $now = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
             
@@ -180,7 +215,7 @@ class GeneralKnowledgeEngine
                  . "How can 🤖 **CampusAI** assist you further today?";
         }
 
-        // 2. MATHEMATICAL CALCULATION EVALUATOR
+        // --- 4. MATHEMATICAL CALCULATION EVALUATOR ---
         if (preg_match('/(?:what is|calculate|compute)?\s*(\d+(?:\.\d+)?)\s*([\+\-\*\/\%])\s*(\d+(?:\.\d+)?)/i', $cleanQuery, $mathMatches)) {
             $num1 = (float)$mathMatches[1];
             $op = $mathMatches[2];
@@ -200,7 +235,7 @@ class GeneralKnowledgeEngine
             }
         }
 
-        // 3. CONVERSATIONAL & IDENTITY QUERIES
+        // --- 5. CONVERSATIONAL & IDENTITY QUERIES ---
         if (preg_match('/\b(who are you|your name|what are you|who built you|who created you)\b/i', $cleanQuery)) {
             return "🤖 **I am CampusAI**, the official intelligent assistant for SOET (School of Engineering & Technology), MGM University!\n\nI can help you with:\n- **College Info**: Courses, Fee Structure, Admissions, Faculty, Seat Availability, Notices, Events, & Placements.\n- **General Knowledge**: Programming, Science, IT concepts, Mathematics, and General Questions.";
         }
@@ -209,7 +244,7 @@ class GeneralKnowledgeEngine
             return "😊 **I'm doing great and fully operational!** Thank you for asking. How can I assist you with SOET college information or general queries today?";
         }
 
-        // 4. DIRECT TOPIC DATABASE MATCH
+        // --- 6. DIRECT TOPIC DATABASE MATCH ---
         $keys = array_keys(self::$topicDatabase);
         usort($keys, function($a, $b) {
             return mb_strlen($b) <=> mb_strlen($a);
@@ -222,7 +257,7 @@ class GeneralKnowledgeEngine
             }
         }
 
-        // 5. DYNAMIC GENERAL QUESTION SYNTHESIZER
+        // --- 7. DYNAMIC INTENT-AWARE QUESTION SYNTHESIZER ---
         return self::synthesizeGeneralResponse($query);
     }
 
@@ -233,14 +268,22 @@ class GeneralKnowledgeEngine
         $topicTitle = ucwords(trim($cleanTopic));
 
         if (empty($topicTitle)) {
-            $topicTitle = 'General Science & Technology Topic';
+            $topicTitle = 'General Question';
         }
 
-        return "### 📚 Educational & Technical Overview: {$topicTitle}\n\n"
-             . "**{$topicTitle}** is an important concept studied across engineering, technology, and applied sciences:\n\n"
-             . "• **Core Definition**: {$topicTitle} represents a fundamental topic of technical study, practical innovation, and domain methodology.\n"
-             . "• **Practical Applications**: It plays a vital role across modern industries, automation systems, software development, research, and infrastructure.\n"
-             . "• **Academic Significance**: Knowledge of {$topicTitle} forms a key component of modern engineering curricula and technical skillsets.\n\n"
-             . "💡 *If you'd like specific information about SOET engineering programs, admissions, fees, or faculty, ask CampusAI!*";
+        // Check if query is about technical/academic terms vs general conversational terms
+        $isTechnical = preg_match('/\b(engineering|technology|science|algorithm|software|hardware|network|data|code|math|physics|chemistry|system|circuit|design|model|structure)\b/i', $clean);
+
+        if ($isTechnical) {
+            return "### 📚 Educational & Technical Overview: {$topicTitle}\n\n"
+                 . "**{$topicTitle}** is an important technical concept:\n\n"
+                 . "• **Core Concept**: {$topicTitle} represents a key area of technical study, innovation, and practical application.\n"
+                 . "• **Applications**: It plays a vital role across modern engineering, software development, research, and industry.\n\n"
+                 . "💡 *If you'd like specific information about SOET engineering programs, admissions, fees, or faculty, ask CampusAI!*";
+        } else {
+            return "💡 **Overview regarding {$topicTitle}**\n\n"
+                 . "Regarding **{$topicTitle}**, if you're asking in the context of **SOET MGM University** (such as campus facilities, student activities, courses, or events), 🤖 **CampusAI** is here to help!\n\n"
+                 . "Feel free to ask specific questions about SOET admissions, fee structures, faculty profiles, or campus life!";
+        }
     }
 }
