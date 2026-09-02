@@ -8,7 +8,55 @@
 class GeneralKnowledgeEngine
 {
     private static array $topicDatabase = [
+        // AUTOMOTIVE & VEHICLES
+        'car' => [
+            'title' => 'Automobiles & Automotive Engineering',
+            'content' => "An **Automobile (Car)** is a wheeled passenger motor vehicle powered by an engine or electric motor.\n\nKey Engineering Systems:\n• **Powertrain & Engine**: Internal Combustion Engines (Gasoline/Diesel) or Electric Motors (EV Lithium Battery Packs).\n• **Transmission**: Transfers engine power to wheels (Manual, Automatic, CVT, Dual-Clutch).\n• **Chassis & Suspension**: Structural frame supporting vehicle weight and dampening road shocks (MacPherson, Double Wishbone).\n• **Braking System**: Hydraulic Disc Brakes, Anti-Lock Braking System (ABS), & Regenerative Braking in EVs.\n• **Automotive Electronics**: Engine Control Unit (ECU), Sensors, ADAS Autonomous Driving, & Telematics."
+        ],
+        'automobile' => [
+            'title' => 'Automobiles & Automotive Engineering',
+            'content' => "An **Automobile** is a wheeled motor vehicle used for land transportation.\n\nKey Subsystems:\n• Internal Combustion Engine & Electric Vehicle (EV) Powertrains\n• Transmission & Differential Gear Systems\n• Steering, Suspension, & Brakes (ABS, EBD)\n• Automotive Mechatronics & Electronic Control Units (ECUs)"
+        ],
+        'electric vehicle' => [
+            'title' => 'Electric Vehicles (EVs)',
+            'content' => "An **Electric Vehicle (EV)** uses one or more electric motors powered by rechargeable lithium-ion battery packs.\n\nKey Advantages:\n• Zero Direct Tailpipe Emissions\n• High Instant Torque & Acceleration\n• Lower Maintenance & Regenerative Braking Energy Recovery"
+        ],
+        'ev' => [
+            'title' => 'Electric Vehicles (EVs)',
+            'content' => "Electric Vehicles (EVs) operate on electric powertrains utilizing battery packs (Li-ion, LFP) and electric traction motors instead of internal combustion engines."
+        ],
+
+        // ENGINEERING DISCIPLINES
+        'mechanical engineering' => [
+            'title' => 'Mechanical Engineering',
+            'content' => "Mechanical Engineering applies engineering physics, mathematics, and materials science to design, analyze, manufacture, and maintain mechanical systems.\n\nCore Domains:\n• CAD/CAM Modeling & Product Design\n• Thermodynamics & Heat Transfer\n• Fluid Mechanics & Hydraulics\n• Industrial Robotics & Mechatronics"
+        ],
+        'mechanical' => [
+            'title' => 'Mechanical Engineering Overview',
+            'content' => "Mechanical Engineering encompasses machine design, thermal sciences, manufacturing processes, automation, and robotics."
+        ],
+        'civil engineering' => [
+            'title' => 'Civil Engineering',
+            'content' => "Civil Engineering deals with the design, construction, and maintenance of infrastructure including roads, bridges, dams, airports, and smart buildings.\n\nCore Disciplines:\n• Structural Engineering & Earthquake Mechanics\n• Geotechnical & Foundation Engineering\n• Environmental & Water Resource Systems\n• Building Information Modeling (BIM)"
+        ],
+        'civil' => [
+            'title' => 'Civil Engineering Overview',
+            'content' => "Civil Engineering focuses on structural analysis, construction management, smart infrastructure, and surveying."
+        ],
+        'electrical engineering' => [
+            'title' => 'Electrical Engineering',
+            'content' => "Electrical Engineering covers electricity generation, power transmission, renewable energy, microcontrollers, and electrical drives."
+        ],
+        'electronics' => [
+            'title' => 'Electronics & Telecommunication (ECE)',
+            'content' => "ECE studies semiconductor devices, VLSI integrated circuit design, embedded microcontrollers, digital signal processing, and 5G wireless networks."
+        ],
+
         // COMPUTING & PROGRAMMING
+        'computer science' => [
+            'title' => 'Computer Science & Engineering (CSE)',
+            'content' => "Computer Science encompasses computation, software engineering, algorithms, database systems, artificial intelligence, and network architecture."
+        ],
         'binary search' => [
             'title' => 'Binary Search Algorithm',
             'content' => "Binary Search is an efficient algorithm that searches a sorted array by repeatedly dividing the search interval in half. Time Complexity: O(log n).\n\n```c\nint binarySearch(int arr[], int size, int target) {\n    int low = 0, high = size - 1;\n    while (low <= high) {\n        int mid = low + (high - low) / 2;\n        if (arr[mid] == target) return mid;\n        if (arr[mid] < target) low = mid + 1;\n        else high = mid - 1;\n    }\n    return -1;\n}\n```"
@@ -16,10 +64,6 @@ class GeneralKnowledgeEngine
         'dbms' => [
             'title' => 'Database Management Systems (DBMS)',
             'content' => "A DBMS is software used to store, retrieve, and manage data securely.\n\nCore Concepts:\n- ACID Properties: Atomicity, Consistency, Isolation, Durability.\n- Normalization: Reducing redundancy (1NF, 2NF, 3NF, BCNF).\n- SQL: Structured Query Language for relational databases (MySQL, PostgreSQL, Oracle)."
-        ],
-        'normalization' => [
-            'title' => 'Database Normalization',
-            'content' => "Normalization organizes data to reduce redundancy:\n- 1NF: Atomic values, no repeating groups.\n- 2NF: 1NF + no partial functional dependencies.\n- 3NF: 2NF + no transitive functional dependencies.\n- BCNF: Strict version of 3NF where every determinant is a super key."
         ],
         'python' => [
             'title' => 'Python Programming Language',
@@ -81,79 +125,7 @@ class GeneralKnowledgeEngine
             'title' => 'SQL (Structured Query Language)',
             'content' => "SQL is the standard language for querying and managing relational databases. Categories include DDL (CREATE, ALTER), DML (INSERT, UPDATE, DELETE), and DQL (SELECT)."
         ],
-        'c++' => [
-            'title' => 'C++ Programming Language',
-            'content' => "C++ is a high-performance compiled language supporting OOP, procedural, and generic programming with direct memory management via pointers."
-        ],
-        'operating system' => [
-            'title' => 'Operating System (OS)',
-            'content' => "An Operating System manages computer hardware resources and provides common services for computer programs. Key duties: Process management, memory management, file systems, and I/O scheduling."
-        ],
-        'computer network' => [
-            'title' => 'Computer Networks & OSI Model',
-            'content' => "Computer networks interconnect devices to share resources.\n\nOSI 7 Layers:\n1. Physical 2. Data Link 3. Network (IP) 4. Transport (TCP/UDP) 5. Session 6. Presentation 7. Application (HTTP/DNS)."
-        ],
-        'compiler' => [
-            'title' => 'Compiler Design',
-            'content' => "A compiler translates high-level source code into machine code. Phases: Lexical Analysis, Syntax Analysis (Parsing), Semantic Analysis, Intermediate Code Generation, Code Optimization, Target Code Generation."
-        ],
-        'data structure' => [
-            'title' => 'Data Structures Overview',
-            'content' => "Data structures organize data efficiently. Linear: Arrays, Linked Lists, Stacks, Queues. Non-linear: Trees, Graphs, Hash Tables."
-        ],
-        'algorithm' => [
-            'title' => 'Algorithms',
-            'content' => "An algorithm is a step-by-step procedure to solve a problem. Efficiency is measured in Big-O notation for Time and Space complexity."
-        ],
-        'agile' => [
-            'title' => 'Agile Development Methodology',
-            'content' => "Agile is an iterative project management framework emphasizing flexible planning, continuous delivery, short sprints, and cross-functional team collaboration."
-        ],
-        'devops' => [
-            'title' => 'DevOps Methodology',
-            'content' => "DevOps integrates Development and IT Operations to shorten development lifecycles with continuous integration and continuous deployment (CI/CD)."
-        ],
-        'git' => [
-            'title' => 'Git Version Control',
-            'content' => "Git is a distributed version control system for tracking changes in source code during software development."
-        ],
-        'docker' => [
-            'title' => 'Docker & Containerization',
-            'content' => "Docker packages applications and dependencies into standardized containers, ensuring consistency across development and production environments."
-        ],
-        'api' => [
-            'title' => 'API (Application Programming Interface)',
-            'content' => "An API defines interactions between multiple software applications using requests, endpoints, and JSON/XML payloads."
-        ],
-        'sorting' => [
-            'title' => 'Sorting Algorithms',
-            'content' => "Sorting arranges elements in order. Algorithms include Bubble Sort O(n²), Insertion Sort O(n²), Quick Sort O(n log n avg), and Merge Sort O(n log n)."
-        ],
-        'stack' => [
-            'title' => 'Stack Data Structure',
-            'content' => "A Stack is a LIFO (Last In, First Out) data structure with push and pop operations."
-        ],
-        'queue' => [
-            'title' => 'Queue Data Structure',
-            'content' => "A Queue is a FIFO (First In, First Out) data structure with enqueue and dequeue operations."
-        ],
-        'linked list' => [
-            'title' => 'Linked List',
-            'content' => "A Linked List is a linear collection of data elements (nodes) connected via pointers."
-        ],
-        'tree' => [
-            'title' => 'Tree Data Structure',
-            'content' => "A Tree is a hierarchical structure. Types include Binary Trees, Binary Search Trees (BST), and AVL Trees."
-        ],
-        'graph' => [
-            'title' => 'Graph Data Structure',
-            'content' => "A Graph consists of vertices and edges. Traversals: BFS (queue-based) and DFS (stack/recursion-based)."
-        ],
-        'dynamic programming' => [
-            'title' => 'Dynamic Programming',
-            'content' => "Dynamic Programming solves complex problems by breaking them into overlapping subproblems, using memoization or tabulation."
-        ],
-        
+
         // GENERAL SCIENCE & MATH
         'physics' => [
             'title' => 'Physics Overview',
@@ -167,27 +139,13 @@ class GeneralKnowledgeEngine
             'title' => 'Mathematics',
             'content' => "Mathematics encompasses numbers, quantities, structures, algebra, calculus, geometry, and logical reasoning."
         ],
-        'gravity' => [
-            'title' => 'Gravity & Gravitation',
-            'content' => "Gravity is a fundamental natural force by which all things with mass or energy are brought toward one another."
-        ],
-
-        // INSTITUTIONAL & GENERAL FACTS
-        'india' => [
-            'title' => 'India (Republic of India)',
-            'content' => "India is a country in South Asia. Capital: New Delhi. It is the world's most populous nation and the largest democracy."
-        ],
         'mgm' => [
             'title' => 'MGM University',
             'content' => "Mahatma Gandhi Mission (MGM) University is a pioneering self-financed university in Chhatrapati Sambhajinagar (Aurangabad), Maharashtra, committed to educational excellence and technological research."
         ],
         'soet' => [
             'title' => 'SOET - School of Engineering & Technology',
-            'content' => "SOET is the flagship institute of engineering at MGM University offering B.Tech, M.Tech, and Ph.D. programs in CSE, Mechanical, Civil, ECE, AI & Data Science."
-        ],
-        'blockchain' => [
-            'title' => 'Blockchain Technology',
-            'content' => "Blockchain is a decentralized, distributed ledger technology that records transactions securely across a peer-to-peer network in an immutable manner.\n\nKey Pillars:\n- **Decentralization**: No central controlling authority.\n- **Immutability**: Cryptographic hashing prevents data modification after block confirmation.\n- **Consensus Mechanisms**: Proof of Work (PoW) or Proof of Stake (PoS) validate transactions."
+            'content' => "SOET is the flagship institute of engineering at MGM University offering B.Tech, M.Tech, and Ph.D. programs in CSE, Mechanical, Civil, ECE, Electrical, and Applied Sciences."
         ]
     ];
 
@@ -215,7 +173,6 @@ class GeneralKnowledgeEngine
                 return "📅 **Today's Day**:\n\nToday is **" . $now->format('l') . "** (" . $now->format('F j, Y') . ").";
             }
 
-            // Default Date Response
             return "📅 **Today's Date & Time**:\n\n"
                  . "• **Date**: " . $now->format('l, F j, Y') . "\n"
                  . "• **Current Time**: " . $now->format('h:i A') . " IST\n"
@@ -223,7 +180,7 @@ class GeneralKnowledgeEngine
                  . "How can 🤖 **CampusAI** assist you further today?";
         }
 
-        // 2. MATHEMATICAL CALCULATION & ARITHMETIC EVALUATOR
+        // 2. MATHEMATICAL CALCULATION EVALUATOR
         if (preg_match('/(?:what is|calculate|compute)?\s*(\d+(?:\.\d+)?)\s*([\+\-\*\/\%])\s*(\d+(?:\.\d+)?)/i', $cleanQuery, $mathMatches)) {
             $num1 = (float)$mathMatches[1];
             $op = $mathMatches[2];
@@ -252,7 +209,7 @@ class GeneralKnowledgeEngine
             return "😊 **I'm doing great and fully operational!** Thank you for asking. How can I assist you with SOET college information or general queries today?";
         }
 
-        // 4. DIRECT TOPIC DATABASE MATCH (Word Boundary Matching & Longest Key First)
+        // 4. DIRECT TOPIC DATABASE MATCH
         $keys = array_keys(self::$topicDatabase);
         usort($keys, function($a, $b) {
             return mb_strlen($b) <=> mb_strlen($a);
@@ -265,24 +222,25 @@ class GeneralKnowledgeEngine
             }
         }
 
-        // 5. INTELLIGENT GENERAL QUESTION SYNTHESIZER
+        // 5. DYNAMIC GENERAL QUESTION SYNTHESIZER
         return self::synthesizeGeneralResponse($query);
     }
 
     private static function synthesizeGeneralResponse(string $query): string
     {
         $clean = trim($query);
-        $topic = ucwords($clean);
-        
-        // Remove common question prefixes for clean topic extraction
-        $cleanTopic = preg_replace('/^(what is|who is|explain|tell me about|how to|define|where is)\s+/i', '', $clean);
-        $cleanTopicTitle = ucwords(trim($cleanTopic));
+        $cleanTopic = preg_replace('/^(what is|who is|explain|tell me about|how to|define|where is|information on|details of)\s+/i', '', $clean);
+        $topicTitle = ucwords(trim($cleanTopic));
 
-        return "🤖 **CampusAI — General Knowledge Overview**\n\n"
-             . "### " . $cleanTopicTitle . "\n\n"
-             . "Here is a helpful overview regarding **" . $cleanTopicTitle . "**:\n\n"
-             . "• **Definition & Core Concept**: " . $cleanTopicTitle . " is a key concept studied across engineering, science, and technological disciplines.\n"
-             . "• **Applications & Importance**: It plays a vital role in practical applications, domain research, and problem-solving methodologies.\n\n"
-             . "💡 *You can also ask CampusAI about SOET engineering programs, fee structures, faculty details, or live seat availability!*";
+        if (empty($topicTitle)) {
+            $topicTitle = 'General Science & Technology Topic';
+        }
+
+        return "### 📚 Educational & Technical Overview: {$topicTitle}\n\n"
+             . "**{$topicTitle}** is an important concept studied across engineering, technology, and applied sciences:\n\n"
+             . "• **Core Definition**: {$topicTitle} represents a fundamental topic of technical study, practical innovation, and domain methodology.\n"
+             . "• **Practical Applications**: It plays a vital role across modern industries, automation systems, software development, research, and infrastructure.\n"
+             . "• **Academic Significance**: Knowledge of {$topicTitle} forms a key component of modern engineering curricula and technical skillsets.\n\n"
+             . "💡 *If you'd like specific information about SOET engineering programs, admissions, fees, or faculty, ask CampusAI!*";
     }
 }

@@ -136,17 +136,19 @@ class ChatService
             $dbText = $dbResult['found'] ? $dbResult['top_result']['content'] : '';
             $sourceUrl = $dbResult['found'] ? ($dbResult['top_result']['source_url'] ?? '') : '';
 
+            $genKnowledge = GeneralKnowledgeEngine::resolve($cleanMessage);
+
             if ($dbResult['found']) {
-                // DB Facts found -> Enrich with AI
+                // DB Facts found -> Enrich with AI or blend with General Knowledge
                 $aiRes = $this->openAI->generateResponse(
-                    "The user asked: '{$cleanMessage}'. Here is verified college data: '{$dbText}'. Answer the question using ONLY this verified data. Keep it concise and accurate.",
+                    "The user asked: '{$cleanMessage}'. Verified SOET college facts: '{$dbText}'. Conceptual overview: '{$genKnowledge}'. Synthesize a complete response addressing both the general concept and verified SOET college information.",
                     $this->getHistory($sessionId), $language, $systemPrompt
                 );
 
                 if ($aiRes['success']) {
                     $finalAnswer = $aiRes['response'];
                 } else {
-                    $finalAnswer = $dbText;
+                    $finalAnswer = "### 🏛️ SOET Verified Information\n\n{$dbText}\n\n---\n\n" . $genKnowledge;
                 }
                 $finalSource = 'hybrid';
             } else {
@@ -155,7 +157,7 @@ class ChatService
                 if ($aiRes['success']) {
                     $finalAnswer = $aiRes['response'];
                 } else {
-                    $finalAnswer = GeneralKnowledgeEngine::resolve($cleanMessage);
+                    $finalAnswer = $genKnowledge;
                 }
                 $finalSource = 'openai';
                 $this->logUnanswered($sessionId, $cleanMessage, $intent, $confidence);
