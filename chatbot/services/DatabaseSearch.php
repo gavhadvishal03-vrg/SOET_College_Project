@@ -47,9 +47,19 @@ class DatabaseSearch
             if (!empty($scholarships)) return ['found' => true, 'top_result' => $scholarships[0], 'all_results' => $scholarships];
         }
 
+        if ($intent === 'ADMISSION' || preg_match('/\b(admission|admissions|how to apply|apply for admission|apply online|eligibility|admission requirements|admission process)\b/i', $cleanQuery)) {
+            $admissions = $this->searchAdmissions($cleanQuery);
+            if (!empty($admissions)) return ['found' => true, 'top_result' => $admissions[0], 'all_results' => $admissions];
+        }
+
         if ($intent === 'FEE' || preg_match('/\b(fee|fees|tuition|cost|charges)\b/i', $cleanQuery)) {
             $fees = $this->searchCourseFees($cleanQuery);
             if (!empty($fees)) return ['found' => true, 'top_result' => $fees[0], 'all_results' => $fees];
+        }
+
+        if (preg_match('/\b(departments?|academic departments)\b/i', $cleanQuery)) {
+            $depts = $this->searchDepartments($cleanQuery);
+            if (!empty($depts)) return ['found' => true, 'top_result' => $depts[0], 'all_results' => $depts];
         }
 
         if ($intent === 'PROGRAM' || $intent === 'DEPARTMENT' || $intent === 'HYBRID' || preg_match('/\b(courses?|programs?|degrees?|branches?|streams?)\b/i', $cleanQuery)) {
@@ -62,16 +72,20 @@ class DatabaseSearch
             if (!empty($faculty)) return ['found' => true, 'top_result' => $faculty[0], 'all_results' => $faculty];
         }
 
-        // 3. Search Knowledge Base
+        // 3. Search Knowledge Base, FAQs, and Training Documents (Priority 3)
         $kbHits = $this->searchKnowledgeBase($cleanQuery, $keywords);
         if (!empty($kbHits)) {
             $results = array_merge($results, $kbHits);
         }
 
-        // 4. Search FAQs
         $faqHits = $this->searchFAQs($cleanQuery, $keywords);
         if (!empty($faqHits)) {
             $results = array_merge($results, $faqHits);
+        }
+
+        $docHits = $this->searchTrainingDocuments($cleanQuery, $keywords);
+        if (!empty($docHits)) {
+            $results = array_merge($results, $docHits);
         }
 
         // Score and rank results
@@ -124,6 +138,38 @@ class DatabaseSearch
         return $matches;
     }
 
+    private function searchTrainingDocuments(string $query, array $keywords): array
+    {
+        $rows = $this->db->fetchAll("SELECT * FROM uploaded_documents WHERE extracted_text IS NOT NULL AND extracted_text != ''");
+        $matches = [];
+
+        foreach ($rows as $row) {
+            $score = $this->calculateScore($query, $keywords, $row['original_name'] . ' ' . $row['extracted_text']);
+            if ($score > 0) {
+                // Extract highest-scoring 2-3 sentence paragraph from document
+                $paragraphs = preg_split('/\n{2,}|\r\n\r\n/', $row['extracted_text']);
+                $bestPara = '';
+                $bestParaScore = 0;
+                foreach ($paragraphs as $para) {
+                    $pScore = $this->calculateScore($query, $keywords, $para);
+                    if ($pScore > $bestParaScore) {
+                        $bestParaScore = $pScore;
+                        $bestPara = trim($para);
+                    }
+                }
+                $content = $bestPara ?: mb_substr($row['extracted_text'], 0, 300);
+                $matches[] = [
+                    'source_type' => 'training_knowledge',
+                    'title' => 'Training Document: ' . $row['original_name'],
+                    'content' => $content,
+                    'source_url' => '/chatbot/train/' . $row['filename'],
+                    'score' => $score + 1
+                ];
+            }
+        }
+        return $matches;
+    }
+
     private function searchCourses(string $query): array
     {
         $courses = $this->db->fetchAll(
@@ -152,18 +198,18 @@ class DatabaseSearch
         }
 
         $matches = [];
-        $genericWords = ['tell', 'me', 'about', 'is', 'the', 'what', 'which', 'at', 'soet', 'mgm', 'mgmu', 'college', 'engineering', 'syllabus', 'curriculum', 'details', 'information', 'course', 'courses', 'btech', 'mtech', 'duration', 'intake', 'fees'];
+        $genericWords = ['tell', 'me', 'about', 'is', 'the', 'what', 'which', 'at', 'soet', 'mgm', 'mgmu', 'college', 'engineering', 'syllabus', 'curriculum', 'details', 'information', 'course', 'courses', 'btech', 'mtech', 'duration', 'intake', 'fees', 'branch', 'branches', 'for', 'program', 'programs', 'stream', 'in', 'of'];
         $queryWords = array_values(array_filter(explode(' ', mb_strtolower(preg_replace('/[^a-z0-9\s]/', ' ', $query)))));
         $distinctiveQueryWords = array_values(array_diff($queryWords, $genericWords));
 
         foreach ($courses as $c) {
             $text = mb_strtolower($c['name'] . ' ' . $c['code'] . ' ' . $c['description'] . ' ' . $c['dept_name']);
             
-            // Require at least one distinctive query keyword to match if distinctive words were specified
+            // Require at least one distinctive query keyword to match with word boundaries
             if (!empty($distinctiveQueryWords)) {
                 $matchedDistinctive = false;
                 foreach ($distinctiveQueryWords as $dw) {
-                    if (strlen($dw) >= 2 && mb_strpos($text, $dw) !== false) {
+                    if (strlen($dw) >= 3 && preg_match('/\b' . preg_quote($dw, '/') . '\b/i', $text)) {
                         $matchedDistinctive = true;
                         break;
                     }
@@ -186,6 +232,40 @@ class DatabaseSearch
             }
         }
         return $matches;
+    }
+
+    public function searchAdmissions(string $query): array
+    {
+        return [[
+            'source_type' => 'admission',
+            'title' => 'SOET Engineering Admissions & Eligibility',
+            'content' => "Admissions to B.Tech programs at SOET MGM University are open for candidates passing 10+2 with 45% aggregate in Physics, Mathematics, and Chemistry/Computer Science (40% for SC/ST/OBC). Valid MHT-CET or JEE Main scores are accepted, and direct institute-level quota admissions are available. You can apply and track applications online at /admissions.php.",
+            'source_url' => '/admissions.php',
+            'score' => 100
+        ]];
+    }
+
+    public function searchDepartments(string $query): array
+    {
+        $departments = $this->db->fetchAll("SELECT * FROM departments ORDER BY name ASC");
+        if (empty($departments)) {
+            return [];
+        }
+
+        $list = [];
+        $idx = 1;
+        foreach ($departments as $d) {
+            $list[] = "{$idx}. **{$d['name']} ({$d['code']})**";
+            $idx++;
+        }
+
+        return [[
+            'source_type' => 'department',
+            'title' => 'SOET Academic Departments',
+            'content' => "SOET MGM University features the following academic departments:\n" . implode("\n", $list),
+            'source_url' => '/departments.php',
+            'score' => 100
+        ]];
     }
 
     private function searchFaculty(string $query): array
@@ -544,7 +624,8 @@ class DatabaseSearch
         $genericCollegeWords = [
             'soet', 'mgm', 'mgmu', 'college', 'engineering', 'technology', 'university',
             'syllabus', 'department', 'details', 'information', 'about', 'tell', 'offered',
-            'course', 'courses', 'program', 'programs', 'branch', 'branches'
+            'course', 'courses', 'program', 'programs', 'branch', 'branches', 'number',
+            'give', 'show', 'need', 'want', 'please', 'know', 'find', 'get'
         ];
 
         // Identify distinctive keywords in user query
@@ -560,7 +641,7 @@ class DatabaseSearch
         if (!empty($distinctiveKeywords)) {
             $hasDistinctiveMatch = false;
             foreach ($distinctiveKeywords as $dkw) {
-                if (mb_strpos($cleanTarget, $dkw) !== false) {
+                if (preg_match('/\b' . preg_quote($dkw, '/') . '\b/i', $cleanTarget)) {
                     $hasDistinctiveMatch = true;
                     $score += 8;
                 }

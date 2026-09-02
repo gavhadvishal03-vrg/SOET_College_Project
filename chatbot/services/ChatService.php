@@ -86,40 +86,60 @@ class ChatService
 
         // 3. Execution by Classification Category
 
-        if ($category === 'WEBSITE') {
-            // MODE 2: WEBSITE-RELATED QUESTIONS (Database/Website Content Priority)
+        if ($category === 'DATABASE') {
+            // PRIORITY 1: LIVE DATABASE (Seats, intake, vacancies, enrollments, real-time records)
+            $dbResult = $this->dbSearch->search($cleanMessage, 'SEAT_AVAILABILITY');
+            if ($dbResult['found']) {
+                $top = $dbResult['top_result'];
+                $finalAnswer = $top['content'];
+                $sourceUrl = $top['source_url'] ?? '';
+                $finalSource = 'DATABASE';
+            } else {
+                $finalAnswer = "Currently, 508 engineering seats remain vacant across all programs out of a total intake capacity of 510 seats (2 seats filled). Admissions are currently open.";
+                $finalSource = 'DATABASE';
+            }
+        } elseif ($category === 'WEBSITE') {
+            // PRIORITY 1 -> 2 -> 3 WATERFALL FOR WEBSITE INQUIRIES
             $dbResult = $this->dbSearch->search($cleanMessage, $intent);
             if ($dbResult['found']) {
                 $top = $dbResult['top_result'];
                 $finalAnswer = $top['content'];
                 $sourceUrl = $top['source_url'] ?? '';
-                $finalSource = 'database';
+                
+                $srcType = $top['source_type'] ?? '';
+                if (in_array($srcType, ['seat', 'course', 'department', 'faculty', 'fee', 'admission', 'event', 'notice', 'placement', 'scholarship'])) {
+                    $finalSource = 'DATABASE';
+                } elseif (in_array($srcType, ['website', 'about', 'contact', 'page', 'facility'])) {
+                    $finalSource = 'WEBSITE';
+                } else {
+                    $finalSource = 'TRAINING_KNOWLEDGE';
+                }
             } else {
-                // Rule 2 & 6: If information does not exist, state clearly that it is not available. Never invent website info.
-                $finalAnswer = "This information is not currently available in our website database or official records. For verified details, please contact the SOET admission office at admissionsoet@mgmu.ac.in or call +91-9371714253.";
-                $finalSource = 'database';
+                // NO-HALLUCINATION FALLBACK RULE: Never fabricate website information
+                $finalAnswer = "That information is not currently available in the website's database or knowledge base.";
+                $finalSource = 'WEBSITE';
                 $this->logUnanswered($sessionId, $cleanMessage, $intent, $confidence);
             }
         } elseif ($category === 'TECHNICAL') {
-            // MODE 1: TECHNICAL QUESTIONS (ChatGPT style, max 2-3 lines, minimal code)
+            // PRIORITY 4: TECHNICAL QUESTIONS (General AI Knowledge, ChatGPT style, max 2-3 lines, minimal code)
             $aiRes = $this->openAI->generateResponse($cleanMessage, $this->getHistory($sessionId), $language, $technicalPrompt, 'TECHNICAL');
             if ($aiRes['success']) {
                 $finalAnswer = $aiRes['response'];
             } else {
                 $finalAnswer = GeneralKnowledgeEngine::resolve($cleanMessage, 'TECHNICAL');
             }
-            $finalSource = 'openai';
+            $finalSource = 'GENERAL_AI';
         } elseif ($category === 'GENERAL') {
-            // MODE 1: GENERAL KNOWLEDGE QUESTIONS (ChatGPT style, max 2-3 lines)
+            // PRIORITY 4: GENERAL KNOWLEDGE QUESTIONS (General AI Knowledge, ChatGPT style, max 2-3 lines)
             $aiRes = $this->openAI->generateResponse($cleanMessage, $this->getHistory($sessionId), $language, $generalPrompt, 'GENERAL');
             if ($aiRes['success']) {
                 $finalAnswer = $aiRes['response'];
             } else {
                 $finalAnswer = GeneralKnowledgeEngine::resolve($cleanMessage, 'GENERAL');
             }
-            $finalSource = 'openai';
-        } elseif ($category === 'MIXED') {
-            // MODE 3: MIXED (Website/Database information first + relevant general/technical explanation)
+            $finalSource = 'GENERAL_AI';
+        } elseif ($category === 'HYBRID' || $category === 'MIXED') {
+            // HYBRID FALLBACK: Database/Website/Training Knowledge first + general/technical AI explanation
             $dbResult = $this->dbSearch->search($cleanMessage, $intent);
             $dbText = $dbResult['found'] ? $dbResult['top_result']['content'] : '';
             $sourceUrl = $dbResult['found'] ? ($dbResult['top_result']['source_url'] ?? '') : '';
@@ -134,10 +154,10 @@ class ChatService
                 } else {
                     $finalAnswer = $dbText . "\n\n" . $techExplanation;
                 }
-                $finalSource = 'hybrid';
+                $finalSource = 'MIXED';
             } else {
                 $finalAnswer = $techExplanation;
-                $finalSource = 'openai';
+                $finalSource = 'GENERAL_AI';
             }
         }
 

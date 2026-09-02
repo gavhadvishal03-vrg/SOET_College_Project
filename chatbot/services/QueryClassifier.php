@@ -30,7 +30,7 @@ class QueryClassifier
         // Courses & Academics
         'course', 'courses', 'program', 'programs', 'branch', 'branches', 'stream', 'streams',
         'degree', 'degrees', 'btech', 'mtech', 'phd', 'b.tech', 'm.tech', 'syllabus', 'curriculum',
-        'cse', 'ece', 'mech', 'mechanical', 'civil', 'electrical', 'applied science', 'specialization',
+        'cse', 'ece', 'mech', 'mechanical', 'civil', 'electrical', 'applied science', 'specialization', 'department', 'departments',
         // Fees & Aid
         'fee', 'fees', 'fee structure', 'tuition', 'tuition fee', 'course fee', 'cost', 'charges',
         'scholarship', 'scholarships', 'waiver', 'concession', 'tfws',
@@ -47,8 +47,9 @@ class QueryClassifier
         // Facilities & Life
         'hostel', 'hostels', 'mess', 'canteen', 'library', 'sports', 'gym', 'bus', 'transport',
         'infrastructure', 'laboratory', 'labs', 'auditorium', 'event', 'events', 'fest', 'notice', 'notices',
-        // Contacts
-        'contact', 'phone', 'helpline', 'mobile', 'call', 'email', 'address', 'location', 'reach us', 'where is the college'
+        // Contacts & Institutional Info
+        'contact', 'phone', 'helpline', 'mobile', 'call', 'email', 'address', 'location', 'reach us', 'where is the college',
+        'vision', 'mission', 'institution', 'campusai', 'reference guide', 'training document', 'qna guide'
     ];
 
     // Technical domains: Coding, CS, Networking, AI, DB, Security
@@ -68,7 +69,7 @@ class QueryClassifier
         'design pattern', 'singleton', 'mvc', 'agile', 'scrum', 'git', 'github', 'version control',
         'api', 'rest api', 'restful', 'graphql', 'endpoint', 'json', 'xml',
         // Systems, OS & Networks
-        'operating system', 'os', 'linux', 'kernel', 'process', 'thread', 'deadlock', 'semaphore',
+        'operating system', 'os', 'linux', 'kernel', 'cpu process', 'os process', 'thread', 'deadlock', 'semaphore',
         'paging', 'virtual memory', 'networking', 'osi model', 'tcp/ip', 'tcp', 'udp', 'http',
         'https', 'dns', 'dhcp', 'socket', 'ip address', 'subnet', 'router', 'switch',
         // Database & Storage
@@ -125,10 +126,21 @@ class QueryClassifier
 
         $isWebsite = ($hasInstitutional || $hasWebsiteSynonym || $isCollegeIntent);
 
-        // 3. Classify into the 4 Standard Rules:
+        // 3. Classify into the 5 Standard Categories (Rule 7):
         
-        // RULE 4: MIXED (Website entity + distinct Technical topic)
-        // Only classify as MIXED if there is an explicit technical concept to explain (e.g. AI, ML, Cloud)
+        // RULE 5: DATABASE (Dynamic real-time database queries: seats, intake, vacancies, enrollments)
+        if ($intent === 'SEAT_AVAILABILITY' || preg_match('/\b(vacant|intake|enrolled|registered|remaining|available seats|seats remain|seat availability|how many seats|seats are available|seats are filled|seats are vacant)\b/i', $rawQuery)) {
+            return [
+                'category' => 'DATABASE',
+                'intent' => 'SEAT_AVAILABILITY',
+                'source' => 'database',
+                'confidence' => 0.99,
+                'description' => 'Real-Time Database Metrics Query'
+            ];
+        }
+
+        // RULE 4: HYBRID (Website entity + distinct Technical/General topic)
+        // Only classify as HYBRID if there is an explicit technical concept to explain (e.g. AI, ML, Cloud)
         if ($isWebsite && $hasTechnical) {
             // If the query is purely about college course offerings/curriculum without asking for a technical definition, treat as WEBSITE
             if (preg_match('/^(what|which|list|tell me|show me)\b.*\b(programs?|courses?|degrees?|branches?|streams?)\b.*\b(offered|available|do you have|at soet)\b/i', $rawQuery)) {
@@ -142,11 +154,11 @@ class QueryClassifier
             }
 
             return [
-                'category' => 'MIXED',
+                'category' => 'HYBRID',
                 'intent' => $intent !== 'UNCLEAR' ? $intent : 'HYBRID',
                 'source' => 'hybrid',
                 'confidence' => 0.95,
-                'description' => 'Mixed query requiring Website DB first + Technical explanation'
+                'description' => 'Hybrid query requiring Website DB first + Technical explanation'
             ];
         }
 
