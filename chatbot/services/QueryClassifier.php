@@ -1,205 +1,195 @@
 <?php
 /**
- * Query Classification & Routing Engine
- * Identifies query intents, keywords, confidence, and target response source (Database vs OpenAI vs Hybrid)
+ * 🤖 CampusAI — Master Query Classification & Routing Engine
+ * Implements strict 4-tier Classification:
+ * 1. WEBSITE   -> SOET Database & Website Content (Priority 1)
+ * 2. TECHNICAL -> Technical & Programming Knowledge (ChatGPT style, max 2-3 lines)
+ * 3. GENERAL   -> General Knowledge (ChatGPT style, max 2-3 lines)
+ * 4. MIXED     -> Combined: Website DB first + Technical/General explanation
  */
+
+require_once __DIR__ . '/SynonymMapper.php';
 
 class QueryClassifier
 {
-    private array $soetKeywords = [
-        'soet', 'mgm', 'mgmu', 'college', 'university', 'campus', 'dean', 'director',
-        'parminder', 'kaur', 'dhingra', 'admission', 'admissions', 'apply', 'application', 'eligibility',
-        'fees', 'fee', 'tuition', 'scholarship', 'course', 'courses', 'program', 'programs',
-        'btech', 'mtech', 'phd', 'cse', 'ece', 'mech', 'mechanical', 'civil', 'department',
-        'departments', 'faculty', 'professor', 'teacher', 'hod', 'placement', 'placements',
-        'recruiter', 'recruiters', 'salary', 'package', 'ctc', 'tcs', 'infosys', 'wipro',
-        'event', 'events', 'notice', 'notices', 'news', 'blog', 'blogs', 'gallery',
-        'lab', 'labs', 'laboratory', 'infrastructure', 'hostel', 'library', 'contact',
-        'address', 'location', 'phone', 'faq', 'cutoff', 'cet', 'jee',
-        'engineering', 'technology', 'sports', 'nss', 'ncc', 'hackathon', 'seminar',
-        'alumni', 'convocation', 'canteen', 'bus', 'transport', 'research', 'accreditation',
-        'naac', 'aicte', 'affiliated', 'graduation', 'examination', 'exam', 'result',
-        'marksheet', 'attendance', 'timetable', 'schedule'
-    ];
-
-    // Only keywords that indicate the user is asking about a GENERAL/TECHNICAL concept (not college)
-    private array $generalAiKeywords = [
-        'explain', 'how to write', 'code example', 'java', 'python', 'c++',
-        'html', 'css', 'javascript', 'sql', 'database concept', 'normalization', 'binary search',
-        'algorithm', 'blockchain', 'crypto', 'machine learning', 'deep learning', 'iot',
-        'quantum', 'math', 'calculus', 'matrix', 'career advice',
-        'prepare for interview', 'rsa', 'encryption', 'dsa', 'sorting', 'stack', 'queue',
-        'artificial intelligence', 'cloud computing', 'cybersecurity', 'data science',
-        'web development', 'react', 'angular', 'node', 'docker', 'kubernetes', 'git',
-        'agile', 'scrum', 'devops', 'linux', 'operating system', 'compiler', 'networking',
-        'tcp', 'http', 'graphql', 'microservices', 'linked list', 'tree', 'graph',
-        'dynamic programming', 'recursion', 'oops', 'inheritance', 'polymorphism'
-    ];
-
-    // College-specific intents that should ALWAYS go to database, never hybrid
-    private array $collegeIntents = [
-        'ADMISSION', 'SEAT_AVAILABILITY', 'PROGRAM', 'DEPARTMENT', 'FACULTY', 'FEE', 'PLACEMENT',
-        'EVENT', 'NOTICE', 'CONTACT', 'EXAM', 'FACILITY', 'RESEARCH'
-    ];
-
-    private array $greetingPatterns = [
-        'hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening', 'namaste', 'greetings'
-    ];
-
-    private array $spellingMap = [
-        'cmputer' => 'computer',
-        'scnce' => 'science',
-        'faclty' => 'faculty',
-        'admssion' => 'admission',
-        'stucture' => 'structure',
-        'cource' => 'course',
-        'cources' => 'courses',
-        'plcmnt' => 'placement',
-        'plcmnts' => 'placements',
-        'conctact' => 'contact',
-        'eligiblity' => 'eligibility',
-        'dept' => 'department'
-    ];
-
     private SynonymMapper $synonymMapper;
+
+    // Direct greetings
+    private array $greetingPatterns = [
+        'hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening', 'namaste', 'greetings', 'sup', 'yo'
+    ];
+
+    // Explicit institutional keywords identifying SOET MGM University
+    private array $institutionalKeywords = [
+        'soet', 'mgm', 'mgmu', 'college', 'campus', 'university', 'institute',
+        'director', 'dean', 'dhingra', 'parminder', 'hod', 'principal'
+    ];
+
+    // Website entity synonym keywords (Academic, Admission, Fees, Faculty, Facilities)
+    private array $websiteSynonymKeywords = [
+        // Courses & Academics
+        'course', 'courses', 'program', 'programs', 'branch', 'branches', 'stream', 'streams',
+        'degree', 'degrees', 'btech', 'mtech', 'phd', 'b.tech', 'm.tech', 'syllabus', 'curriculum',
+        'cse', 'ece', 'mech', 'mechanical', 'civil', 'electrical', 'applied science', 'specialization',
+        // Fees & Aid
+        'fee', 'fees', 'fee structure', 'tuition', 'tuition fee', 'course fee', 'cost', 'charges',
+        'scholarship', 'scholarships', 'waiver', 'concession', 'tfws',
+        // Faculty & Staff
+        'faculty', 'teacher', 'teachers', 'professor', 'professors', 'staff', 'lecturer', 'lecturers',
+        'teaching staff', 'instructor', 'faculty list', 'who teaches',
+        // Admissions & Seats
+        'admission', 'admissions', 'apply', 'applying', 'enrollment', 'enroll', 'eligibility',
+        'cutoff', 'cet', 'jee', 'mht cet', 'merit list', 'intake', 'capacity', 'seat', 'seats',
+        'vacant seat', 'vacant seats', 'available seats', 'vacancy', 'seat availability', 'seat count',
+        // Placements & Careers
+        'placement', 'placements', 'highest package', 'average package', 'recruiter', 'recruiters',
+        'salary package', 'ctc', 'tcs', 'infosys', 'wipro', 'capgemini', 'hiring', 'campus drive',
+        // Facilities & Life
+        'hostel', 'hostels', 'mess', 'canteen', 'library', 'sports', 'gym', 'bus', 'transport',
+        'infrastructure', 'laboratory', 'labs', 'auditorium', 'event', 'events', 'fest', 'notice', 'notices',
+        // Contacts
+        'contact', 'phone', 'helpline', 'mobile', 'call', 'email', 'address', 'location', 'reach us', 'where is the college'
+    ];
+
+    // Technical domains: Coding, CS, Networking, AI, DB, Security
+    private array $technicalKeywords = [
+        // Programming Languages
+        'python', 'java', 'c++', 'c#', 'javascript', 'typescript', 'php', 'rust', 'golang', 'go lang',
+        'swift', 'kotlin', 'ruby', 'sql', 'html', 'css', 'bash', 'shell script',
+        // Data Structures & Algorithms
+        'binary search', 'linear search', 'bubble sort', 'quick sort', 'merge sort', 'insertion sort',
+        'sorting', 'searching', 'linked list', 'doubly linked list', 'array', 'stack', 'queue',
+        'deque', 'tree', 'binary tree', 'bst', 'avl tree', 'graph', 'bfs', 'dfs', 'dijkstra',
+        'algorithm', 'dsa', 'recursion', 'dynamic programming', 'memoization', 'greedy algorithm',
+        'time complexity', 'space complexity', 'big o', 'hash map', 'hash table',
+        // OOP & Software Engineering
+        'oops', 'object oriented', 'inheritance', 'polymorphism', 'encapsulation', 'abstraction',
+        'interface', 'abstract class', 'method overloading', 'method overriding', 'class and object',
+        'design pattern', 'singleton', 'mvc', 'agile', 'scrum', 'git', 'github', 'version control',
+        'api', 'rest api', 'restful', 'graphql', 'endpoint', 'json', 'xml',
+        // Systems, OS & Networks
+        'operating system', 'os', 'linux', 'kernel', 'process', 'thread', 'deadlock', 'semaphore',
+        'paging', 'virtual memory', 'networking', 'osi model', 'tcp/ip', 'tcp', 'udp', 'http',
+        'https', 'dns', 'dhcp', 'socket', 'ip address', 'subnet', 'router', 'switch',
+        // Database & Storage
+        'database', 'dbms', 'rdbms', 'normalization', 'acid properties', 'transaction', 'primary key',
+        'foreign key', 'indexing', 'join', 'inner join', 'outer join', 'mongodb', 'nosql', 'redis',
+        // AI, Data & Cloud
+        'artificial intelligence', 'ai', 'machine learning', 'ml', 'deep learning', 'neural network',
+        'cnn', 'rnn', 'lstm', 'transformer', 'llm', 'nlp', 'computer vision', 'data science',
+        'supervised learning', 'unsupervised learning', 'regression', 'classification',
+        'cloud computing', 'aws', 'azure', 'gcp', 'docker', 'container', 'kubernetes', 'devops',
+        'ci/cd', 'microservices', 'iot', 'internet of things', 'embedded system', 'arduino', 'raspberry pi',
+        // Cybersecurity
+        'cybersecurity', 'cryptography', 'encryption', 'decryption', 'rsa', 'aes', 'firewall',
+        'sql injection', 'xss', 'phishing', 'malware', 'penetration testing',
+        // Code request triggers
+        'code', 'function', 'snippet', 'syntax', 'implement', 'write code', 'how to code', 'computer program', 'write a program'
+    ];
 
     public function __construct()
     {
-        require_once __DIR__ . '/SynonymMapper.php';
         $this->synonymMapper = new SynonymMapper();
     }
 
     public function classify(string $query): array
     {
-        $cleanQuery = $this->synonymMapper->normalizeQuery($query);
+        $rawQuery = trim($query);
+        $normalized = $this->synonymMapper->normalizeQuery($rawQuery);
 
-        // Detect Greeting
-        if (in_array($cleanQuery, $this->greetingPatterns) || preg_match('/^(hi|hello|hey|good morning|good afternoon|good evening|namaste)\b/i', $cleanQuery)) {
+        // 1. Detect Direct Greeting
+        if (in_array($normalized, $this->greetingPatterns) || preg_match('/^(hi|hello|hey|good morning|good afternoon|good evening|namaste|greetings)\b/i', $normalized)) {
             return [
+                'category' => 'GREETING',
                 'intent' => 'GREETING',
-                'confidence' => 1.0,
                 'source' => 'system',
+                'confidence' => 1.0,
                 'description' => 'User greeting'
             ];
         }
 
-        // Run Stage 2 Synonym & Intent Detection Engine
-        $mapped = $this->synonymMapper->detectIntent($query);
-        $intent = $mapped['intent'];
+        // Detect underlying intent via SynonymMapper
+        $detected = $this->synonymMapper->detectIntent($rawQuery);
+        $intent = $detected['intent'] ?? 'GENERAL';
 
-        // Ambiguous / Unclear Query Handling
-        if ($intent === 'UNCLEAR') {
+        // 2. Analyze Keyword Presence with Word Boundaries
+        $hasInstitutional = $this->matchesAnyKeyword($normalized, $this->institutionalKeywords);
+        $hasWebsiteSynonym = $this->matchesAnyKeyword($normalized, $this->websiteSynonymKeywords);
+        $hasTechnical = $this->matchesAnyKeyword($normalized, $this->technicalKeywords);
+
+        // College-specific intent triggers
+        $isCollegeIntent = in_array($intent, [
+            'SEAT_AVAILABILITY', 'ADMISSION', 'PROGRAM', 'FEE', 'FACULTY',
+            'PLACEMENT', 'NOTICE', 'EVENT', 'CONTACT', 'SCHOLARSHIP', 'HOSTEL', 'DIRECTOR'
+        ]);
+
+        $isWebsite = ($hasInstitutional || $hasWebsiteSynonym || $isCollegeIntent);
+
+        // 3. Classify into the 4 Standard Rules:
+        
+        // RULE 4: MIXED (Website entity + distinct Technical topic)
+        // Only classify as MIXED if there is an explicit technical concept to explain (e.g. AI, ML, Cloud)
+        if ($isWebsite && $hasTechnical) {
+            // If the query is purely about college course offerings/curriculum without asking for a technical definition, treat as WEBSITE
+            if (preg_match('/^(what|which|list|tell me|show me)\b.*\b(programs?|courses?|degrees?|branches?|streams?)\b.*\b(offered|available|do you have|at soet)\b/i', $rawQuery)) {
+                return [
+                    'category' => 'WEBSITE',
+                    'intent' => 'PROGRAM',
+                    'source' => 'database',
+                    'confidence' => 0.98,
+                    'description' => 'Website Academic Programs Query'
+                ];
+            }
+
             return [
-                'intent' => 'UNCLEAR',
-                'confidence' => 0.3,
-                'source' => 'system',
-                'description' => 'Unclear query requiring clarification'
-            ];
-        }
-
-        $hasSoet = $this->checkKeywordMatches($cleanQuery, $this->soetKeywords);
-        $hasGeneral = $this->checkKeywordMatches($cleanQuery, $this->generalAiKeywords);
-
-        // KEY RULE: If the intent is college-specific, ALWAYS route to database
-        if (in_array($intent, $this->collegeIntents)) {
-            return [
-                'intent' => $intent,
-                'confidence' => 0.95,
-                'source' => 'database',
-                'description' => 'SOET Institutional Knowledge Base Query'
-            ];
-        }
-
-        // Only mark as hybrid if both keyword sets match AND the intent is NOT college-specific
-        if ($hasSoet && $hasGeneral) {
-            return [
-                'intent' => $intent,
-                'confidence' => 0.88,
+                'category' => 'MIXED',
+                'intent' => $intent !== 'UNCLEAR' ? $intent : 'HYBRID',
                 'source' => 'hybrid',
-                'description' => 'Mixed query requiring SOET DB + General AI explanation'
+                'confidence' => 0.95,
+                'description' => 'Mixed query requiring Website DB first + Technical explanation'
             ];
         }
 
-        if ($hasSoet) {
+        // RULE 3: WEBSITE (College / Website Specific)
+        if ($isWebsite) {
             return [
+                'category' => 'WEBSITE',
                 'intent' => $intent,
-                'confidence' => 0.94,
                 'source' => 'database',
-                'description' => 'SOET Institutional Knowledge Base Query'
+                'confidence' => 0.96,
+                'description' => 'Website & Institutional Database Query'
             ];
         }
 
+        // RULE 2: TECHNICAL (Coding / Computer Science / Engineering)
+        if ($hasTechnical || in_array($intent, ['CODING', 'TECHNICAL', 'CAREER', 'INTERVIEW'])) {
+            return [
+                'category' => 'TECHNICAL',
+                'intent' => $intent !== 'UNCLEAR' ? $intent : 'TECHNICAL',
+                'source' => 'openai',
+                'confidence' => 0.94,
+                'description' => 'Technical & Programming Query'
+            ];
+        }
+
+        // RULE 1: GENERAL (Everyday knowledge, non-technical definitions, casual)
         return [
-            'intent' => $intent,
-            'confidence' => 0.90,
+            'category' => 'GENERAL',
+            'intent' => $intent !== 'UNCLEAR' ? $intent : 'GENERAL',
             'source' => 'openai',
-            'description' => 'General Educational / Programming Query'
+            'confidence' => 0.90,
+            'description' => 'General Knowledge Query'
         ];
     }
 
-    private function checkKeywordMatches(string $query, array $keywords): bool
+    private function matchesAnyKeyword(string $text, array $keywords): bool
     {
         foreach ($keywords as $kw) {
-            if (mb_strpos($query, $kw) !== false) {
+            $pattern = '/\b' . preg_quote($kw, '/') . '\b/i';
+            if (preg_match($pattern, $text)) {
                 return true;
             }
         }
         return false;
-    }
-
-    private function detectIntentCategory(string $query): string
-    {
-        if (preg_match('/(seat|seats|intake|capacity|vacant|vacancy|filled|left in|how many seats|admission open|seats available|seat status)/i', $query)) {
-            return 'SEAT_AVAILABILITY';
-        }
-        if (preg_match('/(admission|apply|eligibility|percentage|12th|cet|jee|criteria|form)/i', $query)) {
-            return 'ADMISSION';
-        }
-        if (preg_match('/(course|btech|mtech|degree|syllabus|curriculum)/i', $query)) {
-            return 'PROGRAM';
-        }
-        if (preg_match('/(department|computer science|civil|mech|ece)/i', $query)) {
-            return 'DEPARTMENT';
-        }
-        if (preg_match('/(faculty|professor|teacher|hod|dean|director|staff|rajesh)/i', $query)) {
-            return 'FACULTY';
-        }
-        if (preg_match('/(fee|fees|tuition|cost|amount|scholarship|concession)/i', $query)) {
-            return 'FEE';
-        }
-        if (preg_match('/(placement|placements|salary|package|ctc|recruiter|company)/i', $query)) {
-            return 'PLACEMENT';
-        }
-        if (preg_match('/(event|fest|workshop|calendar|competition)/i', $query)) {
-            return 'EVENT';
-        }
-        if (preg_match('/(notice|announcement|circular)/i', $query)) {
-            return 'NOTICE';
-        }
-        if (preg_match('/(contact|location|address|phone|where is|reach)/i', $query)) {
-            return 'CONTACT';
-        }
-        if (preg_match('/(exam|result|marksheet|attendance|timetable|schedule)/i', $query)) {
-            return 'EXAM';
-        }
-        if (preg_match('/(hostel|canteen|bus|transport|infrastructure|sports|gym)/i', $query)) {
-            return 'FACILITY';
-        }
-        if (preg_match('/(research|paper|publication|journal|thesis|dissertation)/i', $query)) {
-            return 'RESEARCH';
-        }
-        if (preg_match('/(code|java|python|c\+\+|c#|php|ruby|swift|kotlin|rust|go lang|typescript|binary search|dsa|sql|normalization|blockchain|rsa)/i', $query)) {
-            return 'CODING';
-        }
-        if (preg_match('/(career|job|hiring|internship|startup|freelance)/i', $query)) {
-            return 'CAREER';
-        }
-        if (preg_match('/(interview)/i', $query)) {
-            return 'INTERVIEW';
-        }
-        if (preg_match('/(resume)/i', $query)) {
-            return 'RESUME';
-        }
-        return 'GENERAL_AI';
     }
 }

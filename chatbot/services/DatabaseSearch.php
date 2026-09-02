@@ -52,7 +52,7 @@ class DatabaseSearch
             if (!empty($fees)) return ['found' => true, 'top_result' => $fees[0], 'all_results' => $fees];
         }
 
-        if ($intent === 'PROGRAM' || $intent === 'DEPARTMENT' || preg_match('/\b(courses?|programs?|degrees?|branches?|streams?)\b/i', $cleanQuery)) {
+        if ($intent === 'PROGRAM' || $intent === 'DEPARTMENT' || $intent === 'HYBRID' || preg_match('/\b(courses?|programs?|degrees?|branches?|streams?)\b/i', $cleanQuery)) {
             $courses = $this->searchCourses($cleanQuery);
             if (!empty($courses)) return ['found' => true, 'top_result' => $courses[0], 'all_results' => $courses];
         }
@@ -152,9 +152,28 @@ class DatabaseSearch
         }
 
         $matches = [];
+        $genericWords = ['tell', 'me', 'about', 'is', 'the', 'what', 'which', 'at', 'soet', 'mgm', 'mgmu', 'college', 'engineering', 'syllabus', 'curriculum', 'details', 'information', 'course', 'courses', 'btech', 'mtech', 'duration', 'intake', 'fees'];
+        $queryWords = array_values(array_filter(explode(' ', mb_strtolower(preg_replace('/[^a-z0-9\s]/', ' ', $query)))));
+        $distinctiveQueryWords = array_values(array_diff($queryWords, $genericWords));
+
         foreach ($courses as $c) {
-            $text = $c['name'] . ' ' . $c['code'] . ' ' . $c['description'] . ' ' . $c['dept_name'];
-            $score = $this->calculateScore($query, explode(' ', $query), $text);
+            $text = mb_strtolower($c['name'] . ' ' . $c['code'] . ' ' . $c['description'] . ' ' . $c['dept_name']);
+            
+            // Require at least one distinctive query keyword to match if distinctive words were specified
+            if (!empty($distinctiveQueryWords)) {
+                $matchedDistinctive = false;
+                foreach ($distinctiveQueryWords as $dw) {
+                    if (strlen($dw) >= 2 && mb_strpos($text, $dw) !== false) {
+                        $matchedDistinctive = true;
+                        break;
+                    }
+                }
+                if (!$matchedDistinctive) {
+                    continue; // Skip course if no distinctive keyword matched (e.g. aerospace asked)
+                }
+            }
+
+            $score = $this->calculateScore($query, $distinctiveQueryWords ?: $queryWords, $text);
             if ($score > 0) {
                 $content = "SOET offers {$c['name']} ({$c['code']}) under {$c['dept_name']}. Duration: {$c['duration_years']} Years ({$c['semester_count']} Semesters). Intake Capacity: {$c['intake_capacity']} seats. Description: {$c['description']}.";
                 $matches[] = [
@@ -519,7 +538,36 @@ class DatabaseSearch
         $cleanQuery = mb_strtolower($query);
 
         if (mb_strpos($cleanTarget, $cleanQuery) !== false) {
-            $score += 10;
+            $score += 20;
+        }
+
+        $genericCollegeWords = [
+            'soet', 'mgm', 'mgmu', 'college', 'engineering', 'technology', 'university',
+            'syllabus', 'department', 'details', 'information', 'about', 'tell', 'offered',
+            'course', 'courses', 'program', 'programs', 'branch', 'branches'
+        ];
+
+        // Identify distinctive keywords in user query
+        $distinctiveKeywords = [];
+        foreach ($keywords as $kw) {
+            $cleanKw = mb_strtolower(trim($kw));
+            if (strlen($cleanKw) > 2 && !in_array($cleanKw, $genericCollegeWords)) {
+                $distinctiveKeywords[] = $cleanKw;
+            }
+        }
+
+        // If user specified distinctive keywords, at least one MUST match the target text
+        if (!empty($distinctiveKeywords)) {
+            $hasDistinctiveMatch = false;
+            foreach ($distinctiveKeywords as $dkw) {
+                if (mb_strpos($cleanTarget, $dkw) !== false) {
+                    $hasDistinctiveMatch = true;
+                    $score += 8;
+                }
+            }
+            if (!$hasDistinctiveMatch) {
+                return 0; // Reject match if none of the distinctive keywords matched
+            }
         }
 
         foreach ($keywords as $kw) {

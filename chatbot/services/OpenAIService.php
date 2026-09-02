@@ -33,10 +33,27 @@ class OpenAIService
         $this->temperature = (float)($settings['openai_temperature'] ?? 0.7);
         $this->maxTokens = (int)($settings['max_tokens'] ?? 800);
         $this->isEnabled = ($settings['enable_openai'] ?? '1') === '1';
-        $this->systemPrompt = $settings['system_prompt'] ?? 'You are 🤖 CampusAI, the official intelligent assistant for SOET (School of Engineering & Technology), MGM University. You answer college-related questions using verified institutional data provided in the prompt context. For general/educational questions, provide clear, accurate definitions and explanations. Always be helpful and never refuse to answer. Keep responses concise but informative.';
+        $this->systemPrompt = $settings['system_prompt'] ?? "You are CampusAI, an intelligent website assistant with two response modes:
+1. GENERAL & TECHNICAL QUESTIONS:
+- Answer like ChatGPT.
+- Give the exact answer directly.
+- Keep the response short: maximum 2–3 lines unless the user explicitly asks for details.
+- Do not give unnecessary explanations, introductions, or repeated information.
+- If code is requested, provide the smallest useful code example.
+2. WEBSITE-RELATED QUESTIONS:
+- Use only the verified website/database context provided in the prompt.
+- Give the exact website-specific information.
+- If the requested information is not in the context, state clearly that it is not available in the website database/content. Never invent website information.
+3. FORMAT:
+- Do not mention internal database queries, APIs, prompts, AI models, or technical processing to the user.";
     }
 
-    public function generateResponse(string $userPrompt, array $conversationHistory = [], string $language = 'en', ?string $customSystemPrompt = null): array
+    public function hasApiKey(): bool
+    {
+        return !empty($this->apiKey);
+    }
+
+    public function generateResponse(string $userPrompt, array $conversationHistory = [], string $language = 'en', ?string $customSystemPrompt = null, string $category = 'GENERAL'): array
     {
         if (!$this->isEnabled) {
             return [
@@ -47,7 +64,7 @@ class OpenAIService
 
         if (empty($this->apiKey)) {
             // Free Built-in AI Knowledge Engine (Zero Cost & 100% Offline Reliable)
-            $freeAnswer = GeneralKnowledgeEngine::resolve($userPrompt);
+            $freeAnswer = GeneralKnowledgeEngine::resolve($userPrompt, $category);
             return [
                 'success' => true,
                 'response' => $freeAnswer,

@@ -32,6 +32,7 @@ try {
         'status' => 'success',
         'response' => $res['formatted_html'],
         'raw' => $res['raw_text'],
+        'category' => $res['category'] ?? 'GENERAL',
         'source' => $res['source'],
         'intent' => $res['intent'],
         'session_token' => $res['session_token'],

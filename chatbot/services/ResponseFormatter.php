@@ -122,28 +122,12 @@ class ResponseFormatter
             }
         }
 
-        // 11. Append Source Attribution & Navigation Link
-        $badge = "";
-        if ($source === 'database') {
-            $badge = "<div class='source-badge mt-2 pt-2 border-top border-secondary border-opacity-10 d-flex align-items-center justify-content-between text-muted small' style='font-size:11px;'>
-                        <span class='badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 py-1'><i class='fa-solid fa-building-columns me-1'></i>🤖 CampusAI — SOET Verified Data</span>";
-            if (!empty($sourceUrl)) {
-                $badge .= "<a href='" . APP_URL . $sourceUrl . "' class='text-decoration-none text-primary font-semibold' target='_blank'>Explore Section <i class='fa-solid fa-arrow-up-right-from-square ms-1'></i></a>";
-            }
-            $badge .= "</div>";
-        } elseif ($source === 'openai') {
-            $badge = "<div class='source-badge mt-2 pt-2 border-top border-secondary border-opacity-10 text-muted small' style='font-size:11px;'>
-                        <span class='badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-1'><i class='fa-solid fa-brain me-1'></i>🤖 CampusAI — AI Knowledge</span>
-                      </div>";
-        } elseif ($source === 'hybrid') {
-            $badge = "<div class='source-badge mt-2 pt-2 border-top border-secondary border-opacity-10 d-flex align-items-center justify-content-between text-muted small' style='font-size:11px;'>
-                        <span class='badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-25 rounded-pill px-2 py-1'><i class='fa-solid fa-layer-group me-1'></i>🤖 CampusAI — DB + AI Hybrid</span>";
-            if (!empty($sourceUrl)) {
-                $badge .= "<a href='" . APP_URL . $sourceUrl . "' class='text-decoration-none text-warning text-dark font-semibold' target='_blank'>Explore SOET Page <i class='fa-solid fa-arrow-up-right-from-square ms-1'></i></a>";
-            }
-            $badge .= "</div>";
+        // 11. Navigation Link (Clean, no internal database queries/AI models mentioned)
+        $footer = "";
+        if (!empty($sourceUrl)) {
+            $footer = "<div class='mt-2 pt-1 border-top border-light text-end'><a href='" . APP_URL . $sourceUrl . "' class='text-primary small text-decoration-none fw-semibold' target='_blank'>View Details <i class='fa-solid fa-arrow-up-right-from-square ms-1' style='font-size:10px;'></i></a></div>";
         }
 
-        return $formattedHtml . $badge;
+        return $formattedHtml . $footer;
     }
 }

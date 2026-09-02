@@ -47,7 +47,9 @@ class ChatService
         $userMsgId = $this->logMessage($sessionId, 'user', $cleanMessage, 'system', 'USER_INPUT', 1.00);
 
         // 2. Classify Query Intent
+        // 2. Classify Query Intent & Mode
         $classification = $this->classifier->classify($cleanMessage);
+        $category = $classification['category'] ?? 'GENERAL';
         $intent = $classification['intent'];
         $source = $classification['source'];
         $confidence = $classification['confidence'];
@@ -57,8 +59,8 @@ class ChatService
         $sourceUrl = "";
 
         // GREETING Handler
-        if ($source === 'system' && $intent === 'GREETING') {
-            $finalAnswer = "Hello! I am 🤖 CampusAI, the official intelligent assistant for SOET (School of Engineering & Technology), MGM University. How can I assist you with admissions, courses, fees, faculty, or technical concepts today?";
+        if ($category === 'GREETING') {
+            $finalAnswer = "Hello! I am CampusAI, your intelligent assistant for SOET MGM University. How can I help you today?";
             $formattedHtml = ResponseFormatter::format($finalAnswer, 'system', '');
             $botMsgId = $this->logMessage($sessionId, 'bot', $formattedHtml, 'system', 'GREETING', 1.00);
             $chips = $this->generateFollowUpChips('GREETING', $cleanMessage, 'system');
@@ -69,6 +71,7 @@ class ChatService
                 'message_id' => $botMsgId,
                 'raw_text' => $finalAnswer,
                 'formatted_html' => $formattedHtml,
+                'category' => 'GREETING',
                 'intent' => $intent,
                 'source' => 'system',
                 'confidence' => $confidence,
@@ -77,94 +80,68 @@ class ChatService
             ];
         }
 
-        // UNCLEAR / Ambiguous Query Handler
-        if ($intent === 'UNCLEAR') {
-            $finalAnswer = "Could you please clarify your question? For example, you can ask me about **Courses & Programs**, **Fee Structure**, **Real-Time Seat Availability**, **Admissions**, **Faculty**, or **Placements**.";
-            $formattedHtml = ResponseFormatter::format($finalAnswer, 'system', '');
-            $botMsgId = $this->logMessage($sessionId, 'bot', $formattedHtml, 'system', 'UNCLEAR', 0.50);
-            $chips = $this->generateFollowUpChips('GENERAL', $cleanMessage, 'system');
-            return [
-                'success' => true,
-                'status' => 'success',
-                'session_token' => $session['session_token'],
-                'message_id' => $botMsgId,
-                'raw_text' => $finalAnswer,
-                'formatted_html' => $formattedHtml,
-                'intent' => 'UNCLEAR',
-                'source' => 'system',
-                'confidence' => 0.50,
-                'source_url' => '',
-                'suggested_chips' => $chips
-            ];
-        }
+        // System prompt for OpenAI calls adhering to ChatGPT 2-3 lines style
+        $technicalPrompt = "You are CampusAI. Answer like ChatGPT. Give the exact answer directly. Keep the response short: maximum 2–3 lines unless the user explicitly asks for details. Do not give unnecessary explanations, introductions, or repeated information. If code is requested, provide the smallest useful code example. Do not mention internal database queries, APIs, prompts, or AI models.";
+        $generalPrompt = "You are CampusAI. Answer like ChatGPT. Give the exact answer directly. Keep the response short: maximum 2–3 lines unless the user explicitly asks for details. Do not give unnecessary explanations, introductions, or repeated information. Do not mention internal database queries, APIs, prompts, or AI models.";
 
-        $systemPrompt = "You are 🤖 CampusAI, the official intelligent assistant for SOET (School of Engineering & Technology), MGM University. You answer college-related questions using verified institutional data and general/educational questions using your knowledge. Always be helpful, accurate, and friendly. Never refuse to answer. For college questions, use only verified data. For general questions, provide clear explanations.";
+        // 3. Execution by Classification Category
 
-        // 3. Routing Execution according to Developer Workflow
-        if ($source === 'database') {
-            // CONDITION 1: College / Website Query -> SOET Institutional Database Search
+        if ($category === 'WEBSITE') {
+            // MODE 2: WEBSITE-RELATED QUESTIONS (Database/Website Content Priority)
             $dbResult = $this->dbSearch->search($cleanMessage, $intent);
             if ($dbResult['found']) {
-                // Match Found -> Verified College Facts & Official Data
                 $top = $dbResult['top_result'];
                 $finalAnswer = $top['content'];
                 $sourceUrl = $top['source_url'] ?? '';
                 $finalSource = 'database';
             } else {
-                // No Direct DB Match -> Free AI / LLM Fallback Engine
-                $aiRes = $this->openAI->generateResponse($cleanMessage, $this->getHistory($sessionId), $language, $systemPrompt);
-                if ($aiRes['success']) {
-                    $finalAnswer = $aiRes['response'];
-                } else {
-                    $finalAnswer = GeneralKnowledgeEngine::resolve($cleanMessage);
-                }
-                $finalSource = 'openai';
+                // Rule 2 & 6: If information does not exist, state clearly that it is not available. Never invent website info.
+                $finalAnswer = "This information is not currently available in our website database or official records. For verified details, please contact the SOET admission office at admissionsoet@mgmu.ac.in or call +91-9371714253.";
+                $finalSource = 'database';
                 $this->logUnanswered($sessionId, $cleanMessage, $intent, $confidence);
             }
-        } elseif ($source === 'openai') {
-            // CONDITION 2: General / Technical Query -> Free AI / LLM Knowledge Engine
-            $aiRes = $this->openAI->generateResponse($cleanMessage, $this->getHistory($sessionId), $language, $systemPrompt);
+        } elseif ($category === 'TECHNICAL') {
+            // MODE 1: TECHNICAL QUESTIONS (ChatGPT style, max 2-3 lines, minimal code)
+            $aiRes = $this->openAI->generateResponse($cleanMessage, $this->getHistory($sessionId), $language, $technicalPrompt, 'TECHNICAL');
             if ($aiRes['success']) {
                 $finalAnswer = $aiRes['response'];
             } else {
-                $finalAnswer = GeneralKnowledgeEngine::resolve($cleanMessage);
+                $finalAnswer = GeneralKnowledgeEngine::resolve($cleanMessage, 'TECHNICAL');
             }
             $finalSource = 'openai';
-        } elseif ($source === 'hybrid') {
-            // CONDITION 3: Hybrid Query -> DB Facts + AI Enrichment
+        } elseif ($category === 'GENERAL') {
+            // MODE 1: GENERAL KNOWLEDGE QUESTIONS (ChatGPT style, max 2-3 lines)
+            $aiRes = $this->openAI->generateResponse($cleanMessage, $this->getHistory($sessionId), $language, $generalPrompt, 'GENERAL');
+            if ($aiRes['success']) {
+                $finalAnswer = $aiRes['response'];
+            } else {
+                $finalAnswer = GeneralKnowledgeEngine::resolve($cleanMessage, 'GENERAL');
+            }
+            $finalSource = 'openai';
+        } elseif ($category === 'MIXED') {
+            // MODE 3: MIXED (Website/Database information first + relevant general/technical explanation)
             $dbResult = $this->dbSearch->search($cleanMessage, $intent);
             $dbText = $dbResult['found'] ? $dbResult['top_result']['content'] : '';
             $sourceUrl = $dbResult['found'] ? ($dbResult['top_result']['source_url'] ?? '') : '';
 
-            $genKnowledge = GeneralKnowledgeEngine::resolve($cleanMessage);
+            $techExplanation = GeneralKnowledgeEngine::resolve($cleanMessage, 'TECHNICAL');
 
             if ($dbResult['found']) {
-                // DB Facts found -> Enrich with AI or blend with General Knowledge
-                $aiRes = $this->openAI->generateResponse(
-                    "The user asked: '{$cleanMessage}'. Verified SOET college facts: '{$dbText}'. Conceptual overview: '{$genKnowledge}'. Synthesize a complete response addressing both the general concept and verified SOET college information.",
-                    $this->getHistory($sessionId), $language, $systemPrompt
-                );
-
-                if ($aiRes['success']) {
-                    $finalAnswer = $aiRes['response'];
+                if ($this->openAI->hasApiKey()) {
+                    $hybridPrompt = "Answer this question with website information first, followed by a concise 2–3 line technical explanation: User query: '{$cleanMessage}'. Website facts: '{$dbText}'. Keep response direct and concise without introductory filler.";
+                    $aiRes = $this->openAI->generateResponse($hybridPrompt, $this->getHistory($sessionId), $language, $technicalPrompt, 'TECHNICAL');
+                    $finalAnswer = $aiRes['success'] ? $aiRes['response'] : ($dbText . "\n\n" . $techExplanation);
                 } else {
-                    $finalAnswer = "### 🏛️ SOET Verified Information\n\n{$dbText}\n\n---\n\n" . $genKnowledge;
+                    $finalAnswer = $dbText . "\n\n" . $techExplanation;
                 }
                 $finalSource = 'hybrid';
             } else {
-                // No DB Facts -> Fallback to AI Knowledge Engine
-                $aiRes = $this->openAI->generateResponse($cleanMessage, $this->getHistory($sessionId), $language, $systemPrompt);
-                if ($aiRes['success']) {
-                    $finalAnswer = $aiRes['response'];
-                } else {
-                    $finalAnswer = $genKnowledge;
-                }
+                $finalAnswer = $techExplanation;
                 $finalSource = 'openai';
-                $this->logUnanswered($sessionId, $cleanMessage, $intent, $confidence);
             }
         }
 
-        // Format final HTML response
+        // Format final HTML response (clean, zero internal database queries or model names mentioned)
         $formattedHtml = ResponseFormatter::format($finalAnswer, $finalSource, $sourceUrl);
 
         // Log bot message
@@ -180,6 +157,7 @@ class ChatService
             'message_id' => $botMsgId,
             'raw_text' => $finalAnswer,
             'formatted_html' => $formattedHtml,
+            'category' => $category,
             'intent' => $intent,
             'source' => $finalSource,
             'confidence' => $confidence,

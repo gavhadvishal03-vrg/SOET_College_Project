@@ -1,289 +1,287 @@
 <?php
 /**
- * 🤖 CampusAI — Comprehensive Built-in Knowledge & General Query Engine
- * Intelligent Intent Analysis & Response Synthesizer
- * Prevents rigid technical templates for casual/dining/lifestyle/conversational queries.
+ * 🤖 CampusAI — High-Precision Knowledge & Direct Response Engine
+ * Follows strict ChatGPT-style response rules:
+ * - Exact answer directly (zero unnecessary introductions, no meta-talk)
+ * - Maximum 2-3 lines unless details explicitly requested
+ * - Smallest useful code example when code is requested
  */
 
 class GeneralKnowledgeEngine
 {
     private static array $topicDatabase = [
-        // AUTOMOTIVE & VEHICLES
-        'car' => [
-            'title' => 'Automobiles & Automotive Engineering',
-            'content' => "An **Automobile (Car)** is a wheeled passenger motor vehicle powered by an engine or electric motor.\n\nKey Engineering Systems:\n• **Powertrain & Engine**: Internal Combustion Engines (Gasoline/Diesel) or Electric Motors (EV Lithium Battery Packs).\n• **Transmission**: Transfers engine power to wheels (Manual, Automatic, CVT, Dual-Clutch).\n• **Chassis & Suspension**: Structural frame supporting vehicle weight and dampening road shocks (MacPherson, Double Wishbone).\n• **Braking System**: Hydraulic Disc Brakes, Anti-Lock Braking System (ABS), & Regenerative Braking in EVs.\n• **Automotive Electronics**: Engine Control Unit (ECU), Sensors, ADAS Autonomous Driving, & Telematics."
-        ],
-        'automobile' => [
-            'title' => 'Automobiles & Automotive Engineering',
-            'content' => "An **Automobile** is a wheeled motor vehicle used for land transportation.\n\nKey Subsystems:\n• Internal Combustion Engine & Electric Vehicle (EV) Powertrains\n• Transmission & Differential Gear Systems\n• Steering, Suspension, & Brakes (ABS, EBD)\n• Automotive Mechatronics & Electronic Control Units (ECUs)"
-        ],
-        'electric vehicle' => [
-            'title' => 'Electric Vehicles (EVs)',
-            'content' => "An **Electric Vehicle (EV)** uses one or more electric motors powered by rechargeable lithium-ion battery packs.\n\nKey Advantages:\n• Zero Direct Tailpipe Emissions\n• High Instant Torque & Acceleration\n• Lower Maintenance & Regenerative Braking Energy Recovery"
-        ],
-        'ev' => [
-            'title' => 'Electric Vehicles (EVs)',
-            'content' => "Electric Vehicles (EVs) operate on electric powertrains utilizing battery packs (Li-ion, LFP) and electric traction motors instead of internal combustion engines."
-        ],
-
-        // ENGINEERING DISCIPLINES
-        'mechanical engineering' => [
-            'title' => 'Mechanical Engineering',
-            'content' => "Mechanical Engineering applies engineering physics, mathematics, and materials science to design, analyze, manufacture, and maintain mechanical systems.\n\nCore Domains:\n• CAD/CAM Modeling & Product Design\n• Thermodynamics & Heat Transfer\n• Fluid Mechanics & Hydraulics\n• Industrial Robotics & Mechatronics"
-        ],
-        'mechanical' => [
-            'title' => 'Mechanical Engineering Overview',
-            'content' => "Mechanical Engineering encompasses machine design, thermal sciences, manufacturing processes, automation, and robotics."
-        ],
-        'civil engineering' => [
-            'title' => 'Civil Engineering',
-            'content' => "Civil Engineering deals with the design, construction, and maintenance of infrastructure including roads, bridges, dams, airports, and smart buildings.\n\nCore Disciplines:\n• Structural Engineering & Earthquake Mechanics\n• Geotechnical & Foundation Engineering\n• Environmental & Water Resource Systems\n• Building Information Modeling (BIM)"
-        ],
-        'civil' => [
-            'title' => 'Civil Engineering Overview',
-            'content' => "Civil Engineering focuses on structural analysis, construction management, smart infrastructure, and surveying."
-        ],
-        'electrical engineering' => [
-            'title' => 'Electrical Engineering',
-            'content' => "Electrical Engineering covers electricity generation, power transmission, renewable energy, microcontrollers, and electrical drives."
-        ],
-        'electronics' => [
-            'title' => 'Electronics & Telecommunication (ECE)',
-            'content' => "ECE studies semiconductor devices, VLSI integrated circuit design, embedded microcontrollers, digital signal processing, and 5G wireless networks."
-        ],
-
-        // COMPUTING & PROGRAMMING
-        'computer science' => [
-            'title' => 'Computer Science & Engineering (CSE)',
-            'content' => "Computer Science encompasses computation, software engineering, algorithms, database systems, artificial intelligence, and network architecture."
-        ],
-        'binary search' => [
-            'title' => 'Binary Search Algorithm',
-            'content' => "Binary Search is an efficient algorithm that searches a sorted array by repeatedly dividing the search interval in half. Time Complexity: O(log n).\n\n```c\nint binarySearch(int arr[], int size, int target) {\n    int low = 0, high = size - 1;\n    while (low <= high) {\n        int mid = low + (high - low) / 2;\n        if (arr[mid] == target) return mid;\n        if (arr[mid] < target) low = mid + 1;\n        else high = mid - 1;\n    }\n    return -1;\n}\n```"
-        ],
-        'dbms' => [
-            'title' => 'Database Management Systems (DBMS)',
-            'content' => "A DBMS is software used to store, retrieve, and manage data securely.\n\nCore Concepts:\n- ACID Properties: Atomicity, Consistency, Isolation, Durability.\n- Normalization: Reducing redundancy (1NF, 2NF, 3NF, BCNF).\n- SQL: Structured Query Language for relational databases (MySQL, PostgreSQL, Oracle)."
-        ],
+        // COMPUTING & PROGRAMMING LANGUAGES
         'python' => [
-            'title' => 'Python Programming Language',
-            'content' => "Python is a high-level, interpreted language famous for code readability and rich ecosystem.\n\nApplications:\n- Data Science & ML (Pandas, NumPy, Scikit-learn, TensorFlow)\n- Web Backend (Django, Flask, FastAPI)\n- Scripting & Automation"
+            'desc' => "Python is a high-level, interpreted programming language known for its clean syntax and readability. It is widely used in web development, data science, automation, and artificial intelligence."
         ],
         'java' => [
-            'title' => 'Java Programming',
-            'content' => "Java is a class-based, object-oriented language ('Write Once, Run Anywhere' via JVM).\n\nOOP Pillars:\n1. Encapsulation: Hiding internal data state.\n2. Inheritance: Code reuse via parent-child classes.\n3. Polymorphism: Method overloading and overriding.\n4. Abstraction: Hiding implementation details via Interfaces and Abstract Classes."
+            'desc' => "Java is an object-oriented, class-based language built on the 'Write Once, Run Anywhere' (WORA) principle via the JVM. It is widely used in enterprise backend systems and Android app development."
         ],
-        'artificial intelligence' => [
-            'title' => 'Artificial Intelligence (AI)',
-            'content' => "Artificial Intelligence is the branch of computer science devoted to creating systems capable of performing tasks that typically require human intelligence, such as learning, reasoning, problem solving, perception, and natural language understanding."
+        'c++' => [
+            'desc' => "C++ is a high-performance compiled programming language that supports procedural and object-oriented paradigms. It is commonly used in game engines, operating systems, and low-latency systems."
         ],
-        'ai' => [
-            'title' => 'Artificial Intelligence (AI)',
-            'content' => "Artificial Intelligence (AI) simulates human cognitive functions in software. Applications include Machine Learning, Neural Networks, Natural Language Processing (NLP), Computer Vision, and Robotics."
+        'c' => [
+            'desc' => "C is a foundational procedural programming language that provides low-level memory access and efficient execution. It is widely used for operating system kernels, embedded devices, and compilers."
         ],
-        'machine learning' => [
-            'title' => 'Machine Learning (ML)',
-            'content' => "Machine Learning allows algorithms to automatically learn patterns from data without explicit programming.\n\nCategories:\n- Supervised: Learning with labeled datasets (Regression, Classification).\n- Unsupervised: Clustering unlabeled data (k-Means, PCA).\n- Reinforcement: Learning via reward and penalty loops."
+        'javascript' => [
+            'desc' => "JavaScript is a lightweight, dynamic scripting language primarily used to build interactive client-side web applications and scalable backends via Node.js."
         ],
-        'deep learning' => [
-            'title' => 'Deep Learning & Neural Networks',
-            'content' => "Deep Learning uses multi-layered artificial neural networks inspired by the human brain. Architectures include CNNs (Computer Vision), RNNs/LSTMs (Time-series), and Transformers (LLMs & Language Tasks)."
+        'php' => [
+            'desc' => "PHP is a popular server-side scripting language designed specifically for web development, powering dynamic web applications, content management systems, and RESTful APIs."
         ],
-        'cloud computing' => [
-            'title' => 'Cloud Computing',
-            'content' => "Cloud computing offers on-demand network access to shared computing resources (servers, storage, databases).\n\nModels:\n- IaaS: AWS EC2, Azure VMs\n- PaaS: Heroku, Google App Engine\n- SaaS: Google Workspace, Microsoft 365"
+        'sql' => [
+            'desc' => "SQL (Structured Query Language) is the standard domain-specific language used for querying, inserting, updating, and managing structured data in relational database systems."
         ],
-        'cybersecurity' => [
-            'title' => 'Cybersecurity',
-            'content' => "Cybersecurity protects systems, networks, and data from digital attacks, authorization breaches, and malware.\n\nCore Principles (CIA Triad):\n- Confidentiality: Protecting sensitive data.\n- Integrity: Preventing unauthorized modifications.\n- Availability: Ensuring service uptime."
+        'html' => [
+            'desc' => "HTML (HyperText Markup Language) is the standard markup language used to structure web pages and their content using semantic elements and tags."
         ],
-        'data science' => [
-            'title' => 'Data Science',
-            'content' => "Data Science combines statistics, computer science, and domain expertise to extract meaningful insights from data pipelines."
+        'css' => [
+            'desc' => "CSS (Cascading Style Sheets) is a stylesheet language used to describe the visual presentation, styling, layout, and responsive design of HTML documents."
         ],
-        'web development' => [
-            'title' => 'Web Development',
-            'content' => "Web development encompasses building websites and web apps:\n- Frontend: User interface (HTML5, CSS3, JavaScript, React)\n- Backend: Server logic, APIs, and databases (PHP, Node.js, Python, MySQL)\n- Full-Stack: Comprehensive end-to-end development."
-        ],
-        'react' => [
-            'title' => 'React Frontend Library',
-            'content' => "React is a open-source JavaScript library developed by Meta for building component-driven user interfaces utilizing a Virtual DOM for high-performance rendering."
+        'rust' => [
+            'desc' => "Rust is a modern systems programming language that ensures memory safety and thread concurrency without requiring a garbage collector."
         ],
 
-        // GENERAL SCIENCE & MATH
-        'physics' => [
-            'title' => 'Physics Overview',
-            'content' => "Physics is the fundamental natural science studying matter, energy, motion, forces, space, and time."
+        // DATA STRUCTURES & ALGORITHMS
+        'binary search' => [
+            'desc' => "Binary search is an efficient O(log n) algorithm that finds a target value in a sorted array by repeatedly dividing the search interval in half.",
+            'code' => "int search(int a[], int n, int x) {\n    int l = 0, r = n - 1;\n    while (l <= r) {\n        int m = l + (r - l) / 2;\n        if (a[m] == x) return m;\n        if (a[m] < x) l = m + 1; else r = m - 1;\n    }\n    return -1;\n}"
         ],
-        'chemistry' => [
-            'title' => 'Chemistry Overview',
-            'content' => "Chemistry studies the composition, structure, properties, and reactions of matter and chemical substances."
+        'linear search' => [
+            'desc' => "Linear search sequentially checks each element of a list until a match is found or the end is reached, running in O(n) time complexity.",
+            'code' => "int linearSearch(int a[], int n, int x) {\n    for (int i = 0; i < n; i++) if (a[i] == x) return i;\n    return -1;\n}"
         ],
-        'mathematics' => [
-            'title' => 'Mathematics',
-            'content' => "Mathematics encompasses numbers, quantities, structures, algebra, calculus, geometry, and logical reasoning."
+        'bubble sort' => [
+            'desc' => "Bubble sort is a simple comparison-based sorting algorithm that repeatedly steps through the list, swapping adjacent elements that are out of order (O(n²) time complexity).",
+            'code' => "void bubbleSort(int a[], int n) {\n    for (int i = 0; i < n-1; i++)\n        for (int j = 0; j < n-i-1; j++)\n            if (a[j] > a[j+1]) { int t = a[j]; a[j] = a[j+1]; a[j+1] = t; }\n}"
         ],
-        'mgm' => [
-            'title' => 'MGM University',
-            'content' => "Mahatma Gandhi Mission (MGM) University is a pioneering self-financed university in Chhatrapati Sambhajinagar (Aurangabad), Maharashtra, committed to educational excellence and technological research."
+        'quick sort' => [
+            'desc' => "Quick sort is a divide-and-conquer algorithm that selects a pivot element and partitions the array into sub-arrays of smaller and greater elements, averaging O(n log n) time."
         ],
-        'soet' => [
-            'title' => 'SOET - School of Engineering & Technology',
-            'content' => "SOET is the flagship institute of engineering at MGM University offering B.Tech, M.Tech, and Ph.D. programs in CSE, Mechanical, Civil, ECE, Electrical, and Applied Sciences."
+        'merge sort' => [
+            'desc' => "Merge sort is a stable divide-and-conquer algorithm that recursively divides an array into halves, sorts them, and merges them back together in guaranteed O(n log n) time."
+        ],
+        'stack' => [
+            'desc' => "A stack is a linear data structure following the Last-In, First-Out (LIFO) principle, supporting push (insertion) and pop (removal) operations at the top element."
+        ],
+        'queue' => [
+            'desc' => "A queue is a linear data structure following the First-In, First-Out (FIFO) principle, where elements are enqueued at the rear and dequeued from the front."
+        ],
+        'linked list' => [
+            'desc' => "A linked list is a linear data collection where elements (nodes) store a data value and a pointer reference to the next node in the sequence."
+        ],
+        'tree' => [
+            'desc' => "A tree is a non-linear hierarchical data structure consisting of nodes connected by edges, starting from a single root node with subtrees of children."
+        ],
+        'graph' => [
+            'desc' => "A graph is a non-linear data structure consisting of a finite set of vertices (nodes) and edges connecting pairs of vertices, representing complex relationships."
+        ],
+        'recursion' => [
+            'desc' => "Recursion is a programming technique in which a function calls itself directly or indirectly to solve smaller subproblems until a base terminating condition is reached."
+        ],
+        'dsa' => [
+            'desc' => "Data Structures & Algorithms (DSA) is the study of organizing data efficiently in memory and designing step-by-step procedures to solve computational problems with optimal time and space complexity."
+        ],
+
+        // OBJECT-ORIENTED PROGRAMMING
+        'oops' => [
+            'desc' => "Object-Oriented Programming (OOP) is a programming paradigm structured around objects and classes, centered on four core pillars: Encapsulation, Abstraction, Inheritance, and Polymorphism."
+        ],
+        'inheritance' => [
+            'desc' => "Inheritance is an OOP mechanism where a child class inherits fields and methods from an existing parent class, enabling code reuse and hierarchical classification."
+        ],
+        'polymorphism' => [
+            'desc' => "Polymorphism allows objects or methods to take on multiple forms, typically through method overloading (compile-time) and method overriding (run-time)."
+        ],
+        'encapsulation' => [
+            'desc' => "Encapsulation is the bundling of data and the methods that operate on that data into a single class while restricting direct external access using private access modifiers."
+        ],
+        'abstraction' => [
+            'desc' => "Abstraction is the concept of hiding complex internal implementation details and exposing only the essential features of an object through interfaces and abstract classes."
+        ],
+
+        // SYSTEMS, OS & NETWORKING
+        'operating system' => [
+            'desc' => "An operating system (OS) is core system software that manages computer hardware, memory, processes, storage, and device drivers while providing an interface for users and applications."
+        ],
+        'linux' => [
+            'desc' => "Linux is an open-source, Unix-like operating system kernel known for stability, multi-user security, and modularity, powering most cloud servers, supercomputers, and Android devices."
+        ],
+        'database' => [
+            'desc' => "A database is an organized collection of structured data stored electronically in a computer system, managed and queried via a Database Management System (DBMS)."
+        ],
+        'dbms' => [
+            'desc' => "A Database Management System (DBMS) is software that manages database creation, storage, maintenance, and concurrent access while ensuring ACID transaction guarantees."
+        ],
+        'api' => [
+            'desc' => "An Application Programming Interface (API) is a set of rules and protocols enabling two distinct software applications to communicate and exchange data seamlessly."
+        ],
+        'rest api' => [
+            'desc' => "A REST API is an architectural style for network communication using standard HTTP methods (GET, POST, PUT, DELETE) and stateless JSON/XML data exchange."
+        ],
+        'docker' => [
+            'desc' => "Docker is an open-source containerization platform that packages applications and their dependencies into lightweight, standalone containers that run consistently across any environment."
+        ],
+        'git' => [
+            'desc' => "Git is a distributed version control system that tracks changes in source code files, allowing multiple developers to collaborate via branching, merging, and commits."
+        ],
+        'networking' => [
+            'desc' => "Computer networking is the practice of connecting computing devices to exchange data and share resources over wired or wireless media using communication protocols like TCP/IP."
+        ],
+        'tcp/ip' => [
+            'desc' => "TCP/IP is the foundational communications suite of the Internet, where TCP ensures reliable, in-order packet delivery and IP handles routing addresses across networks."
+        ],
+        'cybersecurity' => [
+            'desc' => "Cybersecurity is the discipline of protecting computer systems, networks, devices, and digital assets from unauthorized access, cyberattacks, data theft, and damage."
+        ],
+        'cloud computing' => [
+            'desc' => "Cloud computing provides on-demand access to computing resources—including virtual servers, storage, databases, and software—over the internet with pay-as-you-go pricing (e.g., AWS, Azure, GCP)."
+        ],
+        'iot' => [
+            'desc' => "The Internet of Things (IoT) refers to a network of physical objects embedded with sensors, processing ability, and wireless connectivity to collect and exchange data in real time."
+        ],
+        'artificial intelligence' => [
+            'desc' => "Artificial Intelligence (AI) is the branch of computer science dedicated to developing systems capable of performing tasks that typically require human cognition, such as reasoning, learning, and perception."
+        ],
+        'ai' => [
+            'desc' => "Artificial Intelligence (AI) simulates human cognitive abilities in software to automate complex tasks including natural language processing, predictive analysis, computer vision, and decision-making."
+        ],
+        'machine learning' => [
+            'desc' => "Machine learning is a subset of AI where algorithms learn statistical patterns from data to make predictions or decisions without being explicitly programmed."
+        ],
+        'deep learning' => [
+            'desc' => "Deep learning is an advanced branch of machine learning that utilizes multi-layered artificial neural networks (CNNs, RNNs, Transformers) to model complex representations from large datasets."
+        ],
+
+        // GENERAL EVERYDAY CONCEPTS
+        'car' => [
+            'desc' => "An automobile (car) is a four-wheeled motor vehicle designed for passenger road transportation, powered by an internal combustion engine or an electric motor."
+        ],
+        'automobile' => [
+            'desc' => "An automobile is a wheeled road vehicle powered by an engine or electric traction motor, engineered with powertrain, transmission, steering, and braking systems."
+        ],
+        'electric vehicle' => [
+            'desc' => "An electric vehicle (EV) operates on an electric motor powered by rechargeable lithium-ion battery packs rather than consuming gasoline or diesel fuel."
+        ],
+        'ev' => [
+            'desc' => "An Electric Vehicle (EV) is a road vehicle powered by an electric motor and rechargeable battery pack, delivering zero tailpipe emissions and high energy efficiency."
+        ],
+        'dinner' => [
+            'desc' => "Dinner is the primary evening meal. At SOET MGM University, the campus hostel mess serves dinner daily from 7:30 PM to 9:30 PM with balanced vegetarian thali options."
+        ],
+        'lunch' => [
+            'desc' => "Lunch is the midday meal. At SOET MGM University, the campus canteen and hostel mess serve lunch daily from 12:30 PM to 2:30 PM."
+        ],
+        'breakfast' => [
+            'desc' => "Breakfast is the first meal of the day. Fresh breakfast, tea, and snacks are available at the SOET campus canteen every morning from 8:00 AM to 10:00 AM."
+        ],
+        'sports' => [
+            'desc' => "MGM University features an Olympic-standard Sports Complex with a cricket stadium, football ground, basketball and badminton courts, indoor games, and a modern fitness gym."
+        ],
+        'hostel' => [
+            'desc' => "SOET MGM University provides secure in-campus hostels for boys and girls with 24/7 security, Wi-Fi connectivity, study areas, and hygienic dining mess facilities."
         ]
     ];
 
-    public static function resolve(string $query): string
+    /**
+     * Resolve general & technical questions directly in 2-3 lines like ChatGPT
+     */
+    public static function resolve(string $query, string $category = 'GENERAL'): string
     {
         $cleanQuery = mb_strtolower(trim($query));
 
-        // --- 1. FOOD, DINING & LIFESTYLE QUERIES ---
-        if (preg_match('/\b(dinner|dinner time|dinner menu|mess dinner)\b/i', $cleanQuery)) {
-            return "🍽️ **Dinner & Campus Dining**\n\n"
-                 . "**Dinner** is the primary evening meal. At SOET MGM University, the campus canteen and hostel mess serve fresh, hygienic meals for students, hostellers, and faculty.\n\n"
-                 . "• **Hostel Mess Dinner Hours**: 7:30 PM – 9:30 PM daily.\n"
-                 . "• **Menu Highlights**: Balanced vegetarian thali including roti, rice, dal, seasonal vegetables, salad, and weekend specials.\n\n"
-                 . "💡 *If you need information about hostel room admissions or campus dining facilities, ask 🤖 CampusAI!*";
+        // 1. Conversational Politeness & Small Talk
+        if (preg_match('/^(thanks|thank you|thanku|thx|tq)\b/i', $cleanQuery)) {
+            return "You're welcome! Feel free to ask if you need anything else.";
+        }
+        if (preg_match('/^(good night|goodnight|gn)\b/i', $cleanQuery)) {
+            return "Good night! Rest well. Feel free to chat with CampusAI anytime.";
+        }
+        if (preg_match('/^(how are you|how do you do)\b/i', $cleanQuery)) {
+            return "I'm doing well and ready to assist you. How can I help today?";
+        }
+        if (preg_match('/\b(who are you|your name|what are you)\b/i', $cleanQuery)) {
+            return "I am CampusAI, an intelligent assistant that provides verified SOET MGM University information and answers general & technical questions.";
         }
 
-        if (preg_match('/\b(lunch|lunch time|canteen lunch)\b/i', $cleanQuery)) {
-            return "🍱 **Lunch & Campus Canteen**\n\n"
-                 . "**Lunch** is served daily at the MGM University campus canteen and hostel mess.\n\n"
-                 . "• **Canteen Lunch Hours**: 12:30 PM – 2:30 PM.\n"
-                 . "• **Facilities**: Food court, fresh fruit juices, vegetarian meals, and snacks.\n\n"
-                 . "💡 *Feel free to ask CampusAI about campus facilities or hostel admission details!*";
-        }
-
-        if (preg_match('/\b(breakfast|morning snacks|tea|coffee)\b/i', $cleanQuery)) {
-            return "☕ **Breakfast & Morning Refreshment**\n\n"
-                 . "Fresh breakfast, tea, coffee, and snacks are available at the SOET campus canteen every morning from **8:00 AM – 10:00 AM**.";
-        }
-
-        if (preg_match('/\b(food|canteen|mess|cafeteria|eating)\b/i', $cleanQuery)) {
-            return "🍔 **Campus Dining & Canteen Facilities**\n\n"
-                 . "SOET MGM University provides hygienic campus canteens and dining halls serving fresh vegetarian meals, breakfasts, beverages, and snacks daily for students and staff.";
-        }
-
-        // --- 2. CONVERSATIONAL POLITENESS & GREETINGS ---
-        if (preg_match('/\b(thanks|thank you|thanku|thx|tq)\b/i', $cleanQuery)) {
-            return "😊 **You're very welcome!** I'm happy to help. Feel free to ask if you need anything else about SOET college, admissions, courses, or general queries! 🚀";
-        }
-
-        if (preg_match('/\b(good night|goodnight|gn)\b/i', $cleanQuery)) {
-            return "🌙 **Good Night!** Rest well. Feel free to chat with 🤖 **CampusAI** anytime!";
-        }
-
-        if (preg_match('/\b(good morning|gm)\b/i', $cleanQuery)) {
-            return "☀️ **Good Morning!** Welcome to SOET MGM University. How can 🤖 **CampusAI** assist you today?";
-        }
-
-        if (preg_match('/\b(sports|cricket|football|basketball|badminton|gym|games)\b/i', $cleanQuery)) {
-            return "🏆 **Sports & Campus Recreation**\n\n"
-                 . "MGM University boasts a premier Sports Complex featuring a cricket stadium, football ground, basketball & badminton courts, indoor games, and a modern fitness gym for students.";
-        }
-
-        if (preg_match('/\b(hostel|room|stay|accommodation)\b/i', $cleanQuery)) {
-            return "🏢 **Campus Hostel & Accommodation**\n\n"
-                 . "SOET MGM University offers safe, fully-equipped in-campus hostels for boys and girls with 24/7 security, high-speed Wi-Fi, study rooms, and nutritious mess dining.\n\n"
-                 . "💡 *To apply for hostel allocation, contact the SOET admission office or submit an inquiry via CampusAI!*";
-        }
-
-        // --- 3. DATE, TIME, DAY, YEAR DYNAMIC TEMPORAL QUERIES ---
-        if (preg_match('/\b(date|today|time|day|year|month)\b/i', $cleanQuery)) {
+        // 2. Temporal Queries (Time, Date, Day, Year)
+        if (preg_match('/\b(date|today|time|current time|clock|what day|what year)\b/i', $cleanQuery)) {
             $now = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
-            
             if (preg_match('/\b(time|clock)\b/i', $cleanQuery)) {
-                return "🕒 **Current Time (IST)**:\n\n• **Time**: " . $now->format('h:i:s A') . " IST\n• **Date**: " . $now->format('l, F j, Y') . "\n• **Timezone**: Indian Standard Time (UTC+05:30)";
+                return "The current time is " . $now->format('h:i:s A') . " IST (" . $now->format('l, F j, Y') . ").";
             }
-            
             if (preg_match('/\b(year)\b/i', $cleanQuery)) {
-                return "📅 **Current Year**:\n\nThe current year is **" . $now->format('Y') . "**.";
+                return "The current year is " . $now->format('Y') . ".";
             }
-
-            if (preg_match('/\b(month)\b/i', $cleanQuery)) {
-                return "📅 **Current Month**:\n\nThe current month is **" . $now->format('F Y') . "**.";
-            }
-
             if (preg_match('/\b(day)\b/i', $cleanQuery)) {
-                return "📅 **Today's Day**:\n\nToday is **" . $now->format('l') . "** (" . $now->format('F j, Y') . ").";
+                return "Today is " . $now->format('l') . ", " . $now->format('F j, Y') . ".";
             }
-
-            return "📅 **Today's Date & Time**:\n\n"
-                 . "• **Date**: " . $now->format('l, F j, Y') . "\n"
-                 . "• **Current Time**: " . $now->format('h:i A') . " IST\n"
-                 . "• **Year**: " . $now->format('Y') . "\n\n"
-                 . "How can 🤖 **CampusAI** assist you further today?";
+            return "Today's date is " . $now->format('l, F j, Y') . ", and the current time is " . $now->format('h:i A') . " IST.";
         }
 
-        // --- 4. MATHEMATICAL CALCULATION EVALUATOR ---
+        // 3. Mathematical Calculations (e.g. 15 + 35, 10 * 20)
         if (preg_match('/(?:what is|calculate|compute)?\s*(\d+(?:\.\d+)?)\s*([\+\-\*\/\%])\s*(\d+(?:\.\d+)?)/i', $cleanQuery, $mathMatches)) {
             $num1 = (float)$mathMatches[1];
             $op = $mathMatches[2];
             $num2 = (float)$mathMatches[3];
             $res = null;
-
             switch ($op) {
                 case '+': $res = $num1 + $num2; break;
                 case '-': $res = $num1 - $num2; break;
                 case '*': $res = $num1 * $num2; break;
-                case '/': $res = ($num2 != 0) ? $num1 / $num2 : 'Division by zero error'; break;
-                case '%': $res = ($num2 != 0) ? fmod($num1, $num2) : 'Modulus by zero error'; break;
+                case '/': $res = ($num2 != 0) ? $num1 / $num2 : 'undefined (division by zero)'; break;
+                case '%': $res = ($num2 != 0) ? fmod($num1, $num2) : 'undefined'; break;
             }
-
             if ($res !== null) {
-                return "🧮 **Mathematical Calculation**:\n\n`" . $num1 . " " . $op . " " . $num2 . " = " . $res . "`";
+                return "`" . $num1 . " " . $op . " " . $num2 . " = " . $res . "`";
             }
         }
 
-        // --- 5. CONVERSATIONAL & IDENTITY QUERIES ---
-        if (preg_match('/\b(who are you|your name|what are you|who built you|who created you)\b/i', $cleanQuery)) {
-            return "🤖 **I am CampusAI**, the official intelligent assistant for SOET (School of Engineering & Technology), MGM University!\n\nI can help you with:\n- **College Info**: Courses, Fee Structure, Admissions, Faculty, Seat Availability, Notices, Events, & Placements.\n- **General Knowledge**: Programming, Science, IT concepts, Mathematics, and General Questions.";
-        }
+        // 4. Code Request Detection
+        $isCodeRequested = (bool)preg_match('/\b(code|function|program|snippet|write|syntax|example|implement)\b/i', $cleanQuery);
 
-        if (preg_match('/\b(how are you|how do you do|are you fine)\b/i', $cleanQuery)) {
-            return "😊 **I'm doing great and fully operational!** Thank you for asking. How can I assist you with SOET college information or general queries today?";
-        }
-
-        // --- 6. DIRECT TOPIC DATABASE MATCH ---
+        // 5. Match Topic Database
         $keys = array_keys(self::$topicDatabase);
-        usort($keys, function($a, $b) {
-            return mb_strlen($b) <=> mb_strlen($a);
-        });
+        usort($keys, fn($a, $b) => mb_strlen($b) <=> mb_strlen($a));
 
         foreach ($keys as $key) {
-            $data = self::$topicDatabase[$key];
             if (preg_match('/\b' . preg_quote($key, '/') . '\b/i', $cleanQuery)) {
-                return "### " . $data['title'] . "\n\n" . $data['content'];
+                $item = self::$topicDatabase[$key];
+                $output = $item['desc'];
+
+                // Append smallest code example if available and code was requested
+                if ($isCodeRequested && !empty($item['code'])) {
+                    $output .= "\n\n```c\n" . $item['code'] . "\n```";
+                }
+                return $output;
             }
         }
 
-        // --- 7. DYNAMIC INTENT-AWARE QUESTION SYNTHESIZER ---
-        return self::synthesizeGeneralResponse($query);
+        // 6. Generic Exact Synthesizer for unlisted technical/general terms (Strictly 2 lines)
+        return self::synthesizeDirectResponse($query, $category, $isCodeRequested);
     }
 
-    private static function synthesizeGeneralResponse(string $query): string
+    /**
+     * Synthesize clean, direct 2-line response without introductory fluff
+     */
+    private static function synthesizeDirectResponse(string $query, string $category, bool $isCodeRequested): string
     {
         $clean = trim($query);
-        $cleanTopic = preg_replace('/^(what is|who is|explain|tell me about|how to|define|where is|information on|details of)\s+/i', '', $clean);
-        $topicTitle = ucwords(trim($cleanTopic));
+        $clean = preg_replace('/^(what is|what are|explain|tell me about|how to|define|where is|meaning of|definition of)\s+/i', '', $clean);
+        $clean = rtrim($clean, '?.,!');
+        $term = ucwords(trim($clean));
 
-        if (empty($topicTitle)) {
-            $topicTitle = 'General Question';
+        if (empty($term)) {
+            return "Please specify a concept or question to receive a direct answer.";
         }
 
-        // Check if query is about technical/academic terms vs general conversational terms
-        $isTechnical = preg_match('/\b(engineering|technology|science|algorithm|software|hardware|network|data|code|math|physics|chemistry|system|circuit|design|model|structure)\b/i', $clean);
-
-        if ($isTechnical) {
-            return "### 📚 Educational & Technical Overview: {$topicTitle}\n\n"
-                 . "**{$topicTitle}** is an important technical concept:\n\n"
-                 . "• **Core Concept**: {$topicTitle} represents a key area of technical study, innovation, and practical application.\n"
-                 . "• **Applications**: It plays a vital role across modern engineering, software development, research, and industry.\n\n"
-                 . "💡 *If you'd like specific information about SOET engineering programs, admissions, fees, or faculty, ask CampusAI!*";
-        } else {
-            return "💡 **Overview regarding {$topicTitle}**\n\n"
-                 . "Regarding **{$topicTitle}**, if you're asking in the context of **SOET MGM University** (such as campus facilities, student activities, courses, or events), 🤖 **CampusAI** is here to help!\n\n"
-                 . "Feel free to ask specific questions about SOET admissions, fee structures, faculty profiles, or campus life!";
+        if ($category === 'TECHNICAL' || preg_match('/\b(programming|code|algorithm|software|hardware|network|server|protocol)\b/i', $query)) {
+            if ($isCodeRequested) {
+                return "Here is a minimal example for **{$term}**:\n\n```python\n# Basic {$term} demonstration\ndef solution(data):\n    return data\n```";
+            }
+            return "**{$term}** is a technical computing concept utilized to solve domain-specific problems efficiently in software development and systems engineering.";
         }
+
+        return "**{$term}** refers to a standard subject of knowledge and inquiry. It is primarily understood and applied according to its functional definition and practical context.";
     }
 }
