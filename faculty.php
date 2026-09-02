@@ -10,6 +10,13 @@ $selected_dept = isset($_GET['dept_id']) ? (int)$_GET['dept_id'] : null;
 
 // Fetch faculty
 $faculty_list = $cms->getFaculty($selected_dept);
+
+// Group faculty by department
+$grouped_faculty = [];
+foreach ($faculty_list as $fac) {
+    $dept_name = $fac['department_name'];
+    $grouped_faculty[$dept_name][] = $fac;
+}
 ?>
 
 <!-- Breadcrumb Header -->
@@ -28,7 +35,7 @@ $faculty_list = $cms->getFaculty($selected_dept);
 
 <div class="container mb-5">
     <!-- Filter & Live Search Bar -->
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-5">
         <div class="col-md-6 col-lg-5">
             <div class="input-group shadow-sm">
                 <span class="input-group-text bg-white border-end-0 text-warning"><i class="fa-solid fa-magnifying-glass"></i></span>
@@ -48,66 +55,83 @@ $faculty_list = $cms->getFaculty($selected_dept);
         </div>
     </div>
 
-    <!-- Faculty Cards Grid -->
-    <div class="row g-4" id="facultyGrid">
-        <?php if (empty($faculty_list)): ?>
-            <div class="col-12 text-center text-muted py-5">
+    <!-- Department Partitioning Container -->
+    <div id="facultyPartitionContainer">
+        <?php if (empty($grouped_faculty)): ?>
+            <div class="text-center text-muted py-5">
                 <i class="fa-solid fa-users-slash fa-3x mb-3 text-secondary"></i>
                 <p>No faculty members found in this department category.</p>
             </div>
         <?php else: ?>
-            <?php foreach ($faculty_list as $fac): ?>
-                <?php $isDirector = (stripos($fac['designation'], 'Director') !== false || stripos($fac['department_name'], 'Director') !== false); ?>
-                <div class="<?php echo $isDirector ? 'col-12 col-lg-6 mb-3' : 'col-md-6 col-lg-3'; ?> faculty-card-col" 
-                     data-name="<?php echo strtolower(htmlspecialchars($fac['name'])); ?>"
-                     data-dept="<?php echo strtolower(htmlspecialchars($fac['department_name'])); ?>"
-                     data-spec="<?php echo strtolower(htmlspecialchars($fac['specialization'] ?: '')); ?>"
-                     data-qual="<?php echo strtolower(htmlspecialchars($fac['qualification'] ?: '')); ?>">
-                    <div class="card custom-card h-100 text-center p-3 border-0 shadow-sm hover-elevate <?php echo $isDirector ? 'border-warning' : ''; ?>" 
-                         style="<?php echo $isDirector ? 'border: 2px solid #bfa15f !important; box-shadow: 0 12px 32px rgba(191, 161, 95, 0.28) !important; background: linear-gradient(145deg, #ffffff, #fffcf5);' : ''; ?>">
-                        
-                        <?php if ($isDirector): ?>
-                            <div class="position-absolute top-0 start-50 translate-middle-x mt-2">
-                                <span class="badge bg-danger text-white px-3 py-1.5 rounded-pill shadow-sm" style="font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">
-                                    <i class="fa-solid fa-crown text-warning me-1"></i> INSTITUTE DIRECTORATE
-                                </span>
-                            </div>
-                        <?php endif; ?>
+            <?php foreach ($grouped_faculty as $dept_name => $fac_members): ?>
+                <div class="dept-partition-block mb-5" data-dept-name="<?php echo htmlspecialchars($dept_name); ?>">
+                    
+                    <!-- Department Header & Divider Line -->
+                    <div class="d-flex align-items-center mb-4">
+                        <h4 class="fw-bold text-primary-color mb-0 me-3">
+                            <i class="fa-solid fa-building-columns text-warning me-2"></i><?php echo htmlspecialchars($dept_name); ?>
+                        </h4>
+                        <div class="flex-grow-1 border-bottom border-2 border-warning opacity-50"></div>
+                        <span class="badge bg-light text-dark border ms-3 fw-semibold px-2.5 py-1.5"><?php echo count($fac_members); ?> Faculty</span>
+                    </div>
 
-                        <div class="text-center <?php echo $isDirector ? 'mt-4 mb-3' : 'my-3'; ?>">
-                            <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm" 
-                                 style="width: <?php echo $isDirector ? '130px' : '110px'; ?>; height: <?php echo $isDirector ? '130px' : '110px'; ?>; overflow: hidden; border: <?php echo $isDirector ? '4px solid #bfa15f' : '3px solid var(--secondary-color)'; ?>;">
-                                <?php if (!empty($fac['image_path'])): ?>
-                                    <img src="<?php echo uploadUrl('faculty', $fac['image_path']); ?>" alt="<?php echo htmlspecialchars($fac['name']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
-                                <?php else: ?>
-                                    <i class="fa-solid fa-user-tie text-secondary fa-4x"></i>
-                                <?php endif; ?>
+                    <!-- Cards Row for Department -->
+                    <div class="row g-4">
+                        <?php foreach ($fac_members as $fac): ?>
+                            <?php $isDirector = (stripos($fac['designation'], 'Director') !== false || stripos($fac['department_name'], 'Director') !== false); ?>
+                            <div class="<?php echo $isDirector ? 'col-12 col-lg-6 mb-3' : 'col-md-6 col-lg-3'; ?> faculty-card-col" 
+                                 data-name="<?php echo strtolower(htmlspecialchars($fac['name'])); ?>"
+                                 data-dept="<?php echo strtolower(htmlspecialchars($fac['department_name'])); ?>"
+                                 data-spec="<?php echo strtolower(htmlspecialchars($fac['specialization'] ?: '')); ?>"
+                                 data-qual="<?php echo strtolower(htmlspecialchars($fac['qualification'] ?: '')); ?>">
+                                <div class="card custom-card h-100 text-center p-3 border-0 shadow-sm hover-elevate <?php echo $isDirector ? 'border-warning' : ''; ?>" 
+                                     style="<?php echo $isDirector ? 'border: 2px solid #bfa15f !important; box-shadow: 0 12px 32px rgba(191, 161, 95, 0.28) !important; background: linear-gradient(145deg, #ffffff, #fffcf5);' : ''; ?>">
+                                    
+                                    <?php if ($isDirector): ?>
+                                        <div class="position-absolute top-0 start-50 translate-middle-x mt-2">
+                                            <span class="badge bg-danger text-white px-3 py-1.5 rounded-pill shadow-sm" style="font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">
+                                                <i class="fa-solid fa-crown text-warning me-1"></i> INSTITUTE DIRECTORATE
+                                            </span>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <div class="text-center <?php echo $isDirector ? 'mt-4 mb-3' : 'my-3'; ?>">
+                                        <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm" 
+                                             style="width: <?php echo $isDirector ? '130px' : '110px'; ?>; height: <?php echo $isDirector ? '130px' : '110px'; ?>; overflow: hidden; border: <?php echo $isDirector ? '4px solid #bfa15f' : '3px solid var(--secondary-color)'; ?>;">
+                                            <?php if (!empty($fac['image_path'])): ?>
+                                                <img src="<?php echo uploadUrl('faculty', $fac['image_path']); ?>" alt="<?php echo htmlspecialchars($fac['name']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                            <?php else: ?>
+                                                <i class="fa-solid fa-user-tie text-secondary fa-4x"></i>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-1">
+                                        <h5 class="<?php echo $isDirector ? 'fw-extrabold text-primary-color fs-4' : 'fw-bold text-primary-color'; ?> mb-1"><?php echo htmlspecialchars($fac['name']); ?></h5>
+                                        <span class="badge <?php echo $isDirector ? 'bg-danger text-white' : 'bg-warning text-dark'; ?> mb-2"><?php echo htmlspecialchars($fac['designation']); ?></span>
+                                        <span class="d-block text-secondary small fw-semibold mb-3"><?php echo htmlspecialchars($fac['department_name']); ?></span>
+                                        
+                                        <hr class="my-2 bg-light">
+                                        
+                                        <div class="text-start text-muted small my-3">
+                                            <p class="mb-1"><strong class="text-dark">Qualification:</strong> <?php echo htmlspecialchars($fac['qualification']); ?></p>
+                                            <p class="mb-1"><strong class="text-dark">Specialization:</strong> <?php echo htmlspecialchars($fac['specialization'] ?: 'General'); ?></p>
+                                            <p class="mb-1"><strong class="text-dark">Experience:</strong> <span class="badge bg-light text-dark border"><?php echo $fac['experience_years']; ?>+ Years</span></p>
+                                        </div>
+                                        
+                                        <hr class="my-2 bg-light">
+                                        
+                                        <div class="d-flex justify-content-center gap-3 mt-3 text-secondary small">
+                                            <a href="mailto:<?php echo htmlspecialchars($fac['email']); ?>" class="btn btn-xs btn-outline-primary py-1 px-2 rounded" title="<?php echo htmlspecialchars($fac['email']); ?>">
+                                                <i class="fa-regular fa-envelope me-1"></i> Email
+                                            </a>
+                                            <a href="tel:<?php echo htmlspecialchars($fac['phone']); ?>" class="btn btn-xs btn-outline-success py-1 px-2 rounded" title="<?php echo htmlspecialchars($fac['phone']); ?>">
+                                                <i class="fa-solid fa-phone me-1"></i> Call
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-body p-1">
-                            <h5 class="<?php echo $isDirector ? 'fw-extrabold text-primary-color fs-4' : 'fw-bold text-primary-color'; ?> mb-1"><?php echo htmlspecialchars($fac['name']); ?></h5>
-                            <span class="badge <?php echo $isDirector ? 'bg-danger text-white' : 'bg-warning text-dark'; ?> mb-2"><?php echo htmlspecialchars($fac['designation']); ?></span>
-                            <span class="d-block text-secondary small fw-semibold mb-3"><?php echo htmlspecialchars($fac['department_name']); ?></span>
-                            
-                            <hr class="my-2 bg-light">
-                            
-                            <div class="text-start text-muted small my-3">
-                                <p class="mb-1"><strong class="text-dark">Qualification:</strong> <?php echo htmlspecialchars($fac['qualification']); ?></p>
-                                <p class="mb-1"><strong class="text-dark">Specialization:</strong> <?php echo htmlspecialchars($fac['specialization'] ?: 'General'); ?></p>
-                                <p class="mb-1"><strong class="text-dark">Experience:</strong> <span class="badge bg-light text-dark border"><?php echo $fac['experience_years']; ?>+ Years</span></p>
-                            </div>
-                            
-                            <hr class="my-2 bg-light">
-                            
-                            <div class="d-flex justify-content-center gap-3 mt-3 text-secondary small">
-                                <a href="mailto:<?php echo htmlspecialchars($fac['email']); ?>" class="btn btn-xs btn-outline-primary py-1 px-2 rounded" title="<?php echo htmlspecialchars($fac['email']); ?>">
-                                    <i class="fa-regular fa-envelope me-1"></i> Email
-                                </a>
-                                <a href="tel:<?php echo htmlspecialchars($fac['phone']); ?>" class="btn btn-xs btn-outline-success py-1 px-2 rounded" title="<?php echo htmlspecialchars($fac['phone']); ?>">
-                                    <i class="fa-solid fa-phone me-1"></i> Call
-                                </a>
-                            </div>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -126,29 +150,42 @@ $faculty_list = $cms->getFaculty($selected_dept);
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('facultySearchInput');
     const cards = document.querySelectorAll('.faculty-card-col');
+    const deptBlocks = document.querySelectorAll('.dept-partition-block');
     const noMatch = document.getElementById('noFacultyMatch');
 
     if (searchInput) {
         searchInput.addEventListener('input', function() {
             const query = this.value.toLowerCase().trim();
-            let visibleCount = 0;
+            let totalVisible = 0;
 
-            cards.forEach(card => {
-                const name = card.getAttribute('data-name') || '';
-                const dept = card.getAttribute('data-dept') || '';
-                const spec = card.getAttribute('data-spec') || '';
-                const qual = card.getAttribute('data-qual') || '';
+            deptBlocks.forEach(block => {
+                let visibleInBlock = 0;
+                const blockCards = block.querySelectorAll('.faculty-card-col');
+                
+                blockCards.forEach(card => {
+                    const name = card.getAttribute('data-name') || '';
+                    const dept = card.getAttribute('data-dept') || '';
+                    const spec = card.getAttribute('data-spec') || '';
+                    const qual = card.getAttribute('data-qual') || '';
 
-                if (name.includes(query) || dept.includes(query) || spec.includes(query) || qual.includes(query)) {
-                    card.classList.remove('d-none');
-                    visibleCount++;
+                    if (name.includes(query) || dept.includes(query) || spec.includes(query) || qual.includes(query)) {
+                        card.classList.remove('d-none');
+                        visibleInBlock++;
+                        totalVisible++;
+                    } else {
+                        card.classList.add('d-none');
+                    }
+                });
+
+                if (visibleInBlock === 0) {
+                    block.classList.add('d-none');
                 } else {
-                    card.classList.add('d-none');
+                    block.classList.remove('d-none');
                 }
             });
 
             if (noMatch) {
-                if (visibleCount === 0 && cards.length > 0) {
+                if (totalVisible === 0 && cards.length > 0) {
                     noMatch.classList.remove('d-none');
                 } else {
                     noMatch.classList.add('d-none');
