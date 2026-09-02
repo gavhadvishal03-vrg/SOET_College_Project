@@ -7,12 +7,17 @@ define('APP_SHORT', 'SOET College');
 if (isset($_SERVER['HTTP_HOST'])) {
     $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
     $appUrl = $scheme . '://' . $_SERVER['HTTP_HOST'];
-    if (strpos($_SERVER['SCRIPT_NAME'] ?? '', '/project/project') !== false) {
-        $appUrl .= '/project/project';
-    } elseif (strpos($_SERVER['SCRIPT_NAME'] ?? '', '/project') !== false) {
-        $appUrl .= '/project';
+    $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+    
+    // Dynamically strip script filename and /admin or /api subfolders to get project root URL
+    $scriptDir = dirname($scriptName);
+    if ($scriptDir !== '/' && $scriptDir !== '.') {
+        $baseDir = preg_replace('#/(admin|api)(/.*)?$#i', '', $scriptDir);
+        if ($baseDir !== '/' && $baseDir !== '') {
+            $appUrl .= $baseDir;
+        }
     }
-    define('APP_URL', $appUrl);
+    define('APP_URL', rtrim($appUrl, '/'));
 } else {
     define('APP_URL', 'http://localhost:8000');
 }

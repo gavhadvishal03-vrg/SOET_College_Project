@@ -10,13 +10,42 @@ class Database
     private function __construct()
     {
         require_once __DIR__ . '/../config/database.php';
-        $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
+        
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
+            PDO::ATTR_TIMEOUT            => 3,
         ];
-        $this->pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+
+        $primaryHost = defined('DB_HOST') ? DB_HOST : '127.0.0.1;port=3307';
+        $dbName = defined('DB_NAME') ? DB_NAME : 'soet_college';
+        $dbUser = defined('DB_USER') ? DB_USER : 'root';
+        $dbPass = defined('DB_PASS') ? DB_PASS : '';
+        $charset = defined('DB_CHARSET') ? DB_CHARSET : 'utf8mb4';
+
+        // Auto-Probing DSN Candidate List for 100% Port & Environment Resilience
+        $dsnCandidates = [
+            'mysql:host=' . $primaryHost . ';dbname=' . $dbName . ';charset=' . $charset,
+            'mysql:host=127.0.0.1;port=3307;dbname=' . $dbName . ';charset=' . $charset,
+            'mysql:host=127.0.0.1;port=3306;dbname=' . $dbName . ';charset=' . $charset,
+            'mysql:host=localhost;dbname=' . $dbName . ';charset=' . $charset,
+            'mysql:host=127.0.0.1;dbname=' . $dbName . ';charset=' . $charset
+        ];
+
+        $lastException = null;
+        foreach (array_unique($dsnCandidates) as $dsn) {
+            try {
+                $this->pdo = new PDO($dsn, $dbUser, $dbPass, $options);
+                return; // Successfully connected!
+            } catch (PDOException $e) {
+                $lastException = $e;
+            }
+        }
+
+        if ($lastException) {
+            throw $lastException;
+        }
     }
 
     public static function getInstance(): Database
