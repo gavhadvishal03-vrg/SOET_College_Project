@@ -199,33 +199,6 @@ $selected_course_id = isset($_GET['course_id']) ? (int)$_GET['course_id'] : 0;
                                 </table>
                             </div>
 
-                            <!-- Interactive Scholarship & Concession Calculator -->
-                            <div class="p-3 bg-light rounded-3 border mb-4" style="border-left: 4px solid var(--secondary-color) !important;">
-                                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-                                    <h6 class="fw-bold text-primary-color mb-0">
-                                        <i class="fa-solid fa-calculator text-warning me-2"></i>Merit Scholarship &amp; Fee Waiver Calculator
-                                    </h6>
-                                    <span class="badge bg-warning text-dark font-semibold">SOET Merit Concession 2026</span>
-                                </div>
-                                <div class="row align-items-center g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label small text-muted font-semibold mb-1">Enter 10+2 / PCM Aggregate Percentage (%):</label>
-                                        <div class="input-group input-group-sm">
-                                            <input type="number" class="form-control pcm-calc-input" data-total-fee="<?php echo $total_tuition; ?>" data-y1-fee="<?php echo $y1_fee; ?>" min="45" max="100" placeholder="e.g. 88" value="85">
-                                            <span class="input-group-text bg-dark text-warning">%</span>
-                                        </div>
-                                        <input type="range" class="form-range mt-2 pcm-range-slider" min="45" max="100" value="85">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="p-2.5 bg-white rounded border text-center shadow-xs">
-                                            <div class="small text-muted font-semibold">Eligible Tier: <strong class="text-primary-color scholarship-tier-label">Gold Tier (20% Fee Waiver)</strong></div>
-                                            <div class="fs-6 fw-bold text-success mt-1">Net Annual Tuition Fee: <span class="net-annual-fee">₹<?php echo number_format($y1_fee * 0.8, 2); ?></span></div>
-                                            <small class="text-muted d-block" style="font-size: 11px;">Total 4-Year Concession Savings: <strong class="text-dark total-savings-label">₹<?php echo number_format($total_tuition * 0.2, 2); ?></strong></small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                             <!-- Year-Wise Syllabus PDF Documents -->
                             <h5 class="fw-bold text-primary-color mb-3 border-bottom pb-2">
                                 <i class="fa-solid fa-file-pdf text-danger me-2"></i>Year-Wise Official Syllabus Curriculum
@@ -325,49 +298,6 @@ document.addEventListener('DOMContentLoaded', function() {
             filterSingleCourse(initialCourseId, courseName);
         }
     }
-
-    // Live Merit Scholarship & Fee Concession Calculator Event Handlers
-    document.querySelectorAll('.pcm-calc-input').forEach(function(numInput) {
-        var card = numInput.closest('.course-detail-card');
-        var sliderInput = card.querySelector('.pcm-range-slider');
-        var tierLabel = card.querySelector('.scholarship-tier-label');
-        var netFeeLabel = card.querySelector('.net-annual-fee');
-        var totalSavingsLabel = card.querySelector('.total-savings-label');
-
-        function updateCalc(val) {
-            val = parseFloat(val) || 0;
-            numInput.value = val;
-            if (sliderInput) sliderInput.value = val;
-
-            var y1Fee = parseFloat(numInput.getAttribute('data-y1-fee')) || 150000;
-            var totalFee = parseFloat(numInput.getAttribute('data-total-fee')) || (y1Fee * 4);
-            var discount = 0;
-            var tierText = "Standard Fee (No Concession)";
-
-            if (val >= 90) {
-                discount = 0.30;
-                tierText = "Platinum Tier (30% Fee Waiver)";
-            } else if (val >= 80) {
-                discount = 0.20;
-                tierText = "Gold Tier (20% Fee Waiver)";
-            } else if (val >= 75) {
-                discount = 0.10;
-                tierText = "Silver Tier (10% Fee Waiver)";
-            }
-
-            var netAnnual = y1Fee * (1 - discount);
-            var totalSavings = totalFee * discount;
-
-            if (tierLabel) tierLabel.innerText = tierText;
-            if (netFeeLabel) netFeeLabel.innerText = '₹' + netAnnual.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            if (totalSavingsLabel) totalSavingsLabel.innerText = '₹' + totalSavings.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        }
-
-        numInput.addEventListener('input', function() { updateCalc(this.value); });
-        if (sliderInput) {
-            sliderInput.addEventListener('input', function() { updateCalc(this.value); });
-        }
-    });
 });
 </script>
 
