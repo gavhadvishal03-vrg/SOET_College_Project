@@ -49,7 +49,12 @@ class ContentManager
             $sql .= " AND f.department_id = ?";
             $params[] = $departmentId;
         }
-        $sql .= " ORDER BY f.designation, f.name";
+        $sql .= " ORDER BY CASE 
+                    WHEN f.designation LIKE '%Head%' OR f.designation LIKE '%HOD%' THEN 1 
+                    WHEN f.designation LIKE '%Professor%' AND f.designation NOT LIKE '%Associate%' AND f.designation NOT LIKE '%Assistant%' THEN 2 
+                    WHEN f.designation LIKE '%Associate%' THEN 3 
+                    WHEN f.designation LIKE '%Assistant%' THEN 4 
+                    ELSE 5 END ASC, f.id ASC";
         return $this->db->fetchAll($sql, $params);
     }
 
