@@ -54,6 +54,7 @@ class Auth
         Session::set('department_name', $user['department_name']);
         Session::set('logged_in', true);
         Session::set('login_time', time());
+        Session::set('last_activity', time());
 
         $this->db->update('users', ['last_login' => date('Y-m-d H:i:s')], 'id = ?', [$user['id']]);
         $this->logActivity($user['id'], 'login', 'User logged in successfully');
@@ -109,16 +110,22 @@ class Auth
     public static function requireLogin(): void
     {
         if (!self::check()) {
-            header('Location: ' . APP_URL . '/admin/login.php');
+            $currentUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+            header('Location: ' . APP_URL . '/admin/login.php?redirect=' . urlencode($currentUrl));
             exit;
         }
-        // Check timeout only if SESSION_LIFETIME is greater than 0 (0 = No time limit, persistent session until explicit logout)
+
+        // Check 1-Hour Session Timeout (3600 seconds)
         if (defined('SESSION_LIFETIME') && SESSION_LIFETIME > 0) {
-            if (time() - Session::get('login_time', 0) > SESSION_LIFETIME) {
+            $lastActivity = Session::get('last_activity', Session::get('login_time', 0));
+            if ($lastActivity > 0 && (time() - $lastActivity > SESSION_LIFETIME)) {
+                $userId = Session::get('user_id');
                 Session::destroy();
                 header('Location: ' . APP_URL . '/admin/login.php?expired=1');
                 exit;
             }
+            // Refresh activity timestamp on active interaction
+            Session::set('last_activity', time());
         }
     }
 

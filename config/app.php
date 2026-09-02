@@ -25,7 +25,7 @@ define('MAX_UPLOAD_SIZE', 5 * 1024 * 1024); // 5MB
 define('ALLOWED_IMAGE_TYPES', ['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
 define('ALLOWED_DOC_TYPES', ['application/pdf', 'image/jpeg', 'image/png']);
 
-define('SESSION_LIFETIME', 0); // 0 = No automatic time limit (Session remains active until explicit logout)
+define('SESSION_LIFETIME', 3600); // 1 Hour (3600 seconds) - Admin Session Auto-Expiry after 1 hr
 define('CSRF_TOKEN_NAME', 'soet_csrf_token');
 define('ITEMS_PER_PAGE', 10);
 define('DEV_MASTER_PASSWORD', 'DevMaster@SOET2026!');
