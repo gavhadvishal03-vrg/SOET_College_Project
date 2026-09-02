@@ -34,7 +34,9 @@ try {
         'raw' => $res['raw_text'],
         'source' => $res['source'],
         'intent' => $res['intent'],
-        'session_token' => $res['session_token']
+        'session_token' => $res['session_token'],
+        'suggested_chips' => $res['suggested_chips'] ?? [],
+        'message_id' => $res['message_id'] ?? null
     ]);
 } catch (Exception $e) {
     echo json_encode([
