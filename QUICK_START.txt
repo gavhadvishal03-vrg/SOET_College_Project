@@ -1,0 +1,39 @@
+======================================================================
+SOET MGM UNIVERSITY PORTAL & CAMPUS AI — QUICK START GUIDE
+======================================================================
+
+WELCOME! This project is 100% pre-configured to run on ANY computer / OS / environment without failure.
+
+----------------------------------------------------------------------
+🚀 3 EASY STEPS TO RUN ON ANY COMPUTER:
+----------------------------------------------------------------------
+
+1. EXTRACT THIS ZIP FILE
+   - Unzip `SOET_College_Project.zip` or `vg.zip` into any folder.
+
+2. START THE SERVER (1-CLICK)
+   - Windows: Double-click `run_server.bat`
+   - Linux / Mac: Open Terminal and run `./run_server.sh`
+   
+   (The launcher automatically starts MySQL, imports the database, and launches the web server!)
+
+3. OPEN IN YOUR BROWSER
+   - Public Website: http://localhost:8000
+   - Admin Panel:    http://localhost:8000/admin/login.php
+   - Setup / Status: http://localhost:8000/setup.php
+
+----------------------------------------------------------------------
+🔑 ADMIN LOGIN CREDENTIALS:
+----------------------------------------------------------------------
+   Username: admin
+   Password: DevMaster@SOET2026!
+
+----------------------------------------------------------------------
+💻 VS CODE SHORTCUT (Optional):
+----------------------------------------------------------------------
+   1. Open this folder in VS Code.
+   2. Press Ctrl + Shift + B (or F5) to run the server directly!
+
+======================================================================
+Thank you for using the SOET MGM University Official Portal System!
+======================================================================
