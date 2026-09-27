@@ -103,15 +103,15 @@ $settings = $cms->getSiteSettings();
 $admissions_bg = !empty($settings['admissions_hero_image']) ? uploadUrl('settings', $settings['admissions_hero_image']) : null;
 ?>
 
-<!-- Breadcrumb Header -->
-<div class="py-5 text-white mb-5 position-relative overflow-hidden" style="<?php echo $admissions_bg ? "background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), url('{$admissions_bg}') center/cover no-repeat;" : "background-color: var(--primary-color);"; ?>">
+<!-- Page Hero Banner -->
+<div class="page-hero mb-5">
     <div class="container position-relative z-1">
-        <h1 class="fw-extrabold mb-1 text-white display-5">Admissions Portal & Seat Tracker</h1>
-        <p class="lead opacity-75 mb-3">Apply online for B.Tech programs, check real-time seat metrics, and track your application</p>
+        <h1 class="font-display fw-extrabold mb-2 text-white">Admissions Portal &amp; Live Seat Tracker</h1>
+        <p class="lead opacity-80 mb-3" style="font-size: 1.1rem; max-width: 650px;">Apply online for B.Tech engineering programs, monitor real-time seat availability across departments, and track application status.</p>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="index.php" class="text-white opacity-75 text-decoration-none">Home</a></li>
-                <li class="breadcrumb-item active text-warning" aria-current="page">Admissions</li>
+                <li class="breadcrumb-item"><a href="index.php" class="text-white opacity-75 text-decoration-none"><i class="fa-solid fa-house me-1"></i> Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Admissions Portal</li>
             </ol>
         </nav>
     </div>
@@ -119,15 +119,17 @@ $admissions_bg = !empty($settings['admissions_hero_image']) ? uploadUrl('setting
 
 <!-- Real-Time Seat Availability Section -->
 <div class="container mb-5">
-    <div class="card border-0 shadow-sm p-4 bg-white mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div class="card border-0 shadow-sm p-4 bg-white mb-5" style="border-radius: 18px; border: 1px solid #e2e8f0 !important;">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
             <div>
-                <h4 class="fw-bold text-primary-color mb-0">
-                    <i class="fa-solid fa-chair text-warning me-2"></i>Real-Time Seat Availability Tracker
+                <h4 class="fw-bold text-primary-color mb-1 font-display">
+                    <i class="fa-solid fa-chair text-warning me-2"></i>Real-Time Seat Quota &amp; Intake Tracker
                 </h4>
-                <small class="text-muted">Live seat quota & admission status across engineering branches</small>
+                <small class="text-muted">Live seat quota &amp; admission availability across engineering branches for 2026-2027</small>
             </div>
-            <span class="badge bg-success py-2 px-3"><i class="fa-solid fa-bolt me-1"></i> Live Database Synced</span>
+            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 py-2 px-3 rounded-pill font-semibold">
+                <i class="fa-solid fa-bolt me-1 text-success"></i> Live Database Synced
+            </span>
         </div>
 
         <div class="row g-3">
@@ -136,14 +138,14 @@ $admissions_bg = !empty($settings['admissions_hero_image']) ? uploadUrl('setting
                 $statusBadgeClass = ($metric['admission_status'] === 'OPEN' && $metric['vacant_seats'] > 0) ? 'bg-success' : 'bg-danger';
             ?>
                 <div class="col-md-6 col-lg-3">
-                    <div class="card h-100 border p-3 bg-light rounded-3 shadow-xs">
+                    <div class="card h-100 border p-3.5 bg-light rounded-3 shadow-xs hover-lift">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge bg-primary"><?php echo htmlspecialchars($metric['course_code']); ?></span>
-                            <span class="badge <?php echo $statusBadgeClass; ?>"><?php echo $metric['admission_status']; ?></span>
+                            <span class="badge bg-primary rounded-pill"><?php echo htmlspecialchars($metric['course_code']); ?></span>
+                            <span class="badge <?php echo $statusBadgeClass; ?> rounded-pill"><?php echo $metric['admission_status']; ?></span>
                         </div>
-                        <h6 class="fw-bold text-primary-color mb-2"><?php echo htmlspecialchars($metric['course_name']); ?></h6>
+                        <h6 class="fw-bold text-primary-color mb-2 font-display" style="font-size: 14px;"><?php echo htmlspecialchars($metric['course_name']); ?></h6>
                         
-                        <div class="d-flex justify-content-between small text-muted mb-1">
+                        <div class="d-flex justify-content-between small text-muted mb-1.5" style="font-size: 12px;">
                             <span>Filled: <strong><?php echo $metric['filled_seats']; ?> / <?php echo $metric['total_intake']; ?></strong></span>
                             <span class="text-success font-semibold"><?php echo $metric['vacant_seats']; ?> Vacant</span>
                         </div>
@@ -160,9 +162,9 @@ $admissions_bg = !empty($settings['admissions_hero_image']) ? uploadUrl('setting
         <!-- Sidebar instructions & Status Tracking -->
         <div class="col-lg-4">
             <!-- Track Status Form -->
-            <div class="card border-0 shadow-sm p-4 bg-light mb-4">
-                <h5 class="fw-bold text-primary-color mb-3"><i class="fa-solid fa-magnifying-glass text-warning me-2"></i>Track Status</h5>
-                <p class="small text-muted mb-3">Enter your unique Application Number (e.g. SOET2026xxxxxx) to view the verification timeline.</p>
+            <div class="card border-0 shadow-sm p-4 bg-white mb-4" style="border-radius: 16px; border: 1px solid #e2e8f0 !important;">
+                <h5 class="fw-bold text-primary-color mb-2 font-display"><i class="fa-solid fa-magnifying-glass text-warning me-2"></i>Track Status</h5>
+                <p class="small text-muted mb-3">Enter your unique Application Number (e.g. SOET2026xxxxxx) to view the live verification timeline.</p>
                 <form method="GET" action="admissions.php">
                     <div class="input-group mb-2">
                         <input type="text" name="track_app_no" class="form-control py-2 font-semibold" placeholder="SOET2026XXXXXX" required value="<?php echo isset($_GET['track_app_no']) ? htmlspecialchars($_GET['track_app_no']) : ''; ?>">
@@ -177,9 +179,9 @@ $admissions_bg = !empty($settings['admissions_hero_image']) ? uploadUrl('setting
                     $step3_done = in_array($st, ['approved', 'confirmed']);
                     $step4_done = ($st === 'confirmed');
                 ?>
-                    <div class="card border-0 bg-white shadow-xs p-3 mt-3">
-                        <small class="text-muted d-block mb-1">Application Record</small>
-                        <h6 class="fw-bold text-primary-color mb-0"><?php echo htmlspecialchars($searched_application['student_name']); ?></h6>
+                    <div class="card border bg-light shadow-xs p-3.5 mt-3 rounded-3">
+                        <small class="text-muted d-block mb-1 font-semibold" style="font-size: 11px;">APPLICATION RECORD</small>
+                        <h6 class="fw-bold text-primary-color mb-0 font-display"><?php echo htmlspecialchars($searched_application['student_name']); ?></h6>
                         <small class="text-secondary d-block mb-3"><?php echo htmlspecialchars($searched_application['course_name']); ?> (<?php echo htmlspecialchars($searched_application['course_code']); ?>)</small>
                         
                         <!-- Visual Timeline Tracker -->
@@ -194,7 +196,7 @@ $admissions_bg = !empty($settings['admissions_hero_image']) ? uploadUrl('setting
                             </div>
                             <div class="d-flex align-items-center mb-2">
                                 <i class="fa-solid <?php echo $step3_done ? 'fa-circle-check text-success' : 'fa-circle-dot text-muted'; ?> me-2"></i>
-                                <span class="small <?php echo $step3_done ? 'font-semibold text-dark' : 'text-muted'; ?>">3. Merit Review & Eligibility</span>
+                                <span class="small <?php echo $step3_done ? 'font-semibold text-dark' : 'text-muted'; ?>">3. Merit Review &amp; Eligibility</span>
                             </div>
                             <div class="d-flex align-items-center mb-2">
                                 <i class="fa-solid <?php echo $step4_done ? 'fa-circle-check text-success' : ($st === 'rejected' || $st === 'cancelled' ? 'fa-circle-xmark text-danger' : 'fa-circle-dot text-muted'); ?> me-2"></i>
@@ -208,32 +210,33 @@ $admissions_bg = !empty($settings['admissions_hero_image']) ? uploadUrl('setting
                         </div>
 
                         <?php if ($searched_application['remarks']): ?>
-                            <div class="bg-light p-2 rounded small mt-2">
+                            <div class="bg-white p-2.5 rounded small mt-2 border">
                                 <strong>Admin Remarks:</strong> <?php echo htmlspecialchars($searched_application['remarks']); ?>
                             </div>
                         <?php endif; ?>
 
                         <div class="text-center mt-3 pt-2">
-                            <a href="<?php echo uploadUrl('admissions', $searched_application['document_path']); ?>" target="_blank" class="btn btn-xs btn-outline-secondary w-100" style="font-size: 11px;">
-                                <i class="fa-solid fa-file-arrow-down me-1"></i> Download Uploaded Marksheet
+                            <a href="<?php echo uploadUrl('admissions', $searched_application['document_path']); ?>" target="_blank" class="btn btn-xs btn-outline-secondary w-100 rounded-pill" style="font-size: 11px;">
+                                <i class="fa-solid fa-file-arrow-down me-1"></i> View Uploaded Marksheet
                             </a>
                         </div>
                     </div>
                 <?php endif; ?>
             </div>
 
-            <div class="card border-0 shadow-sm p-4 bg-dark text-white">
-                <h5 class="fw-bold text-warning mb-3"><i class="fa-solid fa-circle-info me-2"></i>Eligibility & Rules</h5>
-                <p class="small text-white-50"><?php echo nl2br(htmlspecialchars($instructions)); ?></p>
-                <hr class="bg-secondary">
-                <p class="small text-white-50 mb-0"><strong>Admissions Cell Contacts:</strong><br>Phone: +91 9371714253<br>Email: admissionsoet@mgmu.ac.in</p>
+            <div class="card border-0 shadow-sm p-4 text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); border-radius: 16px; border-top: 3px solid var(--accent) !important;">
+                <h5 class="fw-bold text-warning mb-2 font-display"><i class="fa-solid fa-circle-info me-2"></i>Eligibility &amp; Guidelines</h5>
+                <p class="small text-white-50" style="line-height: 1.6;"><?php echo nl2br(htmlspecialchars($instructions)); ?></p>
+                <hr class="border-secondary border-opacity-50 my-3">
+                <p class="small text-white-50 mb-0 font-semibold"><strong>Admissions Help Desk:</strong><br><i class="fa-solid fa-phone text-warning me-1.5"></i> +91 9371714253<br><i class="fa-solid fa-envelope text-warning me-1.5"></i> admissionsoet@mgmu.ac.in</p>
             </div>
         </div>
 
         <!-- Admission Form -->
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm p-4 bg-white">
-                <h4 class="fw-bold text-primary-color mb-4"><i class="fa-solid fa-user-plus text-warning me-2"></i>Online Admission Application</h4>
+            <div class="card border-0 shadow-sm p-4 bg-white" style="border-radius: 18px; border: 1px solid #e2e8f0 !important;">
+                <h4 class="fw-bold text-primary-color mb-3 font-display"><i class="fa-solid fa-user-plus text-warning me-2"></i>Online Admission Application</h4>
+                <p class="text-muted small mb-4">Complete the application form below. Ensure all 10th &amp; 12th percentage details and marksheet attachments are authentic.</p>
                 
                 <form method="POST" action="admissions.php" enctype="multipart/form-data" id="admissionForm" class="needs-validation" novalidate>
                     <?php echo Security::csrfField(); ?>
@@ -305,14 +308,14 @@ $admissions_bg = !empty($settings['admissions_hero_image']) ? uploadUrl('setting
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label font-semibold">Upload 12th Marksheet / Supporting Doc * (PDF/JPG/PNG up to 5MB)</label>
+                            <label class="form-label font-semibold">Upload 12th Marksheet / Supporting Document * (PDF/JPG/PNG up to 5MB)</label>
                             <input type="file" name="marksheet" class="form-control" required accept=".pdf,image/jpeg,image/png">
                             <div class="invalid-feedback">Please attach your marksheet document.</div>
                         </div>
 
                         <div class="col-12 mt-4 text-end">
-                            <button type="submit" name="submit_admission" class="btn btn-primary px-5 py-2">
-                                <i class="fa-solid fa-cloud-arrow-up me-1"></i> Submit Admission Application
+                            <button type="submit" name="submit_admission" class="btn btn-primary px-5 py-2.5 rounded-pill shadow-primary font-semibold">
+                                <i class="fa-solid fa-cloud-arrow-up me-1.5"></i> Submit Admission Application
                             </button>
                         </div>
                     </div>

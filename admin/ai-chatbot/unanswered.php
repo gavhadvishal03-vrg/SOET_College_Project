@@ -114,18 +114,23 @@ $categories = [
 ];
 ?>
 
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom flex-wrap gap-2">
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-0"><i class="fa-solid fa-question text-warning me-2"></i>Unanswered Questions Queue</h1>
-        <small class="text-muted">Review visitor questions requiring verified administrative responses</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Learning Feedback Loop</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">Unanswered Questions Queue</h2>
+        <p class="text-muted small mb-0">Review visitor queries that lack verified institutional answers and publish canonical responses</p>
     </div>
     <div class="d-flex gap-2 align-items-center flex-wrap">
-        <a href="unanswered.php?action=export_csv" class="btn btn-sm btn-success">
-            <i class="fa-solid fa-file-excel me-1"></i> Export CSV
+        <a href="unanswered.php?action=export_csv" class="btn btn-outline-success btn-sm rounded-pill px-3 shadow-xs font-semibold">
+            <i class="fa-solid fa-file-excel me-1.5 text-success"></i> Export CSV
         </a>
-        <span class="badge bg-danger fs-6 px-3 py-2"><i class="fa-solid fa-clock me-1"></i> <?php echo $pendingCount; ?> Pending Review</span>
-        <button type="button" class="btn btn-primary btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalAddUnanswered">
-            <i class="fa-solid fa-plus me-1"></i> Add Question to Queue
+        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-2 fs-6">
+            <i class="fa-solid fa-clock me-1.5"></i> <?php echo $pendingCount; ?> Pending Review
+        </span>
+        <button type="button" class="btn btn-primary btn-sm rounded-pill px-3.5 shadow-sm hover-lift font-semibold" data-bs-toggle="modal" data-bs-target="#modalAddUnanswered">
+            <i class="fa-solid fa-plus me-1.5"></i> Add Question
         </button>
     </div>
 </div>
@@ -133,29 +138,36 @@ $categories = [
 <!-- Modal: Add Manual Question -->
 <div class="modal fade" id="modalAddUnanswered" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
             <form method="POST" action="unanswered.php">
-                <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title fw-bold text-white"><i class="fa-solid fa-circle-question text-warning me-2"></i>Add Question to Unanswered Queue</h5>
+                <div class="modal-header bg-slate-900 text-white py-3 px-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="w-8 h-8 rounded-circle bg-warning bg-opacity-20 d-flex align-items-center justify-content-center text-warning">
+                            <i class="fa-solid fa-circle-question"></i>
+                        </div>
+                        <h5 class="modal-title font-display fw-bold text-white mb-0">Add Question to Queue</h5>
+                    </div>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label class="form-label font-semibold">User Question *</label>
-                        <textarea name="question" class="form-control" rows="3" placeholder="e.g. Is hostellers laundry service free on campus?" required></textarea>
+                        <label class="form-label font-semibold small text-secondary">User Question <span class="text-danger">*</span></label>
+                        <textarea name="question" class="form-control rounded-3" rows="3" placeholder="e.g. Is hostellers laundry service free on campus?" required></textarea>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label font-semibold">Category</label>
-                        <select name="category" class="form-select">
+                    <div class="mb-2">
+                        <label class="form-label font-semibold small text-secondary">Category</label>
+                        <select name="category" class="form-select rounded-3">
                             <?php foreach ($categories as $cat): ?>
                                 <option value="<?php echo $cat['slug']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" name="add_unanswered_question" class="btn btn-primary fw-bold"><i class="fa-solid fa-floppy-disk me-1"></i> Add to Queue</button>
+                <div class="modal-footer bg-light px-4 py-3 border-top">
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" name="add_unanswered_question" class="btn btn-primary btn-sm rounded-pill font-semibold px-4 shadow-sm hover-lift">
+                        <i class="fa-solid fa-floppy-disk me-1.5"></i> Add to Queue
+                    </button>
                 </div>
             </form>
         </div>
@@ -163,35 +175,48 @@ $categories = [
 </div>
 
 <!-- Navigation Pills -->
-<ul class="nav nav-pills mb-4 bg-light p-2 rounded border">
-    <li class="nav-item"><a class="nav-link font-semibold" href="index.php"><i class="fa-solid fa-chart-line me-1"></i> Dashboard</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="knowledge-base.php"><i class="fa-solid fa-book me-1"></i> Knowledge Base</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="faq.php"><i class="fa-solid fa-circle-question me-1"></i> FAQs</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="documents.php"><i class="fa-solid fa-file-arrow-up me-1"></i> Doc Upload &amp; Text Extractor</a></li>
-    <li class="nav-item"><a class="nav-link active font-semibold" href="unanswered.php"><i class="fa-solid fa-question me-1"></i> Unanswered Queue</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="conversations.php"><i class="fa-solid fa-comments me-1"></i> Conversations</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="feedback.php"><i class="fa-solid fa-thumbs-up me-1"></i> User Feedback</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="settings.php"><i class="fa-solid fa-gears me-1"></i> AI Settings</a></li>
-</ul>
+<div class="card border-0 shadow-sm rounded-4 bg-white p-2 mb-4">
+    <ul class="nav nav-pills gap-1 flex-wrap" id="aiSubNav">
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="index.php"><i class="fa-solid fa-chart-line me-1.5 text-primary"></i> Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="knowledge-base.php"><i class="fa-solid fa-book me-1.5 text-primary"></i> Knowledge Base</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="faq.php"><i class="fa-solid fa-circle-question me-1.5 text-info"></i> FAQs</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="documents.php"><i class="fa-solid fa-file-arrow-up me-1.5 text-warning"></i> Documents Extractor</a></li>
+        <li class="nav-item"><a class="nav-link active rounded-pill font-semibold px-3 py-2 text-sm" href="unanswered.php"><i class="fa-solid fa-question me-1.5"></i> Unanswered</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="conversations.php"><i class="fa-solid fa-comments me-1.5 text-success"></i> Conversations</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="feedback.php"><i class="fa-solid fa-thumbs-up me-1.5 text-warning"></i> Feedback</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="settings.php"><i class="fa-solid fa-gears me-1.5 text-muted"></i> AI Config</a></li>
+    </ul>
+</div>
 
-<!-- Filter Tabs -->
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-    <div class="btn-group btn-group-sm">
-        <a href="unanswered.php?status=pending" class="btn <?php echo $statusFilter === 'pending' ? 'btn-dark' : 'btn-outline-dark'; ?>"><i class="fa-solid fa-clock me-1"></i> Pending (<?php echo $pendingCount; ?>)</a>
-        <a href="unanswered.php?status=answered" class="btn <?php echo $statusFilter === 'answered' ? 'btn-dark' : 'btn-outline-dark'; ?>"><i class="fa-solid fa-circle-check me-1"></i> Answered &amp; Published</a>
-        <a href="unanswered.php?status=dismissed" class="btn <?php echo $statusFilter === 'dismissed' ? 'btn-dark' : 'btn-outline-dark'; ?>"><i class="fa-solid fa-eye-slash me-1"></i> Dismissed</a>
+<!-- Filter Tabs & Search -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div class="btn-group p-1 bg-white rounded-pill shadow-xs border">
+        <a href="unanswered.php?status=pending" class="btn btn-sm rounded-pill font-semibold px-3 <?php echo $statusFilter === 'pending' ? 'btn-primary' : 'btn-ghost text-secondary'; ?>">
+            <i class="fa-solid fa-clock me-1.5"></i> Pending (<?php echo $pendingCount; ?>)
+        </a>
+        <a href="unanswered.php?status=answered" class="btn btn-sm rounded-pill font-semibold px-3 <?php echo $statusFilter === 'answered' ? 'btn-primary' : 'btn-ghost text-secondary'; ?>">
+            <i class="fa-solid fa-circle-check me-1.5"></i> Answered &amp; Published
+        </a>
+        <a href="unanswered.php?status=dismissed" class="btn btn-sm rounded-pill font-semibold px-3 <?php echo $statusFilter === 'dismissed' ? 'btn-primary' : 'btn-ghost text-secondary'; ?>">
+            <i class="fa-solid fa-eye-slash me-1.5"></i> Dismissed
+        </a>
     </div>
-    <input type="text" id="qSearchInput" class="form-control form-control-sm" placeholder="Filter questions..." style="width: 200px;">
+    <div class="input-group input-group-sm" style="max-width: 240px;">
+        <span class="input-group-text bg-white border-end-0 rounded-start-pill"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+        <input type="text" id="qSearchInput" class="form-control bg-white border-start-0 rounded-end-pill" placeholder="Filter questions...">
+    </div>
 </div>
 
 <?php if (empty($questionsList)): ?>
-    <div class="card border-0 shadow-sm p-5 text-center">
-        <i class="fa-solid fa-circle-check text-success display-1 mb-3"></i>
-        <h4 class="fw-bold">All Questions Resolved!</h4>
-        <p class="text-muted">There are currently no <?php echo $statusFilter; ?> visitor questions requiring review.</p>
-        <div class="mt-2">
-            <button type="button" class="btn btn-outline-primary btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalAddUnanswered">
-                <i class="fa-solid fa-plus me-1"></i> Add Test Question
+    <div class="card border-0 shadow-sm rounded-4 p-5 text-center">
+        <div class="w-16 h-16 rounded-circle bg-success-subtle text-success d-inline-flex align-items-center justify-content-center mx-auto mb-3" style="width: 64px; height: 64px;">
+            <i class="fa-solid fa-circle-check fa-2x"></i>
+        </div>
+        <h4 class="font-display fw-bold text-dark mb-1">All Questions Resolved!</h4>
+        <p class="text-muted small mb-3">There are currently no <?php echo $statusFilter; ?> visitor questions requiring administrative review.</p>
+        <div>
+            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill font-semibold px-3.5" data-bs-toggle="modal" data-bs-target="#modalAddUnanswered">
+                <i class="fa-solid fa-plus me-1.5"></i> Add Test Question
             </button>
         </div>
     </div>
@@ -199,30 +224,38 @@ $categories = [
     <div class="row g-4" id="questionsGrid">
         <?php foreach ($questionsList as $q): ?>
             <div class="col-md-6 question-card-col" data-text="<?php echo strtolower(htmlspecialchars($q['question'] . ' ' . $q['category'])); ?>">
-                <div class="card border-0 shadow-sm p-4 h-100 border-top border-4 <?php echo $q['status'] === 'pending' ? 'border-warning' : ($q['status'] === 'answered' ? 'border-success' : 'border-secondary'); ?>">
+                <div class="card border-0 shadow-sm rounded-4 p-4 h-100 border-top border-4 <?php echo $q['status'] === 'pending' ? 'border-warning' : ($q['status'] === 'answered' ? 'border-success' : 'border-secondary'); ?>">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="badge bg-secondary text-uppercase"><?php echo htmlspecialchars($q['category']); ?></span>
-                        <small class="text-muted"><i class="fa-regular fa-clock me-1"></i><?php echo formatDate($q['created_at']); ?></small>
+                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1 text-xs text-uppercase font-semibold">
+                            <?php echo htmlspecialchars($q['category']); ?>
+                        </span>
+                        <small class="text-muted text-xs"><i class="fa-regular fa-clock me-1"></i><?php echo formatDate($q['created_at']); ?></small>
                     </div>
 
-                    <h5 class="fw-bold text-primary-color mb-3">"<?php echo htmlspecialchars($q['question']); ?>"</h5>
+                    <h5 class="font-display fw-bold text-dark mb-3">"<?php echo htmlspecialchars($q['question']); ?>"</h5>
 
                     <?php if ($q['status'] === 'answered'): ?>
-                        <div class="bg-light p-3 rounded mb-3 border">
-                            <strong class="text-success small"><i class="fa-solid fa-circle-check me-1"></i> Verified Admin Response:</strong>
-                            <p class="small mb-0 mt-1"><?php echo nl2br(htmlspecialchars($q['admin_response'])); ?></p>
+                        <div class="bg-success-subtle border border-success-subtle p-3 rounded-3 mb-3">
+                            <strong class="text-success small d-flex align-items-center gap-1.5 mb-1">
+                                <i class="fa-solid fa-circle-check"></i> Verified Admin Response:
+                            </strong>
+                            <p class="small text-dark text-opacity-80 mb-0"><?php echo nl2br(htmlspecialchars($q['admin_response'])); ?></p>
                         </div>
                     <?php endif; ?>
 
-                    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
-                        <button type="button" class="btn btn-primary btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalAnswer<?php echo $q['id']; ?>">
-                            <i class="fa-solid fa-pen-to-square me-1"></i> <?php echo $q['status'] === 'answered' ? 'Update Answer' : 'Provide Answer & Publish'; ?>
+                    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <button type="button" class="btn btn-primary btn-sm rounded-pill font-semibold px-3 shadow-sm hover-lift" data-bs-toggle="modal" data-bs-target="#modalAnswer<?php echo $q['id']; ?>">
+                            <i class="fa-solid fa-pen-to-square me-1.5"></i> <?php echo $q['status'] === 'answered' ? 'Update Answer' : 'Answer &amp; Publish'; ?>
                         </button>
-                        <div>
+                        <div class="d-flex gap-1">
                             <?php if ($q['status'] === 'pending'): ?>
-                                <a href="unanswered.php?action=dismiss&id=<?php echo $q['id']; ?>" class="btn btn-outline-secondary btn-sm me-1" title="Dismiss"><i class="fa-solid fa-eye-slash"></i></a>
+                                <a href="unanswered.php?action=dismiss&id=<?php echo $q['id']; ?>" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5 py-1" title="Dismiss">
+                                    <i class="fa-solid fa-eye-slash"></i>
+                                </a>
                             <?php endif; ?>
-                            <a href="unanswered.php?action=delete&id=<?php echo $q['id']; ?>" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this question?');" title="Delete"><i class="fa-solid fa-trash"></i></a>
+                            <a href="unanswered.php?action=delete&id=<?php echo $q['id']; ?>" class="btn btn-xs btn-outline-danger rounded-pill px-2.5 py-1" onclick="return confirm('Delete this question from queue?');" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -231,28 +264,35 @@ $categories = [
             <!-- Modal: Answer & Publish -->
             <div class="modal fade" id="modalAnswer<?php echo $q['id']; ?>" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
-                    <div class="modal-content">
+                    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
                         <form method="POST" action="unanswered.php">
                             <input type="hidden" name="question_id" value="<?php echo $q['id']; ?>">
                             <input type="hidden" name="category" value="<?php echo htmlspecialchars($q['category']); ?>">
-                            <div class="modal-header bg-dark text-white">
-                                <h5 class="modal-title fw-bold text-white"><i class="fa-solid fa-robot text-warning me-2"></i>Answer &amp; Publish to Knowledge Base</h5>
+                            <div class="modal-header bg-slate-900 text-white py-3 px-4">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="w-8 h-8 rounded-circle bg-warning bg-opacity-20 d-flex align-items-center justify-content-center text-warning">
+                                        <i class="fa-solid fa-robot"></i>
+                                    </div>
+                                    <h5 class="modal-title font-display fw-bold text-white mb-0">Answer &amp; Publish to Knowledge Base</h5>
+                                </div>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="modal-body">
+                            <div class="modal-body p-4">
                                 <div class="mb-3">
-                                    <label class="form-label font-semibold">User Question Title</label>
-                                    <input type="text" name="question" class="form-control fw-bold" value="<?php echo htmlspecialchars($q['question']); ?>" required>
+                                    <label class="form-label font-semibold small text-secondary">User Question Title</label>
+                                    <input type="text" name="question" class="form-control rounded-3 fw-bold" value="<?php echo htmlspecialchars($q['question']); ?>" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label font-semibold">Official Verified Answer *</label>
-                                    <textarea name="answer" class="form-control" rows="5" placeholder="Write comprehensive, official response here..." required><?php echo htmlspecialchars($q['admin_response'] ?? ''); ?></textarea>
-                                    <div class="form-text">This will automatically sync with the 🤖 CampusAI Knowledge Base and public FAQ list.</div>
+                                    <label class="form-label font-semibold small text-secondary">Official Verified Answer <span class="text-danger">*</span></label>
+                                    <textarea name="answer" class="form-control rounded-3" rows="5" placeholder="Write comprehensive, official response here..." required><?php echo htmlspecialchars($q['admin_response'] ?? ''); ?></textarea>
+                                    <div class="form-text text-xs">This will automatically sync with the 🤖 CampusAI Knowledge Base and public FAQ list.</div>
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" name="publish_answer" class="btn btn-primary fw-bold"><i class="fa-solid fa-upload me-1"></i> Publish to Knowledge Base</button>
+                            <div class="modal-footer bg-light px-4 py-3 border-top">
+                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" name="publish_answer" class="btn btn-primary btn-sm rounded-pill font-semibold px-4 shadow-sm hover-lift">
+                                    <i class="fa-solid fa-upload me-1.5"></i> Publish to Knowledge Base
+                                </button>
                             </div>
                         </form>
                     </div>

@@ -46,13 +46,13 @@ $contact_bg = !empty($settings['contact_hero_image']) ? uploadUrl('settings', $s
 ?>
 
 <!-- Breadcrumb Header -->
-<div class="py-5 text-white mb-5 position-relative overflow-hidden" style="<?php echo $contact_bg ? "background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), url('{$contact_bg}') center/cover no-repeat;" : "background-color: var(--primary-color);"; ?>">
+<div class="page-hero mb-5" style="<?php echo $contact_bg ? "background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 95, 0.85) 100%), url('{$contact_bg}') center/cover no-repeat;" : ""; ?>">
     <div class="container position-relative z-1">
-        <h1 class="fw-extrabold mb-1 text-white display-5">Contact Us</h1>
-        <p class="lead opacity-75 mb-3">Get in touch with our admissions desk, administration, or campus office</p>
+        <h1 class="font-display fw-extrabold mb-2 text-white">Contact Campus Office</h1>
+        <p class="lead opacity-80 mb-3">Get in touch with our admissions desk, administration office, or departmental counselors</p>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="index.php" class="text-white opacity-75 text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item"><a href="index.php" class="text-white opacity-75 text-decoration-none"><i class="fa-solid fa-house me-1"></i> Home</a></li>
                 <li class="breadcrumb-item active text-warning" aria-current="page">Contact Us</li>
             </ol>
         </nav>
@@ -63,59 +63,62 @@ $contact_bg = !empty($settings['contact_hero_image']) ? uploadUrl('settings', $s
     <div class="row g-5">
         <!-- Contact details -->
         <div class="col-lg-5">
-            <h3 class="fw-bold text-primary-color mb-4">Get In Touch</h3>
-            <p class="text-muted mb-4">Have questions about admissions, fee structures, courses, or events? Fill out the contact form and our counselors will respond within 24 working hours.</p>
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3 py-1 font-semibold">Support & Assistance</span>
+            </div>
+            <h3 class="font-display fw-bold text-dark mb-3">Get In Touch With Us</h3>
+            <p class="text-muted mb-4">Have questions regarding admissions, fee structures, courses, or hostel facilities? Submit your query and our counselors will respond promptly.</p>
             
-            <div class="d-flex flex-column gap-4">
-                <div class="d-flex align-items-start gap-3">
-                    <div class="p-3 rounded-3 shadow-xs d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 50px; height: 50px; background: linear-gradient(135deg, #0d233a, #163654); border: 2px solid #bfa15f;">
+            <div class="d-flex flex-column gap-3 mb-4">
+                <div class="d-flex align-items-start gap-3 p-3 rounded-4 bg-white border shadow-xs">
+                    <div class="stat-icon-wrapper bg-primary text-white rounded-3 flex-shrink-0" style="width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center;">
                         <i class="fa-solid fa-location-dot fa-lg text-warning"></i>
                     </div>
                     <div>
-                        <h6 class="fw-bold text-primary-color mb-1">Campus Location</h6>
+                        <h6 class="font-display fw-bold text-dark mb-1">Campus Location</h6>
                         <p class="text-muted small mb-0"><?php echo htmlspecialchars($col_addr); ?></p>
                     </div>
                 </div>
 
-                <div class="d-flex align-items-start gap-3">
-                    <div class="p-3 rounded-3 shadow-xs d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 50px; height: 50px; background: linear-gradient(135deg, #0d233a, #163654); border: 2px solid #bfa15f;">
+                <div class="d-flex align-items-start gap-3 p-3 rounded-4 bg-white border shadow-xs">
+                    <div class="stat-icon-wrapper bg-primary text-white rounded-3 flex-shrink-0" style="width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center;">
                         <i class="fa-solid fa-phone-volume fa-lg text-warning"></i>
                     </div>
                     <div>
-                        <h6 class="fw-bold text-primary-color mb-1">Contact Desk</h6>
+                        <h6 class="font-display fw-bold text-dark mb-1">Contact Desk</h6>
                         <p class="text-muted small mb-0"><?php echo htmlspecialchars($col_phone); ?></p>
                     </div>
                 </div>
 
-                <div class="d-flex align-items-start gap-3">
-                    <div class="p-3 rounded-3 shadow-xs d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 50px; height: 50px; background: linear-gradient(135deg, #0d233a, #163654); border: 2px solid #bfa15f;">
+                <div class="d-flex align-items-start gap-3 p-3 rounded-4 bg-white border shadow-xs">
+                    <div class="stat-icon-wrapper bg-primary text-white rounded-3 flex-shrink-0" style="width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center;">
                         <i class="fa-solid fa-envelope-open-text fa-lg text-warning"></i>
                     </div>
                     <div>
-                        <h6 class="fw-bold text-primary-color mb-1">Email Helpline</h6>
+                        <h6 class="font-display fw-bold text-dark mb-1">Email Helpline</h6>
                         <p class="text-muted small mb-0"><?php echo htmlspecialchars($col_email); ?></p>
                     </div>
                 </div>
             </div>
 
             <!-- Official Social Media Channels -->
-            <div class="mt-4 pt-4 border-top">
-                <h6 class="fw-bold text-primary-color mb-3"><i class="fa-solid fa-share-nodes text-warning me-2"></i>Official Social Media Channels</h6>
+            <div class="p-4 rounded-4 bg-white border shadow-xs mb-4">
+                <h6 class="font-display fw-bold text-dark mb-3"><i class="fa-solid fa-share-nodes text-warning me-2"></i>Official Social Media Channels</h6>
                 <div class="d-flex flex-wrap gap-2">
-                    <a href="https://www.linkedin.com/company/mgmu-school-of-engineering-and-technology/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-xs">
-                        <i class="fa-brands fa-linkedin-in me-1 text-primary"></i> LinkedIn
+                    <a href="https://www.linkedin.com/company/mgmu-school-of-engineering-and-technology/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                        <i class="fa-brands fa-linkedin-in me-1"></i> LinkedIn
                     </a>
-                    <a href="https://www.instagram.com/mgmu.soet?igsh=MWcxZ3A2emMxZnE5ZA==" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-xs">
-                        <i class="fa-brands fa-instagram me-1 text-danger"></i> Instagram
+                    <a href="https://www.instagram.com/mgmu.soet?igsh=MWcxZ3A2emMxZnE5ZA==" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                        <i class="fa-brands fa-instagram me-1"></i> Instagram
                     </a>
-                    <a href="https://www.facebook.com/share/14hsTNNRa6q/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm rounded-pill px-3 shadow-xs">
-                        <i class="fa-brands fa-facebook-f me-1 text-primary"></i> Facebook
+                    <a href="https://www.facebook.com/share/14hsTNNRa6q/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                        <i class="fa-brands fa-facebook-f me-1"></i> Facebook
                     </a>
                 </div>
             </div>
 
             <!-- Official Google Maps Embed -->
-            <div class="card border-0 shadow-sm mt-4 overflow-hidden position-relative rounded-3" style="height: 280px;">
+            <div class="card border-0 shadow-sm overflow-hidden position-relative rounded-4" style="height: 260px;">
                 <iframe 
                     src="https://maps.google.com/maps?q=MGMU+School+of+Engineering+and+Technology,+CIDCO,+Chhatrapati+Sambhajinagar&t=&z=16&ie=UTF8&iwloc=&output=embed" 
                     width="100%" 
@@ -125,8 +128,8 @@ $contact_bg = !empty($settings['contact_hero_image']) ? uploadUrl('settings', $s
                     loading="lazy" 
                     referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
-                <div class="position-absolute bottom-0 end-0 p-2 z-1">
-                    <a href="https://maps.app.goo.gl/NUzWW6mAcYVX5Tg96" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-dark bg-opacity-90 shadow-sm">
+                <div class="position-absolute bottom-0 end-0 p-3 z-1">
+                    <a href="https://maps.app.goo.gl/NUzWW6mAcYVX5Tg96" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-dark bg-opacity-90 rounded-pill px-3 shadow-sm">
                         <i class="fa-solid fa-map-pin text-warning me-1"></i> Open in Google Maps
                     </a>
                 </div>
@@ -135,33 +138,36 @@ $contact_bg = !empty($settings['contact_hero_image']) ? uploadUrl('settings', $s
 
         <!-- Contact Form -->
         <div class="col-lg-7">
-            <div class="card border-0 shadow-sm p-4 bg-white">
-                <h4 class="fw-bold text-primary-color mb-4"><i class="fa-solid fa-envelope-open-text text-warning me-2"></i>Send Message</h4>
+            <div class="card border-0 shadow-sm p-4 p-md-5 bg-white rounded-4">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 font-semibold">Drop a Message</span>
+                </div>
+                <h4 class="font-display fw-bold text-dark mb-4">Send Us a Direct Message</h4>
                 <form method="POST" action="contact.php" class="needs-validation" novalidate>
                     <?php echo Security::csrfField(); ?>
-                    <div class="row g-3">
+                    <div class="row g-4">
                         <div class="col-md-6">
-                            <label class="form-label font-semibold">Your Name *</label>
-                            <input type="text" name="name" class="form-control" placeholder="John Doe" required>
+                            <label class="form-label font-semibold text-dark">Your Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control rounded-3 py-2.5" placeholder="John Doe" required>
                             <div class="invalid-feedback">Please enter your name.</div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label font-semibold">Email Address *</label>
-                            <input type="email" name="email" class="form-control" placeholder="john@example.com" required>
+                            <label class="form-label font-semibold text-dark">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="form-control rounded-3 py-2.5" placeholder="john@example.com" required>
                             <div class="invalid-feedback">Please enter a valid email address.</div>
                         </div>
                         <div class="col-12">
-                            <label class="form-label font-semibold">Subject *</label>
-                            <input type="text" name="subject" class="form-control" placeholder="Query regarding admissions/fees" required>
+                            <label class="form-label font-semibold text-dark">Subject <span class="text-danger">*</span></label>
+                            <input type="text" name="subject" class="form-control rounded-3 py-2.5" placeholder="Query regarding admissions, syllabus, or fee details" required>
                             <div class="invalid-feedback">Please enter a subject.</div>
                         </div>
                         <div class="col-12">
-                            <label class="form-label font-semibold">Message *</label>
-                            <textarea name="message" class="form-control" rows="5" placeholder="Write details of your query here..." required></textarea>
+                            <label class="form-label font-semibold text-dark">Message <span class="text-danger">*</span></label>
+                            <textarea name="message" class="form-control rounded-3" rows="5" placeholder="Write full details of your inquiry here..." required></textarea>
                             <div class="invalid-feedback">Please write your message.</div>
                         </div>
                         <div class="col-12 text-end">
-                            <button type="submit" name="submit_contact" class="btn btn-primary px-4 py-2"><i class="fa-solid fa-paper-plane me-1"></i> Send Query</button>
+                            <button type="submit" name="submit_contact" class="btn btn-primary px-4 py-2.5 rounded-pill font-semibold shadow-sm"><i class="fa-solid fa-paper-plane me-2 text-warning"></i> Send Query</button>
                         </div>
                     </div>
                 </form>

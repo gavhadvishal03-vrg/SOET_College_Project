@@ -105,40 +105,43 @@ if ($action === 'delete' && isset($_GET['id'])) {
 $gallery_items = $db->fetchAll("SELECT * FROM gallery ORDER BY created_at DESC");
 ?>
 
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom flex-wrap gap-2">
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-0"><i class="fa-solid fa-images text-warning me-2"></i>Campus Gallery Management</h1>
-        <small class="text-muted">Manage campus photographs, lab facilities, event albums, and sports media</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Media & Press</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">Campus Gallery Management</h2>
+        <p class="text-muted small mb-0">Manage campus photography, laboratory facilities, event albums, and sports media</p>
     </div>
     <?php if ($action === 'list'): ?>
         <div class="d-flex gap-2 align-items-center">
-            <a href="gallery.php?action=export_csv" class="btn btn-sm btn-success">
+            <a href="gallery.php?action=export_csv" class="btn btn-sm btn-success rounded-pill px-3 font-semibold">
                 <i class="fa-solid fa-file-excel me-1"></i> Export CSV
             </a>
-            <a href="gallery.php?action=add" class="btn btn-primary btn-sm"><i class="fa-solid fa-cloud-arrow-up me-1"></i> Upload Image</a>
+            <a href="gallery.php?action=add" class="btn btn-primary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-cloud-arrow-up me-1 text-warning"></i> Upload Image</a>
         </div>
     <?php else: ?>
-        <a href="gallery.php" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
+        <a href="gallery.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
     <?php endif; ?>
 </div>
 
 <?php if ($action === 'list'): ?>
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h5 class="fw-bold mb-0 text-primary-color"><i class="fa-solid fa-photo-film text-warning me-2"></i>Uploaded Media Assets (<?php echo count($gallery_items); ?>)</h5>
-            <input type="text" id="gallerySearchInput" class="form-control form-control-sm" placeholder="Search gallery title, category..." style="width: 250px;">
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="card-header bg-white py-3.5 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom">
+            <h5 class="font-display fw-bold mb-0 text-dark"><i class="fa-solid fa-photo-film text-warning me-2"></i>Uploaded Media Assets (<?php echo count($gallery_items); ?>)</h5>
+            <input type="text" id="gallerySearchInput" class="form-control form-control-sm rounded-pill px-3" placeholder="Search gallery title, category..." style="width: 250px;">
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0" id="galleryTable">
-                    <thead class="table-dark">
+                <table class="table table-hover align-middle mb-0" id="galleryTable">
+                    <thead class="table-light">
                         <tr>
-                            <th style="width: 15%;">Preview</th>
+                            <th class="ps-4" style="width: 15%;">Preview</th>
                             <th>Image Title</th>
                             <th>Category</th>
                             <th>Date Uploaded</th>
                             <th class="text-center">Status</th>
-                            <th class="text-end">Actions</th>
+                            <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -149,18 +152,16 @@ $gallery_items = $db->fetchAll("SELECT * FROM gallery ORDER BY created_at DESC")
                         <?php else: ?>
                             <?php foreach ($gallery_items as $item): ?>
                                 <tr>
-                                    <td>
-                                        <img src="<?php echo uploadUrl('gallery', $item['image_path']); ?>" alt="Thumbnail" class="img-fluid rounded border border-warning shadow-xs" style="max-height: 60px; max-width: 90px; object-fit: cover;">
+                                    <td class="ps-4">
+                                        <img src="<?php echo uploadUrl('gallery', $item['image_path']); ?>" alt="Thumbnail" class="img-fluid rounded-3 border shadow-xs" style="max-height: 55px; max-width: 85px; object-fit: cover;">
                                     </td>
-                                    <td class="fw-bold text-primary-color"><?php echo htmlspecialchars($item['title']); ?></td>
-                                    <td><span class="badge bg-secondary"><?php echo htmlspecialchars($item['category']); ?></span></td>
-                                    <td><?php echo formatDate($item['created_at']); ?></td>
+                                    <td class="font-display fw-bold text-dark"><?php echo htmlspecialchars($item['title']); ?></td>
+                                    <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill text-uppercase" style="font-size: 10px;"><?php echo htmlspecialchars($item['category']); ?></span></td>
+                                    <td class="small text-muted"><?php echo formatDate($item['created_at']); ?></td>
                                     <td class="text-center"><?php echo statusBadge($item['is_active'] ? 'active' : 'inactive'); ?></td>
-                                    <td class="text-end">
-                                        <div class="btn-group">
-                                            <a href="gallery.php?action=edit&id=<?php echo $item['id']; ?>" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fa-solid fa-pen"></i></a>
-                                            <a href="gallery.php?action=delete&id=<?php echo $item['id']; ?>" class="btn btn-sm btn-outline-danger btn-delete-confirm" title="Delete" onclick="return confirm('Delete this gallery image?');"><i class="fa-solid fa-trash"></i></a>
-                                        </div>
+                                    <td class="text-end pe-4 text-nowrap">
+                                        <a href="gallery.php?action=edit&id=<?php echo $item['id']; ?>" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 font-semibold me-1" title="Edit"><i class="fa-solid fa-pen me-1"></i> Edit</a>
+                                        <a href="gallery.php?action=delete&id=<?php echo $item['id']; ?>" class="btn btn-sm btn-outline-danger rounded-pill px-2.5 btn-delete-confirm font-semibold" title="Delete" onclick="return confirm('Delete this image?');"><i class="fa-solid fa-trash me-1"></i> Delete</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

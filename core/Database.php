@@ -18,33 +18,46 @@ class Database
             PDO::ATTR_TIMEOUT            => 3,
         ];
 
-        $primaryHost = defined('DB_HOST') ? DB_HOST : '127.0.0.1;port=3307';
+        $rawHost = defined('DB_HOST') ? DB_HOST : '127.0.0.1';
+        $port = defined('DB_PORT') ? DB_PORT : '3307';
         $dbName = defined('DB_NAME') ? DB_NAME : 'soet_college';
         $dbUser = defined('DB_USER') ? DB_USER : 'root';
         $dbPass = defined('DB_PASS') ? DB_PASS : '';
         $charset = defined('DB_CHARSET') ? DB_CHARSET : 'utf8mb4';
 
-        // Auto-Probing DSN Candidate List for 100% Port & Environment Resilience
+        // Extract port if embedded in DB_HOST
+        $host = $rawHost;
+        if (strpos($rawHost, ';port=') !== false) {
+            $parts = explode(';port=', $rawHost);
+            $host = $parts[0];
+            $port = $parts[1];
+        }
+
+        // DSN candidates prioritizing target XAMPP port (3307)
         $dsnCandidates = [
-            'mysql:host=' . $primaryHost . ';dbname=' . $dbName . ';charset=' . $charset,
-            'mysql:host=127.0.0.1;port=3307;dbname=' . $dbName . ';charset=' . $charset,
-            'mysql:host=127.0.0.1;port=3306;dbname=' . $dbName . ';charset=' . $charset,
-            'mysql:host=localhost;dbname=' . $dbName . ';charset=' . $charset,
-            'mysql:host=127.0.0.1;dbname=' . $dbName . ';charset=' . $charset
+            "mysql:host={$host};port={$port};dbname={$dbName};charset={$charset}",
+            "mysql:host=127.0.0.1;port=3307;dbname={$dbName};charset={$charset}",
+            "mysql:host=localhost;port=3307;dbname={$dbName};charset={$charset}",
+            "mysql:host=127.0.0.1;port=3306;dbname={$dbName};charset={$charset}",
+            "mysql:host=localhost;dbname={$dbName};charset={$charset}"
         ];
 
+        $firstException = null;
         $lastException = null;
         foreach (array_unique($dsnCandidates) as $dsn) {
             try {
                 $this->pdo = new PDO($dsn, $dbUser, $dbPass, $options);
                 return; // Successfully connected!
             } catch (PDOException $e) {
+                if ($firstException === null) {
+                    $firstException = $e;
+                }
                 $lastException = $e;
             }
         }
 
-        if ($lastException) {
-            throw $lastException;
+        if ($firstException) {
+            throw $firstException;
         }
     }
 

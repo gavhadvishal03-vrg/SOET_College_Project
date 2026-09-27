@@ -70,14 +70,15 @@ include_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Breadcrumb Header -->
-<div class="bg-light py-4 border-bottom mb-5">
-    <div class="container">
-        <h1 class="fw-bold mb-1 text-primary-color"><i class="fa-solid fa-paper-plane text-warning me-2"></i>Submit Campus News Update</h1>
+<div class="page-hero mb-5">
+    <div class="container position-relative z-1">
+        <h1 class="font-display fw-extrabold mb-2 text-white">Submit Campus News</h1>
+        <p class="lead opacity-80 mb-3">Report campus developments, student accolades, competitions, and department achievements</p>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="index.php" class="text-decoration-none">Home</a></li>
-                <li class="breadcrumb-item"><a href="news.php" class="text-decoration-none">News Portal</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Submit News</li>
+                <li class="breadcrumb-item"><a href="index.php" class="text-white opacity-75 text-decoration-none"><i class="fa-solid fa-house me-1"></i> Home</a></li>
+                <li class="breadcrumb-item"><a href="news.php" class="text-white opacity-75 text-decoration-none">News Portal</a></li>
+                <li class="breadcrumb-item active text-warning" aria-current="page">Submit News</li>
             </ol>
         </nav>
     </div>
@@ -87,61 +88,69 @@ include_once __DIR__ . '/includes/header.php';
     <div class="row g-4">
         <!-- Guidelines column -->
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm p-4 bg-light mb-4" style="border-top: 4px solid var(--secondary-color);">
-                <h5 class="fw-bold text-primary-color mb-3"><i class="fa-solid fa-circle-exclamation text-warning me-2"></i>News Submission Policies</h5>
+            <div class="card border-0 shadow-sm p-4 bg-white mb-4 rounded-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3 py-1 font-semibold">Campus Reporting Policies</span>
+                </div>
+                <h5 class="font-display fw-bold text-dark mb-3">News Submission Guidelines</h5>
                 <ul class="small text-muted ps-3 d-flex flex-column gap-2 mb-0">
-                    <li>News submissions can be made directly by students, faculty members, and campus reporters.</li>
-                    <li>Coverage must strictly concern official college announcements, research achievements, placement highlights, sports meets, or faculty advancements.</li>
-                    <li>Ensure high-definition banner images are uploaded where possible (JPG, PNG, WEBP max size 5MB).</li>
-                    <li>All submitted news goes to the review queue and will be published upon admin verification.</li>
+                    <li>Submissions are accepted from students, faculty members, and student council reporters.</li>
+                    <li>Coverage should pertain to official college activities, research publications, hackathons, sports championships, or placements.</li>
+                    <li>Upload clear landscape banner photos (PNG, JPG, WEBP under 5MB).</li>
+                    <li>All submitted news is reviewed by the media coordinator before public release.</li>
                 </ul>
             </div>
 
-            <div class="card border-0 shadow-sm p-4 bg-primary text-white text-center">
-                <i class="fa-solid fa-newspaper fa-3x text-warning mb-3"></i>
-                <h5 class="fw-bold mb-1">Direct Campus Reporting</h5>
-                <p class="small text-white-50 mb-0">No login required! Enter your details and article text to submit directly for campus publishing.</p>
+            <div class="card border-0 shadow-sm p-4 text-white text-center rounded-4" style="background: linear-gradient(135deg, var(--primary), var(--primary-600));">
+                <div class="stat-icon-wrapper bg-white bg-opacity-10 text-warning mx-auto mb-3" style="width: 50px; height: 50px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-bullhorn fa-xl"></i>
+                </div>
+                <h5 class="font-display fw-bold mb-1">Direct Campus Reporting</h5>
+                <p class="small text-white opacity-75 mb-0">No login required! Enter your details and press release to submit directly for campus publishing.</p>
             </div>
         </div>
 
         <!-- Submission Form -->
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm p-4 bg-white">
-                <h4 class="fw-bold text-primary-color mb-4"><i class="fa-solid fa-square-rss text-warning me-2"></i>Campus News Submission Form</h4>
+            <div class="card border-0 shadow-sm p-4 p-md-5 bg-white rounded-4">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 font-semibold">Press Release Form</span>
+                </div>
+                <h4 class="font-display fw-bold text-dark mb-4">News Announcement Details</h4>
                 
                 <form method="POST" action="submit-news.php" enctype="multipart/form-data">
                     <?php echo Security::csrfField(); ?>
                     
-                    <div class="row g-3 mb-3">
+                    <div class="row g-4 mb-4">
                         <div class="col-md-6">
-                            <label class="form-label font-semibold">Your Full Name *</label>
-                            <input type="text" name="author_name" class="form-control" value="<?php echo Session::get('full_name') ?? ''; ?>" placeholder="e.g. Rahul Sharma (Student - CSE)" required>
+                            <label class="form-label font-semibold text-dark">Your Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="author_name" class="form-control rounded-3 py-2.5" value="<?php echo Session::get('full_name') ?? ''; ?>" placeholder="e.g. Rahul Sharma (Student - CSE)" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label font-semibold">Your Email Address *</label>
-                            <input type="email" name="author_email" class="form-control" value="<?php echo Session::get('email') ?? ''; ?>" placeholder="e.g. rahul.sharma@mgmu.ac.in" required>
+                            <label class="form-label font-semibold text-dark">Your Email Address <span class="text-danger">*</span></label>
+                            <input type="email" name="author_email" class="form-control rounded-3 py-2.5" value="<?php echo Session::get('email') ?? ''; ?>" placeholder="e.g. rahul.sharma@mgmu.ac.in" required>
                         </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label font-semibold">News Headline / Title *</label>
-                        <input type="text" name="title" class="form-control" placeholder="e.g. SOET Students Win National Robotics Championship 2026" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label font-semibold">Banner Image (JPEG / PNG / WEBP)</label>
-                        <input type="file" name="image" class="form-control" accept="image/*">
-                        <small class="text-muted">Optional cover photo for the news headline.</small>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label font-semibold">News Details & Description *</label>
-                        <textarea name="content" class="form-control" rows="10" placeholder="Write full news article content, event details, achievements, or press release here..." required></textarea>
+                        <label class="form-label font-semibold text-dark">News Headline / Title <span class="text-danger">*</span></label>
+                        <input type="text" name="title" class="form-control rounded-3 py-2.5" placeholder="e.g. SOET Students Win National Robotics Championship 2026" required>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center">
-                        <a href="news.php" class="btn btn-outline-secondary px-3"><i class="fa-solid fa-arrow-left me-1"></i> Back to News</a>
-                        <button type="submit" name="submit_news" class="btn btn-warning text-dark fw-bold px-4 shadow-sm"><i class="fa-solid fa-paper-plane me-1"></i> Submit News Article</button>
+                    <div class="mb-4">
+                        <label class="form-label font-semibold text-dark">Banner Image (JPEG / PNG / WEBP)</label>
+                        <input type="file" name="image" class="form-control rounded-3 py-2" accept="image/*">
+                        <small class="text-muted">Optional landscape cover photo for the news headline.</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label font-semibold text-dark">News Details & Description <span class="text-danger">*</span></label>
+                        <textarea name="content" class="form-control rounded-3" rows="10" placeholder="Write full news article content, event details, achievements, or press release here..." required></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pt-2 border-top">
+                        <a href="news.php" class="btn btn-outline-secondary rounded-pill px-4"><i class="fa-solid fa-arrow-left me-1"></i> Back to News</a>
+                        <button type="submit" name="submit_news" class="btn btn-warning text-dark font-semibold rounded-pill px-4 py-2.5 shadow-sm"><i class="fa-solid fa-paper-plane me-1"></i> Submit News Article</button>
                     </div>
                 </form>
             </div>

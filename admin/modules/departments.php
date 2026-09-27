@@ -122,66 +122,67 @@ $departments = $db->fetchAll(
 );
 ?>
 
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom flex-wrap gap-2">
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-0"><i class="fa-solid fa-building-columns text-warning me-2"></i>Academic Departments Management</h1>
-        <small class="text-muted">Manage academic branches, engineering disciplines, and lab facility mappings</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Faculty & Branches</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">Academic Departments Management</h2>
+        <p class="text-muted small mb-0">Manage engineering disciplines, departmental profiles, and curriculum allocations</p>
     </div>
     <?php if ($action === 'list'): ?>
         <div class="d-flex gap-2 align-items-center">
-            <a href="departments.php?action=export_csv" class="btn btn-sm btn-success">
+            <a href="departments.php?action=export_csv" class="btn btn-sm btn-success rounded-pill px-3 font-semibold">
                 <i class="fa-solid fa-file-excel me-1"></i> Export CSV
             </a>
-            <a href="departments.php?action=add" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus me-1"></i> Create Department</a>
+            <a href="departments.php?action=add" class="btn btn-primary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-plus me-1 text-warning"></i> Create Department</a>
         </div>
     <?php else: ?>
-        <a href="departments.php" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
+        <a href="departments.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
     <?php endif; ?>
 </div>
 
 <?php if ($action === 'list'): ?>
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h5 class="fw-bold mb-0 text-primary-color"><i class="fa-solid fa-network-wired text-warning me-2"></i>Departments (<?php echo count($departments); ?>)</h5>
-            <input type="text" id="deptSearchInput" class="form-control form-control-sm" placeholder="Search department name, code..." style="width: 250px;">
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="card-header bg-white py-3.5 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom">
+            <h5 class="font-display fw-bold mb-0 text-dark"><i class="fa-solid fa-network-wired text-warning me-2"></i>Departments (<?php echo count($departments); ?>)</h5>
+            <input type="text" id="deptSearchInput" class="form-control form-control-sm rounded-pill px-3" placeholder="Search department name, code..." style="width: 250px;">
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0" id="departmentsTable">
-                    <thead class="table-dark">
+                <table class="table table-hover align-middle mb-0" id="departmentsTable">
+                    <thead class="table-light">
                         <tr>
-                            <th>Cover Image</th>
+                            <th class="ps-4">Cover Image</th>
                             <th>Department Name</th>
                             <th>Code</th>
                             <th>Allocated Programs</th>
                             <th>Faculty Strength</th>
                             <th class="text-center">Status</th>
-                            <th class="text-end">Actions</th>
+                            <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($departments as $dept): ?>
                             <tr>
-                                <td>
+                                <td class="ps-4">
                                     <?php if (!empty($dept['image_path'])): ?>
-                                        <img src="<?php echo uploadUrl('departments', $dept['image_path']); ?>" alt="Cover" class="rounded img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                        <img src="<?php echo uploadUrl('departments', $dept['image_path']); ?>" alt="Cover" class="rounded-3 shadow-xs" style="width: 48px; height: 48px; object-fit: cover;">
                                     <?php else: ?>
-                                        <div class="bg-light rounded text-muted d-flex align-items-center justify-content-center border" style="width: 50px; height: 50px; font-size: 10px;">No Image</div>
+                                        <div class="bg-light rounded-3 text-muted d-flex align-items-center justify-content-center border" style="width: 48px; height: 48px; font-size: 10px;">No Image</div>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <div class="fw-bold text-primary-color"><?php echo htmlspecialchars($dept['name']); ?></div>
+                                    <div class="font-display fw-bold text-dark mb-0.5"><?php echo htmlspecialchars($dept['name']); ?></div>
                                     <small class="text-muted"><?php echo truncate(htmlspecialchars($dept['description']), 80); ?></small>
                                 </td>
-                                <td><span class="badge bg-warning text-dark"><?php echo htmlspecialchars($dept['code']); ?></span></td>
-                                <td><span class="badge bg-primary"><?php echo $dept['course_count']; ?> Courses</span></td>
-                                <td><span class="badge bg-info text-dark"><?php echo $dept['faculty_count']; ?> Faculty</span></td>
+                                <td><span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill"><?php echo htmlspecialchars($dept['code']); ?></span></td>
+                                <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill"><?php echo $dept['course_count']; ?> Courses</span></td>
+                                <td><span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill"><?php echo $dept['faculty_count']; ?> Faculty</span></td>
                                 <td class="text-center"><?php echo statusBadge($dept['is_active'] ? 'active' : 'inactive'); ?></td>
-                                <td class="text-end">
-                                    <div class="btn-group">
-                                        <a href="departments.php?action=edit&id=<?php echo $dept['id']; ?>" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fa-solid fa-pen"></i></a>
-                                        <a href="departments.php?action=delete&id=<?php echo $dept['id']; ?>" class="btn btn-sm btn-outline-danger btn-delete-confirm" title="Delete" onclick="return confirm('Delete this department?');"><i class="fa-solid fa-trash"></i></a>
-                                    </div>
+                                <td class="text-end pe-4 text-nowrap">
+                                    <a href="departments.php?action=edit&id=<?php echo $dept['id']; ?>" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 font-semibold me-1" title="Edit"><i class="fa-solid fa-pen me-1"></i> Edit</a>
+                                    <a href="departments.php?action=delete&id=<?php echo $dept['id']; ?>" class="btn btn-sm btn-outline-danger rounded-pill px-2.5 btn-delete-confirm font-semibold" title="Delete" onclick="return confirm('Delete this department?');"><i class="fa-solid fa-trash me-1"></i> Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

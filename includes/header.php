@@ -87,12 +87,12 @@ try {
 }
 ?>
 <!-- Header Navigation -->
-<nav class="navbar navbar-expand-xl navbar-dark sticky-top py-2" style="border-bottom: 3px solid var(--secondary-color); box-shadow: 0 4px 20px rgba(0,0,0,0.15); background-color: var(--primary-color);">
+<nav class="navbar navbar-expand-xl navbar-dark sticky-top py-2" style="border-bottom: 2px solid var(--accent); box-shadow: 0 4px 25px rgba(0,0,0,0.2); background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
     <div class="container-fluid px-2 px-md-3 px-xl-4">
         <a class="navbar-brand d-flex align-items-center me-2 me-xl-3" href="<?php echo APP_URL; ?>/index.php">
             <img src="<?php echo $logo_src; ?>" alt="SOET Logo" class="me-2" style="height: 44px; object-fit: contain;">
             <div>
-                <span class="d-block lh-1 text-uppercase" style="font-size: 20px; font-weight: 800; color: var(--secondary-color); letter-spacing: 0.5px; font-family: 'Outfit', sans-serif;">SOET</span>
+                <span class="d-block lh-1 text-uppercase" style="font-size: 20px; font-weight: 800; color: var(--accent); letter-spacing: 0.5px; font-family: 'Outfit', sans-serif;">SOET</span>
                 <span class="d-block text-white font-semibold" style="font-size: 10px; font-weight: 700; letter-spacing: 0.5px; opacity: 0.95; font-family: 'Inter', sans-serif; margin-top: 2px;">MGM University</span>
             </div>
         </a>
@@ -100,7 +100,7 @@ try {
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="mainNavbar">
-            <ul class="navbar-nav ms-auto mb-2 mb-xl-0 align-items-center gap-0.5">
+            <ul class="navbar-nav ms-auto mb-2 mb-xl-0 align-items-center gap-1">
                 <?php if (!empty($dbNavMain)): ?>
                     <?php foreach ($dbNavMain as $mainNav): ?>
                         <?php 
@@ -120,7 +120,7 @@ try {
                                 <a class="nav-link dropdown-toggle <?php echo $dropdownActive ? 'active' : ''; ?>" href="#" id="dropdownNav<?php echo $mainNav['id']; ?>" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <?php echo htmlspecialchars($mainNav['title']); ?>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-dark bg-dark border-0 shadow" aria-labelledby="dropdownNav<?php echo $mainNav['id']; ?>">
+                                <ul class="dropdown-menu dropdown-menu-dark bg-dark border-0 shadow-lg" aria-labelledby="dropdownNav<?php echo $mainNav['id']; ?>">
                                     <?php foreach ($dbNavSubGrouped[$mainNav['id']] as $subItem): ?>
                                         <?php 
                                             $subTarget = !empty($subItem['target']) ? $subItem['target'] : '_self';
@@ -130,7 +130,7 @@ try {
                                         ?>
                                         <li>
                                             <a class="dropdown-item py-2 <?php echo ($current_page === $subItem['url']) ? 'active text-warning' : ''; ?>" href="<?php echo $subUrl; ?>" target="<?php echo $subTarget; ?>">
-                                                <?php if (!empty($subItem['icon'])): ?><i class="fa-solid <?php echo htmlspecialchars($subItem['icon']); ?> me-1.5 text-warning"></i><?php endif; ?>
+                                                <?php if (!empty($subItem['icon'])): ?><i class="fa-solid <?php echo htmlspecialchars($subItem['icon']); ?> me-2 text-warning"></i><?php endif; ?>
                                                 <?php echo htmlspecialchars($subItem['title']); ?>
                                             </a>
                                         </li>
@@ -156,15 +156,6 @@ try {
                     <li class="nav-item"><a class="nav-link <?php echo $current_page === 'events.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/events.php">Events</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo $current_page === 'contact.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/contact.php">Contact</a></li>
                 <?php endif; ?>
-
-                <!-- Spotlight Search Trigger (Ctrl+K) -->
-                <li class="nav-item ms-xl-1">
-                    <button class="btn btn-outline-light btn-sm rounded-pill spotlight-trigger d-flex align-items-center gap-1" id="spotlightTriggerBtn" title="Instant Quick Search (Press Ctrl+K)">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <span class="d-none d-xxl-inline">Search</span>
-                        <kbd class="bg-dark text-white-50 border border-secondary border-opacity-25 px-1 rounded" style="font-size: 10px;">Ctrl+K</kbd>
-                    </button>
-                </li>
 
                 <li class="nav-item ms-xl-1">
                     <a class="btn btn-admission text-center" href="<?php echo APP_URL; ?>/admissions.php"><i class="fa-solid fa-right-to-bracket me-1"></i> Admissions</a>

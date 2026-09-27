@@ -22,14 +22,19 @@ if (!empty($slug)) {
     $wordCount = str_word_count(strip_tags($news['content']));
     $readMinutes = max(1, ceil($wordCount / 200));
     ?>
-    <!-- Breadcrumb Header -->
-    <div class="bg-light py-4 border-bottom mb-5">
-        <div class="container">
-            <h1 class="fw-bold mb-1 text-primary-color"><?php echo htmlspecialchars($news['title']); ?></h1>
+    <!-- Page Hero Banner for Single Article -->
+    <div class="page-hero mb-5">
+        <div class="container position-relative z-1">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge bg-warning text-dark rounded-pill px-3 py-1 font-semibold" style="font-size: 11px;">Campus Press Release</span>
+                <span class="text-white-50 small">&bull;</span>
+                <span class="text-white-50 small"><i class="fa-regular fa-clock me-1"></i><?php echo $readMinutes; ?> min read</span>
+            </div>
+            <h1 class="font-display fw-extrabold mb-3 text-white" style="font-size: 2.2rem; max-width: 850px;"><?php echo htmlspecialchars($news['title']); ?></h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="index.php" class="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href="news.php" class="text-decoration-none">News Portal</a></li>
+                    <li class="breadcrumb-item"><a href="index.php" class="text-white opacity-75 text-decoration-none"><i class="fa-solid fa-house me-1"></i> Home</a></li>
+                    <li class="breadcrumb-item"><a href="news.php" class="text-white opacity-75 text-decoration-none">News Portal</a></li>
                     <li class="breadcrumb-item active" aria-current="page"><?php echo truncate(htmlspecialchars($news['title']), 30); ?></li>
                 </ol>
             </nav>
@@ -40,20 +45,19 @@ if (!empty($slug)) {
     <div class="container mb-5">
         <div class="row g-4">
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm p-4 bg-white rounded-3">
-                    <div class="d-flex align-items-center gap-3 mb-4 text-muted small flex-wrap">
+                <div class="card border-0 shadow-sm p-4 p-md-5 bg-white" style="border-radius: 18px; border: 1px solid #e2e8f0 !important;">
+                    <div class="d-flex align-items-center gap-3 mb-4 text-muted small flex-wrap pb-3 border-bottom">
                         <span><i class="fa-regular fa-calendar me-1 text-warning"></i><?php echo formatDate($news['published_at']); ?></span>
-                        <span><i class="fa-solid fa-user-pen me-1 text-primary"></i>Reported by <?php echo htmlspecialchars($news['author_name']); ?></span>
-                        <span class="badge bg-light text-dark border"><i class="fa-regular fa-clock me-1"></i><?php echo $readMinutes; ?> min read</span>
+                        <span><i class="fa-solid fa-user-pen me-1 text-primary"></i>Reported by <strong class="text-dark"><?php echo htmlspecialchars($news['author_name']); ?></strong></span>
                     </div>
 
                     <?php if ($news['image_path']): ?>
-                        <div class="text-center mb-4 rounded overflow-hidden shadow-xs" style="max-height: 400px;">
+                        <div class="text-center mb-4 rounded-3 overflow-hidden shadow-xs" style="max-height: 420px;">
                             <img src="<?php echo uploadUrl('news', $news['image_path']); ?>" alt="News Banner" class="img-fluid w-100" style="object-fit: cover;">
                         </div>
                     <?php endif; ?>
 
-                    <div class="news-content" style="line-height: 1.85; font-size: 16px; color: #2d3748;">
+                    <div class="news-content" style="line-height: 1.85; font-size: 16px; color: #1e293b;">
                         <?php echo nl2br(htmlspecialchars($news['content'])); ?>
                     </div>
                 </div>
@@ -61,8 +65,8 @@ if (!empty($slug)) {
 
             <!-- Recent News sidebar -->
             <div class="col-lg-4">
-                <div class="card border-0 shadow-sm p-4 bg-light mb-4 rounded-3">
-                    <h5 class="fw-bold text-primary-color mb-3"><i class="fa-solid fa-bullhorn text-warning me-2"></i>Recent Press Releases</h5>
+                <div class="card border-0 shadow-sm p-4 bg-white mb-4" style="border-radius: 16px; border: 1px solid #e2e8f0 !important;">
+                    <h5 class="fw-bold text-primary-color mb-3 font-display"><i class="fa-solid fa-bullhorn text-warning me-2"></i>Recent Press Releases</h5>
                     <?php 
                         $others = $cms->db->fetchAll(
                             "SELECT title, slug, published_at FROM news WHERE status = 'published' AND slug != ? ORDER BY published_at DESC LIMIT 5",
@@ -71,11 +75,11 @@ if (!empty($slug)) {
                         if (empty($others)):
                             echo '<p class="text-muted small mb-0">No other news headlines available.</p>';
                         else:
-                            echo '<div class="list-group list-group-flush rounded shadow-xs">';
+                            echo '<div class="list-group list-group-flush rounded-3 border overflow-hidden">';
                             foreach ($others as $oth) {
-                                echo '<a href="news.php?slug=' . urlencode($oth['slug']) . '" class="list-group-item list-group-item-action py-2.5 small">';
-                                echo '<strong class="text-primary-color d-block">' . htmlspecialchars($oth['title']) . '</strong>';
-                                echo '<span class="text-muted" style="font-size: 10px;">' . formatDate($oth['published_at']) . '</span>';
+                                echo '<a href="news.php?slug=' . urlencode($oth['slug']) . '" class="list-group-item list-group-item-action py-3 small">';
+                                echo '<strong class="text-primary-color d-block font-display mb-1">' . htmlspecialchars($oth['title']) . '</strong>';
+                                echo '<span class="text-muted" style="font-size: 11px;"><i class="fa-regular fa-clock me-1"></i>' . formatDate($oth['published_at']) . '</span>';
                                 echo '</a>';
                             }
                             echo '</div>';
@@ -83,11 +87,11 @@ if (!empty($slug)) {
                     ?>
                 </div>
 
-                <div class="card border-0 shadow-sm p-4 text-center bg-dark text-white rounded-3">
+                <div class="card border-0 shadow-sm p-4 text-center text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); border-radius: 16px; border-top: 3px solid var(--accent) !important;">
                     <i class="fa-solid fa-paper-plane fa-2x text-warning mb-2"></i>
-                    <h6 class="fw-bold mb-1">Campus Media Desk</h6>
-                    <p class="small text-white-50 mb-3">Submit official departmental news, academic press releases, or conference coverage.</p>
-                    <a href="submit-news.php" class="btn btn-warning btn-sm font-semibold rounded-pill px-4">Submit News Report</a>
+                    <h6 class="fw-bold mb-1 font-display">Campus Media Desk</h6>
+                    <p class="small text-white-50 mb-3" style="font-size: 12px; line-height: 1.5;">Submit official departmental press releases, academic milestones, or research symposium coverage.</p>
+                    <a href="submit-news.php" class="btn btn-warning btn-sm font-bold rounded-pill px-4 shadow-xs text-dark">Submit News Report</a>
                 </div>
             </div>
         </div>
@@ -108,20 +112,20 @@ if (!empty($slug)) {
     $news_bg = !empty($settings['news_hero_image']) ? uploadUrl('settings', $settings['news_hero_image']) : null;
     ?>
 
-    <!-- Breadcrumb Header -->
-    <div class="py-5 text-white mb-5 position-relative overflow-hidden" style="<?php echo $news_bg ? "background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), url('{$news_bg}') center/cover no-repeat;" : "background-color: var(--primary-color);"; ?>">
-        <div class="container position-relative z-1 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <!-- Page Hero Banner for News Grid -->
+    <div class="page-hero mb-5">
+        <div class="container position-relative z-1 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <h1 class="fw-extrabold mb-1 text-white display-5">News Portal</h1>
-                <p class="lead opacity-75 mb-3">Official Announcements, Press Releases, and Achievements</p>
+                <h1 class="font-display fw-extrabold mb-2 text-white">Campus News &amp; Media Portal</h1>
+                <p class="lead opacity-80 mb-3" style="font-size: 1.1rem; max-width: 650px;">Official institute announcements, academic achievements, research breakthroughs, and press releases.</p>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="index.php" class="text-white opacity-75 text-decoration-none">Home</a></li>
-                        <li class="breadcrumb-item active text-warning" aria-current="page">News</li>
+                        <li class="breadcrumb-item"><a href="index.php" class="text-white opacity-75 text-decoration-none"><i class="fa-solid fa-house me-1"></i> Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">News Portal</li>
                     </ol>
                 </nav>
             </div>
-            <a href="submit-news.php" class="btn btn-warning rounded-pill px-4 py-2 fw-bold shadow-sm"><i class="fa-solid fa-paper-plane me-1"></i> Submit News</a>
+            <a href="submit-news.php" class="btn btn-warning rounded-pill px-4 py-2 font-bold shadow-sm text-dark"><i class="fa-solid fa-paper-plane me-1.5"></i> Submit News</a>
         </div>
     </div>
 
@@ -129,9 +133,9 @@ if (!empty($slug)) {
         <!-- Live Search Bar -->
         <div class="row mb-4 justify-content-center">
             <div class="col-md-6">
-                <div class="input-group shadow-sm">
-                    <span class="input-group-text bg-white border-end-0 text-warning"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" id="newsSearchInput" class="form-control border-start-0" placeholder="Search news articles or headlines...">
+                <div class="input-group shadow-xs">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="newsSearchInput" class="form-control border-start-0 ps-0" placeholder="Search news articles, topics, or headlines...">
                 </div>
             </div>
         </div>
@@ -139,7 +143,7 @@ if (!empty($slug)) {
         <div class="row g-4" id="newsGrid">
             <?php if (empty($news_list)): ?>
                 <div class="col-12 text-center text-muted py-5">
-                    <i class="fa-solid fa-newspaper fa-4x mb-3 text-secondary"></i>
+                    <i class="fa-solid fa-newspaper fa-4x mb-3 text-secondary opacity-50"></i>
                     <p>No news updates have been published yet.</p>
                 </div>
             <?php else: ?>
@@ -150,7 +154,7 @@ if (!empty($slug)) {
                     <div class="col-md-6 col-lg-4 news-card-col"
                          data-title="<?php echo strtolower(htmlspecialchars($news['title'])); ?>"
                          data-content="<?php echo strtolower(htmlspecialchars(substr($news['content'], 0, 200))); ?>">
-                        <div class="card custom-card h-100 border-0 shadow-sm hover-elevate">
+                        <div class="card h-100 border-0 shadow-sm hover-lift bg-white overflow-hidden" style="border-radius: 16px; border: 1px solid #e2e8f0 !important;">
                             <?php if ($news['image_path']): ?>
                                 <img src="<?php echo uploadUrl('news', $news['image_path']); ?>" class="card-img-top" alt="Cover" style="height: 200px; object-fit: cover;">
                             <?php else: ?>
@@ -158,18 +162,18 @@ if (!empty($slug)) {
                                     <i class="fa-solid fa-newspaper fa-3x text-warning"></i>
                                 </div>
                             <?php endif; ?>
-                            <div class="card-body d-flex flex-column justify-content-between p-3.5">
+                            <div class="card-body d-flex flex-column justify-content-between p-4">
                                 <div>
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="text-muted small"><i class="fa-regular fa-calendar me-1"></i><?php echo formatDate($news['published_at']); ?></span>
-                                        <span class="badge bg-warning text-dark" style="font-size: 10px;">Official News</span>
+                                        <span class="badge bg-warning bg-opacity-25 text-dark rounded-pill" style="font-size: 10px;">Official Press</span>
                                     </div>
-                                    <h5 class="fw-bold text-primary-color mb-2"><?php echo htmlspecialchars($news['title']); ?></h5>
-                                    <p class="text-muted small mb-3"><?php echo truncate(htmlspecialchars($news['content']), 120); ?></p>
+                                    <h5 class="fw-bold text-primary-color mb-2 font-display"><?php echo htmlspecialchars($news['title']); ?></h5>
+                                    <p class="text-muted small mb-3" style="line-height: 1.6;"><?php echo truncate(htmlspecialchars($news['content']), 120); ?></p>
                                 </div>
-                                <div class="d-flex justify-content-between align-items-center border-top pt-2">
+                                <div class="d-flex justify-content-between align-items-center border-top pt-3">
                                     <small class="text-muted font-semibold"><i class="fa-regular fa-clock me-1"></i><?php echo $readMinutes; ?> min read</small>
-                                    <a href="news.php?slug=<?php echo urlencode($news['slug']); ?>" class="btn btn-xs btn-outline-primary py-1 px-2.5 rounded font-semibold" style="font-size: 11px;">Read Full <i class="fa-solid fa-arrow-right small ms-1"></i></a>
+                                    <a href="news.php?slug=<?php echo urlencode($news['slug']); ?>" class="btn btn-xs btn-outline-primary py-1 px-3 rounded-pill font-semibold" style="font-size: 11px;">Read Full <i class="fa-solid fa-arrow-right small ms-1"></i></a>
                                 </div>
                             </div>
                         </div>

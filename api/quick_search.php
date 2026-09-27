@@ -1,9 +1,11 @@
 <?php
 /**
  * ⚡ Spotlight Quick Search & Navigation API (Ctrl+K Command Palette)
+ * SOET MGM University
  */
 
-header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../core/bootstrap.php';
 
 $query = trim($_GET['q'] ?? '');
@@ -29,14 +31,27 @@ $staticPages = [
     ['title' => '🤖 CampusAI Assistant', 'desc' => '24/7 Intelligent assistant for admission queries & tech help', 'url' => 'javascript:document.getElementById("soet-chatbot-trigger")?.click()', 'icon' => 'fa-robot']
 ];
 
-if (empty($query)) {
-    $results['pages'] = array_slice($staticPages, 0, 5);
-    echo json_encode(['success' => true, 'results' => $results]);
-    exit;
-}
-
 try {
     $db = Database::getInstance();
+
+    if (empty($query)) {
+        // Return default top links and popular programs
+        $results['pages'] = $staticPages;
+        
+        $topCourses = $db->fetchAll("SELECT name, code, duration_years, fee_year_1 FROM courses WHERE is_active = 1 ORDER BY id ASC LIMIT 3");
+        foreach ($topCourses as $c) {
+            $results['courses'][] = [
+                'title' => $c['name'] . ' (' . $c['code'] . ')',
+                'desc' => $c['duration_years'] . ' Years • ₹' . number_format($c['fee_year_1']) . '/yr',
+                'url' => APP_URL . '/courses.php',
+                'icon' => 'fa-book-open'
+            ];
+        }
+
+        echo json_encode(['success' => true, 'results' => $results], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+
     $param = '%' . $query . '%';
 
     // 1. Filter Static Pages
@@ -117,7 +132,7 @@ try {
         ];
     }
 
-    echo json_encode(['success' => true, 'results' => $results]);
+    echo json_encode(['success' => true, 'results' => $results], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'results' => $results, 'message' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'results' => $results, 'message' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 }

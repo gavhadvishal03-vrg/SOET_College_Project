@@ -87,32 +87,13 @@ $totalViews = $visitorTracker->getTotalPageViews();
     </div>
 </footer>
 
-<!-- Spotlight Command Palette Modal (Ctrl+K) -->
-<div class="modal fade spotlight-modal" id="spotlightModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px);">
-            <div class="modal-header border-bottom border-secondary border-opacity-25 px-4 py-3">
-                <div class="input-group input-group-lg border-0">
-                    <span class="input-group-text bg-transparent border-0 text-warning ps-0"><i class="fa-solid fa-magnifying-glass fs-4"></i></span>
-                    <input type="text" id="spotlightInput" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Type a course, faculty name, event, fee, or keyword..." autocomplete="off">
-                </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-3" id="spotlightResults" style="max-height: 450px; overflow-y: auto;">
-                <!-- Results rendered dynamically via JavaScript -->
-            </div>
-            <div class="modal-footer border-top border-secondary border-opacity-25 py-2 px-4 d-flex justify-content-between text-white-50 small">
-                <span><kbd class="bg-dark text-white-50 border border-secondary border-opacity-50 px-1 rounded">ESC</kbd> to close</span>
-                <span><kbd class="bg-dark text-white-50 border border-secondary border-opacity-50 px-1 rounded">↑</kbd> <kbd class="bg-dark text-white-50 border border-secondary border-opacity-50 px-1 rounded">↓</kbd> to navigate</span>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Back-to-Top Floating Scroll Button -->
 <button id="backToTopBtn" class="btn btn-warning rounded-circle shadow" title="Back to top">
-    <i class="fa-solid fa-arrow-up text-dark"></i>
+    <i class="fa-solid fa-arrow-up"></i>
 </button>
+
+<!-- Include WhatsApp Live Support UI overlay -->
+<?php include_once __DIR__ . '/whatsapp-ui.php'; ?>
 
 <!-- Include Chatbot UI overlay -->
 <?php include_once __DIR__ . '/chatbot-ui.php'; ?>

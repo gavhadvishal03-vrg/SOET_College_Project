@@ -131,35 +131,38 @@ $faculty_list = $db->fetchAll(
 );
 ?>
 
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom flex-wrap gap-2">
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-0"><i class="fa-solid fa-chalkboard-user text-warning me-2"></i>Faculty Directory Management</h1>
-        <small class="text-muted">Manage academic faculty profiles, research areas, and departmental appointments</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Faculty & Staff</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">Faculty Directory Management</h2>
+        <p class="text-muted small mb-0">Manage academic faculty profiles, research appointments, and qualifications</p>
     </div>
     <?php if ($action === 'list'): ?>
         <div class="d-flex gap-2 align-items-center">
-            <a href="faculty.php?action=export_csv" class="btn btn-sm btn-success">
+            <a href="faculty.php?action=export_csv" class="btn btn-sm btn-success rounded-pill px-3 font-semibold">
                 <i class="fa-solid fa-file-excel me-1"></i> Export CSV
             </a>
-            <a href="faculty.php?action=add" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus me-1"></i> Add Faculty</a>
+            <a href="faculty.php?action=add" class="btn btn-primary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-plus me-1 text-warning"></i> Add Faculty</a>
         </div>
     <?php else: ?>
-        <a href="faculty.php" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
+        <a href="faculty.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
     <?php endif; ?>
 </div>
 
 <?php if ($action === 'list'): ?>
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h5 class="fw-bold mb-0 text-primary-color"><i class="fa-solid fa-users-rectangle text-warning me-2"></i>Faculty Members (<?php echo count($faculty_list); ?>)</h5>
-            <input type="text" id="facultySearchInput" class="form-control form-control-sm" placeholder="Search faculty name, department..." style="width: 240px;">
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="card-header bg-white py-3.5 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom">
+            <h5 class="font-display fw-bold mb-0 text-dark"><i class="fa-solid fa-users-rectangle text-warning me-2"></i>Faculty Members (<?php echo count($faculty_list); ?>)</h5>
+            <input type="text" id="facultySearchInput" class="form-control form-control-sm rounded-pill px-3" placeholder="Search faculty name, department..." style="width: 240px;">
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0" id="facultyTable">
-                    <thead class="table-dark">
+                <table class="table table-hover align-middle mb-0" id="facultyTable">
+                    <thead class="table-light">
                         <tr>
-                            <th style="width: 60px;">Photo</th>
+                            <th class="ps-4" style="width: 60px;">Photo</th>
                             <th>Faculty Name</th>
                             <th>Designation</th>
                             <th>Department</th>
@@ -167,14 +170,14 @@ $faculty_list = $db->fetchAll(
                             <th>Specialization</th>
                             <th class="text-center">Experience</th>
                             <th class="text-center">Status</th>
-                            <th class="text-end">Actions</th>
+                            <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($faculty_list as $f): ?>
                             <tr>
-                                <td class="text-center">
-                                    <div class="rounded-circle overflow-hidden bg-light border d-inline-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+                                <td class="ps-4 text-center">
+                                    <div class="rounded-circle overflow-hidden bg-light border d-inline-flex align-items-center justify-content-center shadow-xs" style="width: 44px; height: 44px;">
                                         <?php if (!empty($f['image_path'])): ?>
                                             <img src="<?php echo uploadUrl('faculty', $f['image_path']); ?>" alt="<?php echo htmlspecialchars($f['name']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
                                         <?php else: ?>
@@ -182,21 +185,19 @@ $faculty_list = $db->fetchAll(
                                         <?php endif; ?>
                                     </div>
                                 </td>
-                                <td class="fw-bold text-primary-color"><?php echo htmlspecialchars($f['name']); ?></td>
-                                <td><span class="badge bg-warning text-dark"><?php echo htmlspecialchars($f['designation']); ?></span></td>
-                                <td><span class="text-muted small fw-semibold"><?php echo htmlspecialchars($f['department_name']); ?></span></td>
+                                <td><div class="font-display fw-bold text-dark"><?php echo htmlspecialchars($f['name']); ?></div></td>
+                                <td><span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill"><?php echo htmlspecialchars($f['designation']); ?></span></td>
+                                <td><span class="text-muted small font-semibold"><?php echo htmlspecialchars($f['department_name']); ?></span></td>
                                 <td>
-                                    <small class="d-block text-secondary"><?php echo htmlspecialchars($f['email']); ?></small>
+                                    <small class="d-block text-dark font-semibold"><?php echo htmlspecialchars($f['email']); ?></small>
                                     <small class="d-block text-muted"><?php echo htmlspecialchars($f['phone']); ?></small>
                                 </td>
-                                <td class="small"><?php echo htmlspecialchars($f['specialization']); ?></td>
-                                <td class="text-center"><?php echo $f['experience_years']; ?> Years</td>
+                                <td class="small text-muted"><?php echo htmlspecialchars($f['specialization']); ?></td>
+                                <td class="text-center font-semibold"><?php echo $f['experience_years']; ?> Yrs</td>
                                 <td class="text-center"><?php echo statusBadge($f['is_active'] ? 'active' : 'inactive'); ?></td>
-                                <td class="text-end">
-                                    <div class="btn-group">
-                                        <a href="faculty.php?action=edit&id=<?php echo $f['id']; ?>" class="btn btn-sm btn-outline-primary" title="Edit Profile"><i class="fa-solid fa-pen"></i></a>
-                                        <a href="faculty.php?action=delete&id=<?php echo $f['id']; ?>" class="btn btn-sm btn-outline-danger btn-delete-confirm" title="Delete Profile" onclick="return confirm('Delete this faculty member?');"><i class="fa-solid fa-trash"></i></a>
-                                    </div>
+                                <td class="text-end pe-4 text-nowrap">
+                                    <a href="faculty.php?action=edit&id=<?php echo $f['id']; ?>" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 font-semibold me-1" title="Edit Profile"><i class="fa-solid fa-pen me-1"></i> Edit</a>
+                                    <a href="faculty.php?action=delete&id=<?php echo $f['id']; ?>" class="btn btn-sm btn-outline-danger rounded-pill px-2.5 btn-delete-confirm font-semibold" title="Delete Profile" onclick="return confirm('Delete this faculty member?');"><i class="fa-solid fa-trash me-1"></i> Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

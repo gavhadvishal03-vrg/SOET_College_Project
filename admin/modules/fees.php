@@ -101,39 +101,42 @@ $fees = $db->fetchAll(
 );
 ?>
 
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom flex-wrap gap-2">
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-0"><i class="fa-solid fa-indian-rupee-sign text-warning me-2"></i>Fee Structures Manager</h1>
-        <small class="text-muted">Manage semester-wise and academic year tuition fees across degree tracks</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Financials</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">Fee Structures Manager</h2>
+        <p class="text-muted small mb-0">Manage semester-wise and academic year tuition fees across degree programs</p>
     </div>
     <?php if ($action === 'list'): ?>
         <div class="d-flex gap-2 align-items-center">
-            <a href="fees.php?action=export_csv" class="btn btn-sm btn-success">
+            <a href="fees.php?action=export_csv" class="btn btn-sm btn-success rounded-pill px-3 font-semibold">
                 <i class="fa-solid fa-file-excel me-1"></i> Export CSV
             </a>
-            <a href="fees.php?action=add" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus me-1"></i> Configure Fees</a>
+            <a href="fees.php?action=add" class="btn btn-primary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-plus me-1 text-warning"></i> Configure Fees</a>
         </div>
     <?php else: ?>
-        <a href="fees.php" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
+        <a href="fees.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
     <?php endif; ?>
 </div>
 
 <?php if ($action === 'list'): ?>
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h5 class="fw-bold mb-0 text-primary-color"><i class="fa-solid fa-receipt text-warning me-2"></i>Configured Fee Schedules (<?php echo count($fees); ?>)</h5>
-            <input type="text" id="feeSearchInput" class="form-control form-control-sm" placeholder="Search course, code, year..." style="width: 250px;">
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="card-header bg-white py-3.5 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom">
+            <h5 class="font-display fw-bold mb-0 text-dark"><i class="fa-solid fa-receipt text-warning me-2"></i>Configured Fee Schedules (<?php echo count($fees); ?>)</h5>
+            <input type="text" id="feeSearchInput" class="form-control form-control-sm rounded-pill px-3" placeholder="Search course, code, year..." style="width: 250px;">
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0" id="feesTable">
-                    <thead class="table-dark">
+                <table class="table table-hover align-middle mb-0" id="feesTable">
+                    <thead class="table-light">
                         <tr>
-                            <th>Course / Program</th>
+                            <th class="ps-4">Course / Program</th>
                             <th class="text-center">Semester</th>
                             <th>Academic Year</th>
                             <th class="text-end">Amount (INR)</th>
-                            <th class="text-end">Actions</th>
+                            <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -144,15 +147,13 @@ $fees = $db->fetchAll(
                         <?php else: ?>
                             <?php foreach ($fees as $fee): ?>
                                 <tr>
-                                    <td class="fw-bold text-primary-color"><?php echo htmlspecialchars($fee['course_name']); ?> (<?php echo htmlspecialchars($fee['course_code']); ?>)</td>
-                                    <td class="text-center"><span class="badge bg-secondary">Semester <?php echo $fee['semester']; ?></span></td>
-                                    <td><code><?php echo htmlspecialchars($fee['academic_year']); ?></code></td>
-                                    <td class="text-end fw-bold text-success">₹<?php echo number_format($fee['amount'], 2); ?></td>
-                                    <td class="text-end">
-                                        <div class="btn-group">
-                                            <a href="fees.php?action=edit&id=<?php echo $fee['id']; ?>" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fa-solid fa-pen"></i></a>
-                                            <a href="fees.php?action=delete&id=<?php echo $fee['id']; ?>" class="btn btn-sm btn-outline-danger btn-delete-confirm" title="Delete" onclick="return confirm('Delete this fee configuration?');"><i class="fa-solid fa-trash"></i></a>
-                                        </div>
+                                    <td class="ps-4 font-display fw-bold text-dark"><?php echo htmlspecialchars($fee['course_name']); ?> <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill ms-1"><?php echo htmlspecialchars($fee['course_code']); ?></span></td>
+                                    <td class="text-center"><span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill">Semester <?php echo $fee['semester']; ?></span></td>
+                                    <td><code class="text-dark bg-light px-2 py-1 rounded"><?php echo htmlspecialchars($fee['academic_year']); ?></code></td>
+                                    <td class="text-end fw-bold text-success fs-6">₹<?php echo number_format($fee['amount'], 2); ?></td>
+                                    <td class="text-end pe-4 text-nowrap">
+                                        <a href="fees.php?action=edit&id=<?php echo $fee['id']; ?>" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 font-semibold me-1" title="Edit"><i class="fa-solid fa-pen me-1"></i> Edit</a>
+                                        <a href="fees.php?action=delete&id=<?php echo $fee['id']; ?>" class="btn btn-sm btn-outline-danger rounded-pill px-2.5 btn-delete-confirm font-semibold" title="Delete" onclick="return confirm('Delete this fee configuration?');"><i class="fa-solid fa-trash me-1"></i> Delete</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

@@ -44,78 +44,89 @@ for ($i = 6; $i >= 0; $i--) {
 ?>
 
 <!-- Chatbot Admin Header Subnav -->
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom flex-wrap gap-2">
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-0"><i class="fa-solid fa-robot text-warning me-2"></i>AI Chatbot Control Suite</h1>
-        <small class="text-muted">Enterprise Hybrid Query Router, Knowledge Base, &amp; CampusAI Analytics</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Cognitive Intelligence</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">CampusAI Hub &amp; Analytics</h2>
+        <p class="text-muted small mb-0">Enterprise Hybrid Query Router, Knowledge Base, &amp; CampusAI Analytics</p>
     </div>
     <div class="d-flex gap-2 align-items-center flex-wrap">
-        <a href="settings.php" class="btn btn-warning text-dark font-semibold"><i class="fa-solid fa-key me-1"></i> OpenAI Settings</a>
-        <a href="unanswered.php" class="btn btn-outline-danger font-semibold position-relative">
+        <a href="settings.php" class="btn btn-outline-warning text-dark btn-sm rounded-pill px-3 shadow-xs font-semibold">
+            <i class="fa-solid fa-key me-1 text-warning"></i> AI API Settings
+        </a>
+        <a href="unanswered.php" class="btn btn-outline-danger btn-sm rounded-pill px-3 position-relative font-semibold shadow-xs">
             <i class="fa-solid fa-triangle-exclamation me-1"></i> Unanswered Questions
             <?php if ($unansweredCount > 0): ?>
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"><?php echo $unansweredCount; ?></span>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 10px;"><?php echo $unansweredCount; ?></span>
             <?php endif; ?>
         </a>
     </div>
 </div>
 
 <!-- Navigation Pills -->
-<ul class="nav nav-pills mb-4 bg-light p-2 rounded border">
-    <li class="nav-item"><a class="nav-link active font-semibold" href="index.php"><i class="fa-solid fa-chart-line me-1"></i> Dashboard</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="knowledge-base.php"><i class="fa-solid fa-book me-1"></i> Knowledge Base</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="faq.php"><i class="fa-solid fa-circle-question me-1"></i> FAQs</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="documents.php"><i class="fa-solid fa-file-arrow-up me-1"></i> Doc Upload &amp; Text Extractor</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="unanswered.php"><i class="fa-solid fa-question me-1"></i> Unanswered Queue</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="conversations.php"><i class="fa-solid fa-comments me-1"></i> Conversations</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="feedback.php"><i class="fa-solid fa-thumbs-up me-1"></i> User Feedback</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="settings.php"><i class="fa-solid fa-gears me-1"></i> AI Settings</a></li>
-</ul>
+<div class="card border-0 shadow-sm rounded-4 bg-white p-2 mb-4">
+    <ul class="nav nav-pills gap-1 flex-wrap" id="aiSubNav">
+        <li class="nav-item"><a class="nav-link active rounded-pill font-semibold px-3 py-2 text-sm" href="index.php"><i class="fa-solid fa-chart-line me-1.5"></i> Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="knowledge-base.php"><i class="fa-solid fa-book me-1.5 text-primary"></i> Knowledge Base</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="faq.php"><i class="fa-solid fa-circle-question me-1.5 text-info"></i> FAQs</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="documents.php"><i class="fa-solid fa-file-arrow-up me-1.5 text-warning"></i> Documents Extractor</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="unanswered.php"><i class="fa-solid fa-question me-1.5 text-danger"></i> Unanswered</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="conversations.php"><i class="fa-solid fa-comments me-1.5 text-success"></i> Conversations</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="feedback.php"><i class="fa-solid fa-thumbs-up me-1.5 text-warning"></i> Feedback</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="settings.php"><i class="fa-solid fa-gears me-1.5 text-muted"></i> AI Config</a></li>
+    </ul>
+</div>
 
 <!-- Metrics Stat Cards -->
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm p-3 bg-primary text-white">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <h6 class="text-white-50 mb-1 text-uppercase font-semibold">Total Chats</h6>
-                    <h3 class="fw-bold mb-0"><?php echo number_format($totalConversations); ?></h3>
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3.5 bg-white h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Total Chats</span>
+                <div class="stat-icon-sm bg-primary-subtle text-primary rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    <i class="fa-solid fa-comments"></i>
                 </div>
-                <i class="fa-solid fa-comments fs-1 text-white-50"></i>
             </div>
+            <h3 class="font-display fw-extrabold text-dark mb-0"><?php echo number_format($totalConversations); ?></h3>
+            <div class="text-muted small mt-1" style="font-size: 11px;"><?php echo number_format($totalMessages); ?> total messages</div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm p-3 bg-success text-white">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <h6 class="text-white-50 mb-1 text-uppercase font-semibold">Today's Chats</h6>
-                    <h3 class="fw-bold mb-0"><?php echo number_format($todayConversations); ?></h3>
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3.5 bg-white h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Today's Chats</span>
+                <div class="stat-icon-sm bg-success-subtle text-success rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    <i class="fa-solid fa-calendar-day"></i>
                 </div>
-                <i class="fa-solid fa-calendar-day fs-1 text-white-50"></i>
             </div>
+            <h3 class="font-display fw-extrabold text-dark mb-0"><?php echo number_format($todayConversations); ?></h3>
+            <div class="text-success small mt-1 fw-medium" style="font-size: 11px;"><i class="fa-solid fa-arrow-trend-up me-1"></i>Active sessions today</div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm p-3 bg-info text-white">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <h6 class="text-white-50 mb-1 text-uppercase font-semibold">SOET DB Queries</h6>
-                    <h3 class="fw-bold mb-0"><?php echo number_format($soetQueries); ?></h3>
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3.5 bg-white h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">DB Facts Served</span>
+                <div class="stat-icon-sm bg-info-subtle text-info-emphasis rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    <i class="fa-solid fa-building-columns"></i>
                 </div>
-                <i class="fa-solid fa-building-columns fs-1 text-white-50"></i>
             </div>
+            <h3 class="font-display fw-extrabold text-dark mb-0"><?php echo number_format($soetQueries); ?></h3>
+            <div class="text-muted small mt-1" style="font-size: 11px;">Institutional verified data</div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm p-3 bg-dark text-white">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <h6 class="text-white-50 mb-1 text-uppercase font-semibold">Satisfaction Rate</h6>
-                    <h3 class="fw-bold mb-0 text-warning"><?php echo $satisfactionRate; ?>%</h3>
+    <div class="col-6 col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3.5 bg-white h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Satisfaction Rate</span>
+                <div class="stat-icon-sm bg-warning-subtle text-warning-emphasis rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    <i class="fa-solid fa-star"></i>
                 </div>
-                <i class="fa-solid fa-star fs-1 text-warning"></i>
             </div>
+            <h3 class="font-display fw-extrabold text-warning-emphasis mb-0"><?php echo $satisfactionRate; ?>%</h3>
+            <div class="text-muted small mt-1" style="font-size: 11px;">Based on <?php echo $totalRatings; ?> ratings</div>
         </div>
     </div>
 </div>
@@ -123,16 +134,22 @@ for ($i = 6; $i >= 0; $i--) {
 <!-- Chart Analytics Section -->
 <div class="row g-4 mb-4">
     <div class="col-lg-8">
-        <div class="card border-0 shadow-sm p-4 h-100">
-            <h5 class="fw-bold text-primary-color mb-3 border-bottom pb-2"><i class="fa-solid fa-chart-area text-warning me-2"></i>7-Day Chatbot Interaction Trends</h5>
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+            <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
+                <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-chart-area text-primary me-2"></i>7-Day Chatbot Interaction Trends</h5>
+                <span class="badge bg-light text-muted border font-semibold">Weekly View</span>
+            </div>
             <div style="height: 280px; position: relative;">
                 <canvas id="chatTrafficChart"></canvas>
             </div>
         </div>
     </div>
     <div class="col-lg-4">
-        <div class="card border-0 shadow-sm p-4 h-100">
-            <h5 class="fw-bold text-primary-color mb-3 border-bottom pb-2"><i class="fa-solid fa-chart-pie text-warning me-2"></i>Query Source Distribution</h5>
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+            <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
+                <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-chart-pie text-primary me-2"></i>Query Source Routing</h5>
+                <span class="badge bg-light text-muted border font-semibold">RAG Mix</span>
+            </div>
             <div style="height: 280px; position: relative;">
                 <canvas id="querySourceChart"></canvas>
             </div>
@@ -154,19 +171,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 label: 'Chat Sessions',
                 data: <?php echo json_encode($chartData); ?>,
                 borderColor: '#1e3a8a',
-                backgroundColor: 'rgba(30, 58, 138, 0.15)',
-                borderWidth: 3,
+                backgroundColor: 'rgba(30, 58, 138, 0.08)',
+                borderWidth: 2.5,
                 fill: true,
                 tension: 0.35,
                 pointRadius: 4,
+                pointHoverRadius: 6,
                 pointBackgroundColor: '#f59e0b'
             }]
         },
         options: { 
             responsive: true, 
             maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
             scales: {
-                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                x: { grid: { display: false } }
             }
         }
     });
@@ -180,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
             datasets: [{
                 data: [<?php echo max(1, $soetQueries); ?>, <?php echo max(1, $openaiQueries); ?>, <?php echo max(1, $hybridQueries); ?>],
                 backgroundColor: ['#1e3a8a', '#10b981', '#f59e0b'],
-                borderWidth: 2,
+                borderWidth: 3,
                 borderColor: '#ffffff'
             }]
         },
@@ -188,8 +210,9 @@ document.addEventListener('DOMContentLoaded', () => {
             responsive: true, 
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'bottom' }
-            }
+                legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } }
+            },
+            cutout: '68%'
         }
     });
 });

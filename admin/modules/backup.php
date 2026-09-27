@@ -114,47 +114,68 @@ $page_title = "Backup & Restore";
 include_once __DIR__ . '/../includes/header.php';
 ?>
 
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom">
-    <h1 class="h2 fw-bold text-primary-color">Database Maintenance</h1>
-    <span class="badge bg-warning text-dark"><i class="fa-solid fa-triangle-exclamation me-1"></i> Admin Operations</span>
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">System Maintenance</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">Database Backup &amp; Restore</h2>
+        <p class="text-muted small mb-0">Export system snapshots or restore the complete institutional database schema</p>
+    </div>
+    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3 py-2 fw-semibold">
+        <i class="fa-solid fa-triangle-exclamation me-1 text-warning"></i> Super Admin Level Action
+    </span>
 </div>
 
 <div class="row g-4">
     <!-- Backup Export card -->
     <div class="col-lg-6">
-        <div class="card border-0 shadow-sm p-4 h-100 text-center">
-            <i class="fa-solid fa-cloud-arrow-down fa-4x text-warning mb-3"></i>
-            <h4 class="fw-bold text-primary-color mb-3">Export Database Backup</h4>
-            <p class="text-muted small mb-4">Export and download the full schema of the SOET College database, including all configuration values, roles, placements, events, and log archives, formatted as standard SQL file statements.</p>
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 text-center d-flex flex-column">
+            <div class="stat-icon bg-primary-subtle text-primary rounded-4 mx-auto mb-3 d-flex align-items-center justify-content-center shadow-xs" style="width: 72px; height: 72px; font-size: 28px;">
+                <i class="fa-solid fa-cloud-arrow-down"></i>
+            </div>
+            <h4 class="font-display fw-bold text-dark mb-2">Export Database Backup</h4>
+            <p class="text-muted small mb-4 px-lg-3" style="line-height: 1.7;">
+                Export and download the full schema of the SOET College database, including all configuration values, roles, placements, events, and log archives, formatted as standard SQL file statements.
+            </p>
             
-            <div class="mt-auto">
-                <a href="backup.php?action=export" class="btn btn-primary w-100 py-2.5 fw-bold"><i class="fa-solid fa-download me-1"></i> Download SQL Backup File</a>
+            <div class="mt-auto pt-3">
+                <a href="backup.php?action=export" class="btn btn-primary rounded-pill w-100 py-2.5 fw-bold shadow-sm hover-lift">
+                    <i class="fa-solid fa-download me-1.5"></i> Download SQL Backup Snapshot
+                </a>
+                <div class="text-muted small mt-2" style="font-size: 11px;"><i class="fa-solid fa-shield-halved me-1 text-success"></i> Includes foreign keys and transactional state</div>
             </div>
         </div>
     </div>
 
     <!-- Restore DB card -->
     <div class="col-lg-6">
-        <div class="card border-0 shadow-sm p-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 d-flex flex-column">
             <div class="text-center mb-3">
-                <i class="fa-solid fa-cloud-arrow-up fa-4x text-danger mb-2"></i>
-                <h4 class="fw-bold text-primary-color">Restore Database</h4>
-                <p class="text-muted small">Upload a previously generated SOET SQL database backup file to override current structures. All current table records will be drops and replaced.</p>
+                <div class="stat-icon bg-danger-subtle text-danger rounded-4 mx-auto mb-3 d-flex align-items-center justify-content-center shadow-xs" style="width: 72px; height: 72px; font-size: 28px;">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <h4 class="font-display fw-bold text-dark mb-2">Restore Database</h4>
+                <p class="text-muted small mb-0 px-lg-2">
+                    Upload a previously generated SOET SQL database backup file to restore structures. All existing table records will be replaced.
+                </p>
             </div>
             
-            <div class="alert alert-warning small mb-4">
-                <i class="fa-solid fa-circle-exclamation me-1"></i> <strong>Caution:</strong> This process will overwrite current records. Perform this operation with caution!
+            <div class="alert alert-warning-subtle border border-warning-subtle rounded-3 small p-3 mb-4">
+                <i class="fa-solid fa-circle-exclamation me-1 text-warning"></i> <strong>Caution:</strong> This process will overwrite current records with the uploaded snapshot.
             </div>
 
-            <form method="POST" action="backup.php" enctype="multipart/form-data">
+            <form method="POST" action="backup.php" enctype="multipart/form-data" class="mt-auto">
                 <?php echo Security::csrfField(); ?>
                 
-                <div class="mb-4">
-                    <label class="form-label font-semibold small">Choose SQL backup file (.sql) *</label>
-                    <input type="file" name="backup_file" class="form-control" accept=".sql" required>
+                <div class="mb-3">
+                    <label class="form-label font-semibold text-dark small">Choose SQL backup file (.sql) <span class="text-danger">*</span></label>
+                    <input type="file" name="backup_file" class="form-control rounded-3" accept=".sql" required>
                 </div>
                 
-                <button type="submit" name="restore_database" class="btn btn-danger w-100 py-2.5 fw-bold" onclick="return confirm('WARNING: Are you absolutely sure you want to restore the database? This will overwrite all current tables!');"><i class="fa-solid fa-rotate me-1"></i> Restore Database Schema</button>
+                <button type="submit" name="restore_database" class="btn btn-danger rounded-pill w-100 py-2.5 fw-bold shadow-sm hover-lift" onclick="return confirm('WARNING: Are you absolutely sure you want to restore the database? This will overwrite all current tables!');">
+                    <i class="fa-solid fa-rotate me-1.5"></i> Execute Database Restore
+                </button>
             </form>
         </div>
     </div>

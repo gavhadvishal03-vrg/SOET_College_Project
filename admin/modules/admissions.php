@@ -127,29 +127,32 @@ $applications = $db->fetchAll(
 $seatMetrics = $cms->getCourseSeatMetrics();
 ?>
 
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom">
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-0"><i class="fa-solid fa-graduation-cap text-warning me-2"></i>Admissions & Real-Time Seat Manager</h1>
-        <small class="text-muted">Live synchronization between Admission Portal $\rightarrow$ Database $\rightarrow$ 🤖 CampusAI Chatbot API</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Admissions & Quota</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">Admissions & Real-Time Seat Manager</h2>
+        <p class="text-muted small mb-0">Live real-time synchronization between Admission Portal &bull; Database &bull; 🤖 CampusAI Chatbot Engine</p>
     </div>
     <?php if ($action !== 'list'): ?>
-        <a href="admissions.php" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-angle-left me-1"></i> Back to Queue</a>
+        <a href="admissions.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><i class="fa-solid fa-angle-left me-1"></i> Back to Queue</a>
     <?php endif; ?>
 </div>
 
 <?php if ($action === 'list'): ?>
     <!-- 1. Real-Time Seat Availability Dashboard -->
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="fw-bold mb-0 text-white"><i class="fa-solid fa-chart-pie text-warning me-2"></i>Course-Wise Seat Availability & Admission Status</h5>
-            <span class="badge bg-warning text-dark"><i class="fa-solid fa-rotate me-1"></i> Real-Time Database Sync</span>
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white overflow-hidden">
+        <div class="card-header bg-dark text-white py-3.5 px-4 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, var(--primary), var(--primary-600)) !important;">
+            <h5 class="font-display fw-bold mb-0 text-white"><i class="fa-solid fa-chart-pie text-warning me-2"></i>Course-Wise Seat Availability & Admission Status</h5>
+            <span class="badge bg-warning text-dark rounded-pill px-3 py-1 font-semibold"><i class="fa-solid fa-rotate me-1"></i> Real-Time Database Sync</span>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0 text-sm">
-                    <thead class="bg-light text-secondary">
+                    <thead class="table-light">
                         <tr>
-                            <th>Course Name / Code</th>
+                            <th class="ps-4">Course Name / Code</th>
                             <th class="text-center">Total Intake</th>
                             <th class="text-center">Filled Seats</th>
                             <th class="text-center">Vacant Seats</th>
@@ -157,64 +160,64 @@ $seatMetrics = $cms->getCourseSeatMetrics();
                             <th class="text-center">Cancelled Apps</th>
                             <th class="text-center">Status</th>
                             <th class="text-center">Last Updated</th>
-                            <th class="text-end">Manage Intake</th>
+                            <th class="text-end pe-4">Manage Intake</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($seatMetrics as $m): ?>
                             <tr>
-                                <td>
+                                <td class="ps-4">
                                     <strong class="text-dark d-block"><?php echo htmlspecialchars($m['course_name']); ?></strong>
-                                    <span class="badge bg-secondary"><?php echo htmlspecialchars($m['course_code']); ?></span>
+                                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill"><?php echo htmlspecialchars($m['course_code']); ?></span>
                                 </td>
                                 <td class="text-center fw-bold fs-6"><?php echo $m['total_intake']; ?></td>
                                 <td class="text-center fw-bold text-success fs-6"><?php echo $m['filled_seats']; ?></td>
                                 <td class="text-center fw-bold <?php echo $m['vacant_seats'] > 0 ? 'text-primary' : 'text-danger'; ?> fs-6">
                                     <?php echo $m['vacant_seats']; ?>
                                 </td>
-                                <td class="text-center"><span class="badge bg-warning text-dark"><?php echo $m['pending_applications']; ?></span></td>
-                                <td class="text-center"><span class="badge bg-light text-muted border"><?php echo $m['cancelled_applications']; ?></span></td>
+                                <td class="text-center"><span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1"><?php echo $m['pending_applications']; ?></span></td>
+                                <td class="text-center"><span class="badge bg-light text-muted border rounded-pill"><?php echo $m['cancelled_applications']; ?></span></td>
                                 <td class="text-center">
                                     <?php if ($m['admission_status'] === 'OPEN' && $m['vacant_seats'] > 0): ?>
-                                        <span class="badge bg-success px-2 py-1"><i class="fa-solid fa-door-open me-1"></i> OPEN</span>
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1"><i class="fa-solid fa-door-open me-1"></i> OPEN</span>
                                     <?php else: ?>
-                                        <span class="badge bg-danger px-2 py-1"><i class="fa-solid fa-door-closed me-1"></i> CLOSED</span>
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1"><i class="fa-solid fa-door-closed me-1"></i> CLOSED</span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-center small text-muted"><?php echo $m['last_updated']; ?></td>
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modalSeat<?php echo $m['course_id']; ?>">
+                                <td class="text-end pe-4">
+                                    <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3 font-semibold" data-bs-toggle="modal" data-bs-target="#modalSeat<?php echo $m['course_id']; ?>">
                                         <i class="fa-solid fa-sliders me-1"></i> Edit
                                     </button>
 
                                     <!-- Edit Seat Modal -->
                                     <div class="modal fade" id="modalSeat<?php echo $m['course_id']; ?>" tabindex="-1" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered text-start">
-                                            <div class="modal-content">
+                                            <div class="modal-content border-0 shadow-xl rounded-4 overflow-hidden">
                                                 <form method="POST" action="admissions.php">
                                                     <?php echo Security::csrfField(); ?>
                                                     <input type="hidden" name="course_id" value="<?php echo $m['course_id']; ?>">
-                                                    <div class="modal-header bg-dark text-white">
-                                                        <h5 class="modal-title fw-bold text-white"><i class="fa-solid fa-sliders text-warning me-2"></i>Update <?php echo htmlspecialchars($m['course_code']); ?> Seat Capacity</h5>
+                                                    <div class="modal-header bg-dark text-white p-4" style="background: linear-gradient(135deg, var(--primary), var(--primary-600)) !important;">
+                                                        <h5 class="modal-title font-display fw-bold text-white"><i class="fa-solid fa-sliders text-warning me-2"></i>Update <?php echo htmlspecialchars($m['course_code']); ?> Seat Capacity</h5>
                                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
-                                                    <div class="modal-body">
+                                                    <div class="modal-body p-4">
                                                         <div class="mb-3">
-                                                            <label class="form-label font-semibold">Total Approved Intake Capacity *</label>
-                                                            <input type="number" name="intake_capacity" class="form-control" value="<?php echo $m['total_intake']; ?>" min="1" required>
-                                                            <small class="text-muted">Currently Filled Seats: <strong><?php echo $m['filled_seats']; ?></strong></small>
+                                                            <label class="form-label font-semibold text-dark">Total Approved Intake Capacity <span class="text-danger">*</span></label>
+                                                            <input type="number" name="intake_capacity" class="form-control rounded-3 py-2" value="<?php echo $m['total_intake']; ?>" min="1" required>
+                                                            <small class="text-muted">Currently Filled Seats: <strong class="text-dark"><?php echo $m['filled_seats']; ?></strong></small>
                                                         </div>
                                                         <div class="mb-3">
-                                                            <label class="form-label font-semibold">Admission Status *</label>
-                                                            <select name="admission_status" class="form-select" required>
+                                                            <label class="form-label font-semibold text-dark">Admission Status <span class="text-danger">*</span></label>
+                                                            <select name="admission_status" class="form-select rounded-3 py-2" required>
                                                                 <option value="OPEN" <?php echo ($m['admission_status'] === 'OPEN') ? 'selected' : ''; ?>>OPEN (Accepting Applications)</option>
                                                                 <option value="CLOSED" <?php echo ($m['admission_status'] === 'CLOSED') ? 'selected' : ''; ?>>CLOSED (Admissions Closed)</option>
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                        <button type="submit" name="update_seat_settings" class="btn btn-primary fw-bold"><i class="fa-solid fa-floppy-disk me-1"></i> Save Changes</button>
+                                                    <div class="modal-footer p-3 bg-light">
+                                                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" name="update_seat_settings" class="btn btn-primary rounded-pill px-4 font-semibold"><i class="fa-solid fa-floppy-disk me-1"></i> Save Changes</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -230,12 +233,12 @@ $seatMetrics = $cms->getCourseSeatMetrics();
     </div>
 
     <!-- 2. Admission Applications Queue Table -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h5 class="fw-bold mb-0 text-primary-color"><i class="fa-solid fa-list-check text-warning me-2"></i>Student Admission Applications Queue</h5>
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="card-header bg-white py-3.5 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom">
+            <h5 class="font-display fw-bold mb-0 text-dark"><i class="fa-solid fa-list-check text-warning me-2"></i>Student Admission Applications Queue</h5>
             <div class="d-flex gap-2 align-items-center flex-wrap">
-                <input type="text" id="admQueueSearchInput" class="form-control form-control-sm" placeholder="Search applicant, app #..." style="width: 200px;">
-                <select id="admStatusFilter" class="form-select form-select-sm" style="width: 140px;">
+                <input type="text" id="admQueueSearchInput" class="form-control form-control-sm rounded-pill px-3" placeholder="Search applicant, app #..." style="width: 200px;">
+                <select id="admStatusFilter" class="form-select form-select-sm rounded-pill px-3" style="width: 140px;">
                     <option value="">All Statuses</option>
                     <option value="pending">Pending</option>
                     <option value="verified">Verified</option>
@@ -243,17 +246,17 @@ $seatMetrics = $cms->getCourseSeatMetrics();
                     <option value="cancelled">Cancelled</option>
                     <option value="rejected">Rejected</option>
                 </select>
-                <a href="admissions.php?action=export_csv" class="btn btn-sm btn-success">
+                <a href="admissions.php?action=export_csv" class="btn btn-sm btn-success rounded-pill px-3 font-semibold">
                     <i class="fa-solid fa-file-excel me-1"></i> Export CSV
                 </a>
             </div>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0" id="admissionsQueueTable">
-                    <thead class="table-dark">
+                <table class="table table-hover align-middle mb-0" id="admissionsQueueTable">
+                    <thead class="table-light">
                         <tr>
-                            <th>App No</th>
+                            <th class="ps-4">App No</th>
                             <th>Student Name</th>
                             <th>Email/Phone</th>
                             <th>Course</th>

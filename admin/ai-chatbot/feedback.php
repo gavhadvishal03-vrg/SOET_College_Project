@@ -43,75 +43,95 @@ $feedbacks = $db->fetchAll(
 );
 ?>
 
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom flex-wrap gap-2">
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-0"><i class="fa-solid fa-thumbs-up text-warning me-2"></i>User Ratings &amp; Feedback</h1>
-        <small class="text-muted">Review visitor satisfaction and AI response quality feedback</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Sentiment &amp; Telemetry</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">User Ratings &amp; Feedback</h2>
+        <p class="text-muted small mb-0">Review visitor satisfaction metrics and individual response evaluations from CampusAI chats</p>
     </div>
-    <div class="d-flex gap-2 align-items-center">
-        <a href="feedback.php?action=export_csv" class="btn btn-sm btn-success">
-            <i class="fa-solid fa-file-excel me-1"></i> Export CSV
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+        <a href="feedback.php?action=export_csv" class="btn btn-outline-success btn-sm rounded-pill px-3 shadow-xs font-semibold">
+            <i class="fa-solid fa-file-excel me-1.5 text-success"></i> Export CSV
         </a>
-        <span class="badge bg-dark fs-6 px-3 py-2"><?php echo count($feedbacks); ?> Ratings Recorded</span>
+        <span class="badge bg-slate-900 text-white rounded-pill px-3 py-2 fs-6 shadow-xs">
+            <i class="fa-solid fa-star text-warning me-1"></i> <?php echo count($feedbacks); ?> Ratings Recorded
+        </span>
     </div>
 </div>
 
 <!-- Navigation Pills -->
-<ul class="nav nav-pills mb-4 bg-light p-2 rounded border">
-    <li class="nav-item"><a class="nav-link font-semibold" href="index.php"><i class="fa-solid fa-chart-line me-1"></i> Dashboard</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="knowledge-base.php"><i class="fa-solid fa-book me-1"></i> Knowledge Base</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="faq.php"><i class="fa-solid fa-circle-question me-1"></i> FAQs</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="documents.php"><i class="fa-solid fa-file-arrow-up me-1"></i> Doc Upload &amp; Text Extractor</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="unanswered.php"><i class="fa-solid fa-question me-1"></i> Unanswered Queue</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="conversations.php"><i class="fa-solid fa-comments me-1"></i> Conversations</a></li>
-    <li class="nav-item"><a class="nav-link active font-semibold" href="feedback.php"><i class="fa-solid fa-thumbs-up me-1"></i> User Feedback</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="settings.php"><i class="fa-solid fa-gears me-1"></i> AI Settings</a></li>
-</ul>
+<div class="card border-0 shadow-sm rounded-4 bg-white p-2 mb-4">
+    <ul class="nav nav-pills gap-1 flex-wrap" id="aiSubNav">
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="index.php"><i class="fa-solid fa-chart-line me-1.5 text-primary"></i> Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="knowledge-base.php"><i class="fa-solid fa-book me-1.5 text-primary"></i> Knowledge Base</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="faq.php"><i class="fa-solid fa-circle-question me-1.5 text-info"></i> FAQs</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="documents.php"><i class="fa-solid fa-file-arrow-up me-1.5 text-warning"></i> Documents Extractor</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="unanswered.php"><i class="fa-solid fa-question me-1.5 text-danger"></i> Unanswered</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="conversations.php"><i class="fa-solid fa-comments me-1.5 text-success"></i> Conversations</a></li>
+        <li class="nav-item"><a class="nav-link active rounded-pill font-semibold px-3 py-2 text-sm" href="feedback.php"><i class="fa-solid fa-thumbs-up me-1.5"></i> Feedback</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="settings.php"><i class="fa-solid fa-gears me-1.5 text-muted"></i> AI Config</a></li>
+    </ul>
+</div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <h5 class="fw-bold mb-0 text-primary-color"><i class="fa-solid fa-star-half-stroke text-warning me-2"></i>Visitor Feedback Log</h5>
-        <input type="text" id="feedbackSearchInput" class="form-control form-control-sm" placeholder="Search comments or message..." style="width: 250px;">
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h5 class="font-display fw-bold text-dark mb-0">
+            <i class="fa-solid fa-star-half-stroke text-warning me-2"></i>Visitor Feedback Telemetry
+        </h5>
+        <div class="input-group input-group-sm" style="max-width: 250px;">
+            <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+            <input type="text" id="feedbackSearchInput" class="form-control bg-light border-start-0 rounded-end-pill" placeholder="Search comments or message...">
+        </div>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle mb-0" id="feedbackTable">
-                <thead class="table-dark">
+            <table class="table table-hover align-middle mb-0" id="feedbackTable">
+                <thead class="table-light text-secondary text-uppercase text-xs tracking-wider">
                     <tr>
-                        <th>ID</th>
+                        <th class="ps-4">ID</th>
                         <th>Rating</th>
                         <th>Bot Response Evaluated</th>
-                        <th>Response Source</th>
+                        <th>Engine Source</th>
                         <th>User Comments</th>
-                        <th>Date &amp; Time</th>
+                        <th class="pe-4">Date &amp; Time</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y">
                     <?php if (empty($feedbacks)): ?>
-                        <tr><td colspan="6" class="text-center py-4 text-muted">No user ratings submitted yet.</td></tr>
+                        <tr><td colspan="6" class="text-center py-5 text-muted">No user ratings submitted yet.</td></tr>
                     <?php else: ?>
                         <?php foreach ($feedbacks as $fb): ?>
                             <tr>
-                                <td><strong>#<?php echo $fb['id']; ?></strong></td>
+                                <td class="ps-4 font-mono text-xs text-muted">#<?php echo $fb['id']; ?></td>
                                 <td>
                                     <?php if ($fb['rating'] === 'positive'): ?>
-                                        <span class="badge bg-success"><i class="fa-solid fa-thumbs-up me-1"></i> Helpful</span>
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 text-xs">
+                                            <i class="fa-solid fa-thumbs-up me-1"></i> Helpful
+                                        </span>
                                     <?php else: ?>
-                                        <span class="badge bg-danger"><i class="fa-solid fa-thumbs-down me-1"></i> Unhelpful</span>
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 text-xs">
+                                            <i class="fa-solid fa-thumbs-down me-1"></i> Unhelpful
+                                        </span>
                                     <?php endif; ?>
                                 </td>
-                                <td style="max-width: 350px;">
-                                    <div class="text-truncate small"><?php echo htmlspecialchars($fb['message']); ?></div>
+                                <td style="max-width: 340px;">
+                                    <div class="text-truncate small text-dark"><?php echo htmlspecialchars($fb['message']); ?></div>
                                 </td>
-                                <td><span class="badge bg-info text-dark"><?php echo htmlspecialchars($fb['source'] ?: 'AI'); ?></span></td>
+                                <td>
+                                    <span class="badge bg-slate-900 text-white rounded-pill px-2.5 py-1 text-xs">
+                                        <?php echo htmlspecialchars($fb['source'] ?: 'AI'); ?>
+                                    </span>
+                                </td>
                                 <td>
                                     <?php if (!empty($fb['comments'])): ?>
-                                        <span class="small text-secondary"><?php echo htmlspecialchars($fb['comments']); ?></span>
+                                        <span class="small text-secondary fw-medium"><?php echo htmlspecialchars($fb['comments']); ?></span>
                                     <?php else: ?>
-                                        <span class="text-muted small">No comments left</span>
+                                        <span class="text-muted small italic">No comments left</span>
                                     <?php endif; ?>
                                 </td>
-                                <td><small class="text-muted"><?php echo formatDateTime($fb['created_at']); ?></small></td>
+                                <td class="pe-4"><small class="text-muted text-xs"><?php echo formatDateTime($fb['created_at']); ?></small></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>

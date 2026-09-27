@@ -20,6 +20,18 @@ class GeneralKnowledgeEngine
         'c++' => [
             'desc' => "C++ is a high-performance compiled programming language that supports procedural and object-oriented paradigms. It is commonly used in game engines, operating systems, and low-latency systems."
         ],
+        'cpp' => [
+            'desc' => "C++ (C Plus Plus) is a high-performance compiled programming language supporting procedural and object-oriented programming, widely used in game engines, operating systems, and competitive coding."
+        ],
+        'blockchain' => [
+            'desc' => "Blockchain is a decentralized, distributed digital ledger that securely records transactions across a network of computers. Once recorded, data inside a block cannot be altered retrospectively without network consensus."
+        ],
+        'quantum computing' => [
+            'desc' => "Quantum computing is a multidisciplinary field utilizing principles of quantum mechanics—such as superposition and entanglement—to perform complex computations exponentially faster than classical computers for specific problem classes."
+        ],
+        'object-oriented programming' => [
+            'desc' => "Object-Oriented Programming (OOP) is a programming paradigm structured around objects and classes, centered on four core pillars: Encapsulation, Abstraction, Inheritance, and Polymorphism."
+        ],
         'c' => [
             'desc' => "C is a foundational procedural programming language that provides low-level memory access and efficient execution. It is widely used for operating system kernels, embedded devices, and compilers."
         ],
@@ -152,6 +164,54 @@ class GeneralKnowledgeEngine
         'deep learning' => [
             'desc' => "Deep learning is an advanced branch of machine learning that utilizes multi-layered artificial neural networks (CNNs, RNNs, Transformers) to model complex representations from large datasets."
         ],
+        'data science' => [
+            'desc' => "Data science is an interdisciplinary field that combines statistics, mathematics, specialized programming, and machine learning to extract actionable insights from structured and unstructured data."
+        ],
+        'chatgpt' => [
+            'desc' => "ChatGPT is an artificial intelligence chatbot developed by OpenAI, trained on large language models (LLMs) to engage in natural dialogue, write and debug code, and summarize complex topics."
+        ],
+        'internet' => [
+            'desc' => "The Internet is a global network of interconnected computer networks that communicate and exchange information using the Internet Protocol Suite (TCP/IP)."
+        ],
+        'digital transformation' => [
+            'desc' => "Digital transformation is the strategic adoption of digital technologies across all areas of an enterprise, fundamentally restructuring operational efficiency and customer value delivery."
+        ],
+        'mysql' => [
+            'desc' => "MySQL is an open-source Relational Database Management System (RDBMS) that stores data in structured tables and uses Structured Query Language (SQL) for database operations."
+        ],
+        'difference between html and css' => [
+            'desc' => "HTML provides the structural markup and semantic content of a webpage, whereas CSS controls the presentation, visual styling, colors, and responsive layout of those HTML elements."
+        ],
+        'difference between java and python' => [
+            'desc' => "Java is a statically typed, compiled object-oriented language prioritizing strict type safety and high performance, whereas Python is a dynamically typed, interpreted language emphasizing developer productivity and readable syntax."
+        ],
+        'class' => [
+            'desc' => "In object-oriented programming, a class is an extensible code blueprint that defines the member variables (state) and methods (behavior) that its created objects will possess."
+        ],
+        'object' => [
+            'desc' => "An object is a specific, self-contained instance of a class in memory that encapsulates concrete state data and executable methods defined by its class."
+        ],
+        'primary key' => [
+            'desc' => "A primary key is a column or set of columns in a relational database table that uniquely identifies each individual row, strictly enforcing non-null and uniqueness constraints."
+        ],
+        'foreign key' => [
+            'desc' => "A foreign key is a column in a relational table that points to the primary key of another table, establishing a referential integrity link between the two tables."
+        ],
+        'normalization' => [
+            'desc' => "Database normalization is the systematic design process of structuring relational tables to eliminate data redundancy and prevent insertion, update, and deletion anomalies (1NF to BCNF)."
+        ],
+        'sql query' => [
+            'desc' => "An SQL query is a declarative command written in SQL (e.g., SELECT, INSERT, UPDATE, DELETE) to retrieve, filter, modify, or manage structured data within a database."
+        ],
+        'crud' => [
+            'desc' => "CRUD is an acronym for Create, Read, Update, and Delete—the four foundational operations implemented in persistent storage and RESTful database applications."
+        ],
+        'github' => [
+            'desc' => "GitHub is a cloud-based development and hosting platform built around Git, facilitating source code version control, pull requests, code reviews, and project collaboration."
+        ],
+        'ip address' => [
+            'desc' => "An IP address (Internet Protocol address) is a unique numerical label (IPv4 or IPv6) assigned to each device connected to a computer network that uses the Internet Protocol for communication."
+        ],
 
         // GENERAL EVERYDAY CONCEPTS
         'car' => [
@@ -245,7 +305,11 @@ class GeneralKnowledgeEngine
         usort($keys, fn($a, $b) => mb_strlen($b) <=> mb_strlen($a));
 
         foreach ($keys as $key) {
-            if (preg_match('/\b' . preg_quote($key, '/') . '\b/i', $cleanQuery)) {
+            $pattern = preg_match('/[a-z0-9]$/i', $key)
+                ? '/\b' . preg_quote($key, '/') . '\b/i'
+                : '/\b' . preg_quote($key, '/') . '(?!\w)/i';
+
+            if (preg_match($pattern, $cleanQuery)) {
                 $item = self::$topicDatabase[$key];
                 $output = $item['desc'];
 

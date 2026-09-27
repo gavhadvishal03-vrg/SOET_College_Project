@@ -180,65 +180,68 @@ $courses = $db->fetchAll(
 );
 ?>
 
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom flex-wrap gap-2">
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-0"><i class="fa-solid fa-graduation-cap text-warning me-2"></i>Courses, Year-Wise Fees &amp; Syllabus Manager</h1>
-        <small class="text-muted">Manage degree tracks, four-year tuition structure, intake quotas, and academic syllabus documents</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Academics & Curricula</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">Courses, Fees & Syllabus Manager</h2>
+        <p class="text-muted small mb-0">Manage degree tracks, four-year tuition structures, intake quotas, and official curriculum documents</p>
     </div>
     <?php if ($action === 'list'): ?>
         <div class="d-flex gap-2 align-items-center">
-            <a href="courses.php?action=export_csv" class="btn btn-sm btn-success">
+            <a href="courses.php?action=export_csv" class="btn btn-sm btn-success rounded-pill px-3 font-semibold">
                 <i class="fa-solid fa-file-excel me-1"></i> Export CSV
             </a>
-            <a href="courses.php?action=add" class="btn btn-primary btn-sm font-semibold"><i class="fa-solid fa-plus me-1"></i> Register New Course</a>
+            <a href="courses.php?action=add" class="btn btn-primary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-plus me-1 text-warning"></i> Register New Course</a>
         </div>
     <?php else: ?>
-        <a href="courses.php" class="btn btn-outline-secondary btn-sm font-semibold"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
+        <a href="courses.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
     <?php endif; ?>
 </div>
 
 <?php if ($action === 'list'): ?>
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h5 class="fw-bold mb-0 text-primary-color"><i class="fa-solid fa-book-open text-warning me-2"></i>Registered Degree Programs (<?php echo count($courses); ?>)</h5>
-            <input type="text" id="courseSearchInput" class="form-control form-control-sm" placeholder="Search course name, code..." style="width: 240px;">
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="card-header bg-white py-3.5 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom">
+            <h5 class="font-display fw-bold mb-0 text-dark"><i class="fa-solid fa-book-open text-warning me-2"></i>Registered Degree Programs (<?php echo count($courses); ?>)</h5>
+            <input type="text" id="courseSearchInput" class="form-control form-control-sm rounded-pill px-3" placeholder="Search course name, code..." style="width: 240px;">
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0" id="coursesTable">
-                    <thead class="table-dark">
+                <table class="table table-hover align-middle mb-0" id="coursesTable">
+                    <thead class="table-light">
                         <tr>
-                            <th>Cover</th>
+                            <th class="ps-4">Cover</th>
                             <th>Course Name &amp; Code</th>
                             <th>Department</th>
                             <th>Year-Wise Fees Breakdown</th>
                             <th>Syllabus PDFs</th>
                             <th class="text-center">Capacity</th>
                             <th class="text-center">Status</th>
-                            <th class="text-end">Actions</th>
+                            <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($courses as $c): ?>
                             <?php $totalFee = $c['fee_year_1'] + $c['fee_year_2'] + $c['fee_year_3'] + $c['fee_year_4']; ?>
                             <tr>
-                                <td>
+                                <td class="ps-4">
                                     <?php if (!empty($c['image_path'])): ?>
-                                        <img src="<?php echo uploadUrl('courses', $c['image_path']); ?>" alt="Cover" class="rounded img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                        <img src="<?php echo uploadUrl('courses', $c['image_path']); ?>" alt="Cover" class="rounded-3 shadow-xs" style="width: 48px; height: 48px; object-fit: cover;">
                                     <?php else: ?>
-                                        <div class="bg-light rounded text-muted d-flex align-items-center justify-content-center border" style="width: 50px; height: 50px; font-size: 10px;">No Image</div>
+                                        <div class="bg-light rounded-3 text-muted d-flex align-items-center justify-content-center border" style="width: 48px; height: 48px; font-size: 10px;">No Image</div>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <div class="fw-bold text-primary-color"><?php echo htmlspecialchars($c['name']); ?></div>
-                                    <span class="badge bg-secondary"><?php echo htmlspecialchars($c['code']); ?></span>
+                                    <div class="font-display fw-bold text-dark mb-0.5"><?php echo htmlspecialchars($c['name']); ?></div>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill"><?php echo htmlspecialchars($c['code']); ?></span>
                                     <small class="text-muted opacity-75 ms-1"><?php echo $c['duration_years']; ?> Years (<?php echo $c['semester_count']; ?> Semesters)</small>
                                 </td>
-                                <td><span class="text-muted small fw-semibold"><?php echo htmlspecialchars($c['department_name']); ?></span></td>
+                                <td><span class="text-muted small font-semibold"><?php echo htmlspecialchars($c['department_name']); ?></span></td>
                                 <td>
                                     <div class="small text-nowrap">
-                                        <span class="d-block">Y1: ₹<?php echo number_format($c['fee_year_1']); ?> | Y2: ₹<?php echo number_format($c['fee_year_2']); ?></span>
-                                        <span class="d-block">Y3: ₹<?php echo number_format($c['fee_year_3']); ?> | Y4: ₹<?php echo number_format($c['fee_year_4']); ?></span>
+                                        <span class="d-block text-muted">Y1: ₹<?php echo number_format($c['fee_year_1']); ?> | Y2: ₹<?php echo number_format($c['fee_year_2']); ?></span>
+                                        <span class="d-block text-muted">Y3: ₹<?php echo number_format($c['fee_year_3']); ?> | Y4: ₹<?php echo number_format($c['fee_year_4']); ?></span>
                                         <strong class="text-success">Total: ₹<?php echo number_format($totalFee); ?></strong>
                                     </div>
                                 </td>
@@ -247,20 +250,20 @@ $courses = $db->fetchAll(
                                         <?php for ($y = 1; $y <= 4; $y++): ?>
                                             <?php $pdfKey = "syllabus_pdf_year_{$y}"; ?>
                                             <?php if (!empty($c[$pdfKey])): ?>
-                                                <a href="<?php echo uploadUrl('courses', $c[$pdfKey]); ?>" target="_blank" class="btn btn-outline-danger btn-xs py-0 px-1 font-semibold" title="Year <?php echo $y; ?> Syllabus PDF">
+                                                <a href="<?php echo uploadUrl('courses', $c[$pdfKey]); ?>" target="_blank" class="btn btn-outline-danger btn-xs py-0.5 px-2 rounded-pill font-semibold" title="Year <?php echo $y; ?> Syllabus PDF" style="font-size: 10px;">
                                                     <i class="fa-solid fa-file-pdf me-1"></i>Y<?php echo $y; ?> PDF
                                                 </a>
                                             <?php else: ?>
-                                                <span class="badge bg-light text-muted border" style="font-size: 10px;">Y<?php echo $y; ?>: None</span>
+                                                <span class="badge bg-light text-muted border rounded-pill" style="font-size: 10px;">Y<?php echo $y; ?>: None</span>
                                             <?php endif; ?>
                                         <?php endfor; ?>
                                     </div>
                                 </td>
-                                <td class="text-center fw-bold"><?php echo $c['intake_capacity']; ?> Seats</td>
+                                <td class="text-center fw-bold fs-6"><?php echo $c['intake_capacity']; ?></td>
                                 <td class="text-center"><?php echo statusBadge($c['is_active'] ? 'active' : 'inactive'); ?></td>
-                                <td class="text-end text-nowrap">
-                                    <a href="courses.php?action=edit&id=<?php echo $c['id']; ?>" class="btn btn-sm btn-outline-primary font-semibold me-1"><i class="fa-solid fa-pen-to-square me-1"></i> Edit</a>
-                                    <a href="courses.php?action=delete&id=<?php echo $c['id']; ?>" class="btn btn-sm btn-outline-danger btn-delete-confirm font-semibold" onclick="return confirm('Delete this course?');"><i class="fa-solid fa-trash-can me-1"></i> Delete</a>
+                                <td class="text-end pe-4 text-nowrap">
+                                    <a href="courses.php?action=edit&id=<?php echo $c['id']; ?>" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 font-semibold me-1"><i class="fa-solid fa-pen-to-square me-1"></i> Edit</a>
+                                    <a href="courses.php?action=delete&id=<?php echo $c['id']; ?>" class="btn btn-sm btn-outline-danger rounded-pill px-2.5 btn-delete-confirm font-semibold" onclick="return confirm('Delete this course?');"><i class="fa-solid fa-trash-can me-1"></i> Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

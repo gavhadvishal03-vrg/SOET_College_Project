@@ -80,15 +80,15 @@ $settings = $cms->getSiteSettings();
 $events_bg = !empty($settings['events_hero_image']) ? uploadUrl('settings', $settings['events_hero_image']) : null;
 ?>
 
-<!-- Breadcrumb Header -->
-<div class="py-5 text-white mb-5 position-relative overflow-hidden" style="<?php echo $events_bg ? "background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), url('{$events_bg}') center/cover no-repeat;" : "background-color: var(--primary-color);"; ?>">
+<!-- Page Hero Banner -->
+<div class="page-hero mb-5">
     <div class="container position-relative z-1">
-        <h1 class="fw-extrabold mb-1 text-white display-5">Events & Sub-Events Calendar</h1>
-        <p class="lead opacity-75 mb-3">Hackathons, robotics wars, paper presentations, workshops, and cultural college fests</p>
+        <h1 class="font-display fw-extrabold mb-2 text-white">Campus Events &amp; Fests Calendar</h1>
+        <p class="lead opacity-80 mb-3" style="font-size: 1.1rem; max-width: 650px;">Hackathons, robotics championships, tech symposiums, workshops, and annual cultural extravaganzas.</p>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="index.php" class="text-white opacity-75 text-decoration-none">Home</a></li>
-                <li class="breadcrumb-item active text-warning" aria-current="page">Events Calendar</li>
+                <li class="breadcrumb-item"><a href="index.php" class="text-white opacity-75 text-decoration-none"><i class="fa-solid fa-house me-1"></i> Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Events Calendar</li>
             </ol>
         </nav>
     </div>
@@ -97,13 +97,13 @@ $events_bg = !empty($settings['events_hero_image']) ? uploadUrl('settings', $set
 <div class="container mb-5">
     <!-- EVENT REGISTRATION PASS TICKET DISPLAY CARD -->
     <?php if ($eventPass): ?>
-        <div class="card border-0 shadow-lg mb-5 overflow-hidden border-top border-5 border-success">
-            <div class="card-header bg-dark text-white p-3.5 d-flex justify-content-between align-items-center">
+        <div class="card border-0 shadow-lg mb-5 overflow-hidden" style="border-radius: 18px; border-top: 4px solid var(--success) !important;">
+            <div class="card-header p-3.5 d-flex justify-content-between align-items-center" style="background: #0f172a; color: #ffffff;">
                 <div>
-                    <h5 class="fw-bold text-white mb-0"><i class="fa-solid fa-ticket text-warning me-2"></i>Official Event Entry Pass Ticket</h5>
+                    <h5 class="fw-bold text-white mb-0 font-display"><i class="fa-solid fa-ticket text-warning me-2"></i>Official Event Entry Pass Ticket</h5>
                     <small class="text-white-50">Keep or screenshot this entry pass for event check-in</small>
                 </div>
-                <span class="badge bg-warning text-dark fs-6 font-semibold px-3 py-2">
+                <span class="badge bg-warning text-dark fs-6 font-semibold px-3 py-2 rounded-pill">
                     <i class="fa-solid fa-barcode me-1"></i> <?php echo htmlspecialchars($eventPass['registration_no']); ?>
                 </span>
             </div>
@@ -111,16 +111,16 @@ $events_bg = !empty($settings['events_hero_image']) ? uploadUrl('settings', $set
                 <div class="row g-3">
                     <div class="col-md-6 border-end">
                         <small class="text-muted text-uppercase fw-bold font-monospace d-block mb-1">Registration Pass Number</small>
-                        <h4 class="fw-extrabold text-primary-color mb-3"><code><?php echo htmlspecialchars($eventPass['registration_no']); ?></code></h4>
+                        <h4 class="fw-extrabold text-primary-color mb-3 font-display"><code><?php echo htmlspecialchars($eventPass['registration_no']); ?></code></h4>
 
                         <small class="text-muted text-uppercase fw-bold font-monospace d-block mb-1">Main Event</small>
-                        <h5 class="fw-bold text-dark mb-2"><?php echo htmlspecialchars($eventPass['event_title']); ?></h5>
+                        <h5 class="fw-bold text-dark mb-2 font-display"><?php echo htmlspecialchars($eventPass['event_title']); ?></h5>
 
                         <small class="text-muted text-uppercase fw-bold font-monospace d-block mb-1">Selected Sub-Event / Track</small>
                         <p class="fw-bold text-success mb-3"><i class="fa-solid fa-flag me-1"></i> <?php echo htmlspecialchars($eventPass['sub_event_title']); ?></p>
 
-                        <small class="text-muted text-uppercase fw-bold font-monospace d-block mb-1">Schedule & Venue</small>
-                        <p class="mb-0 text-secondary">
+                        <small class="text-muted text-uppercase fw-bold font-monospace d-block mb-1">Schedule &amp; Venue</small>
+                        <p class="mb-0 text-secondary small" style="line-height: 1.6;">
                             <i class="fa-regular fa-calendar me-1 text-warning"></i> <?php echo formatDate($eventPass['date']); ?> |
                             <i class="fa-regular fa-clock me-1 text-warning"></i> <?php echo date('h:i A', strtotime($eventPass['time'])); ?><br>
                             <i class="fa-solid fa-location-dot me-1 text-danger"></i> <?php echo htmlspecialchars($eventPass['venue']); ?>
@@ -153,10 +153,10 @@ $events_bg = !empty($settings['events_hero_image']) ? uploadUrl('settings', $set
                         </table>
 
                         <div class="d-flex gap-2 mt-4">
-                            <button onclick="window.print()" class="btn btn-dark btn-sm font-semibold px-3">
+                            <button onclick="window.print()" class="btn btn-dark btn-sm font-semibold px-4 rounded-pill">
                                 <i class="fa-solid fa-print me-1"></i> Print / Save Entry Pass
                             </button>
-                            <a href="events.php" class="btn btn-outline-secondary btn-sm px-3">Dismiss</a>
+                            <a href="events.php" class="btn btn-outline-secondary btn-sm px-3 rounded-pill">Dismiss</a>
                         </div>
                     </div>
                 </div>
@@ -167,19 +167,19 @@ $events_bg = !empty($settings['events_hero_image']) ? uploadUrl('settings', $set
     <!-- Toggle tab buttons & Search -->
     <div class="row g-3 mb-5 align-items-center">
         <div class="col-md-6 text-center text-md-start">
-            <div class="btn-group shadow-sm rounded-pill overflow-hidden bg-light p-1">
-                <a href="events.php?type=upcoming" class="btn px-4 py-2 rounded-pill <?php echo $type === 'upcoming' ? 'btn-primary' : 'btn-light'; ?>">
-                    <i class="fa-regular fa-calendar-check me-1"></i> Upcoming Events &amp; Fests
+            <div class="btn-group shadow-xs rounded-pill overflow-hidden bg-white p-1 border">
+                <a href="events.php?type=upcoming" class="btn px-4 py-2 rounded-pill font-semibold <?php echo $type === 'upcoming' ? 'btn-primary' : 'btn-light text-muted'; ?>" style="font-size: 13.5px;">
+                    <i class="fa-regular fa-calendar-check me-1.5"></i> Upcoming Events &amp; Fests
                 </a>
-                <a href="events.php?type=past" class="btn px-4 py-2 rounded-pill <?php echo $type === 'past' ? 'btn-primary' : 'btn-light'; ?>">
-                    <i class="fa-solid fa-history me-1"></i> Past Archive
+                <a href="events.php?type=past" class="btn px-4 py-2 rounded-pill font-semibold <?php echo $type === 'past' ? 'btn-primary' : 'btn-light text-muted'; ?>" style="font-size: 13.5px;">
+                    <i class="fa-solid fa-history me-1.5"></i> Past Archive
                 </a>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="input-group shadow-sm">
-                <span class="input-group-text bg-white border-end-0 text-warning"><i class="fa-solid fa-magnifying-glass"></i></span>
-                <input type="text" id="eventSearchInput" class="form-control border-start-0" placeholder="Search event title, venue, or keywords...">
+            <div class="input-group shadow-xs">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="text" id="eventSearchInput" class="form-control border-start-0 ps-0" placeholder="Search event title, venue, or keywords...">
             </div>
         </div>
     </div>
@@ -188,7 +188,7 @@ $events_bg = !empty($settings['events_hero_image']) ? uploadUrl('settings', $set
     <div class="row g-4" id="eventsGrid">
         <?php if (empty($events)): ?>
             <div class="col-12 text-center text-muted py-5">
-                <i class="fa-solid fa-calendar-xmark fa-3x mb-3 text-secondary"></i>
+                <i class="fa-solid fa-calendar-xmark fa-3x mb-3 text-secondary opacity-50"></i>
                 <p>No <?php echo $type; ?> events scheduled at this moment. Check back soon!</p>
             </div>
         <?php else: ?>
@@ -198,26 +198,26 @@ $events_bg = !empty($settings['events_hero_image']) ? uploadUrl('settings', $set
                      data-title="<?php echo strtolower(htmlspecialchars($event['title'])); ?>"
                      data-desc="<?php echo strtolower(htmlspecialchars($event['description'])); ?>"
                      data-venue="<?php echo strtolower(htmlspecialchars($event['venue'])); ?>">
-                    <div class="card custom-card h-100 border-0 shadow-sm hover-elevate">
+                    <div class="card h-100 border-0 shadow-sm hover-lift overflow-hidden bg-white" style="border-radius: 16px; border: 1px solid #e2e8f0 !important;">
                         <?php if ($event['image_path']): ?>
                             <img src="<?php echo uploadUrl('events', $event['image_path']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($event['title']); ?>" style="height: 190px; object-fit: cover;">
                         <?php else: ?>
                             <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Event banner" style="height: 190px; object-fit: cover;">
                         <?php endif; ?>
-                        <div class="card-body d-flex flex-column">
+                        <div class="card-body d-flex flex-column p-4">
                             <div class="d-flex justify-content-between align-items-center text-muted small mb-2">
                                 <span><i class="fa-regular fa-calendar me-1 text-warning"></i><?php echo formatDate($event['event_date']); ?></span>
                                 <span><i class="fa-regular fa-clock me-1 text-warning"></i><?php echo date('h:i A', strtotime($event['event_time'])); ?></span>
                             </div>
-                            <h5 class="fw-bold text-primary-color mb-2"><?php echo htmlspecialchars($event['title']); ?></h5>
-                            <p class="text-muted small mb-3"><?php echo htmlspecialchars($event['description']); ?></p>
+                            <h5 class="fw-bold text-primary-color mb-2 font-display"><?php echo htmlspecialchars($event['title']); ?></h5>
+                            <p class="text-muted small mb-3" style="line-height: 1.6;"><?php echo htmlspecialchars($event['description']); ?></p>
                             
                             <!-- SUB-EVENTS BREAKDOWN BADGE & SCHEDULE -->
                             <?php if (!empty($subEvents)): ?>
-                                <div class="bg-light p-2.5 rounded border mb-3">
-                                    <div class="fw-bold text-dark small mb-2 d-flex justify-content-between align-items-center">
-                                        <span><i class="fa-solid fa-diagram-project text-warning me-1"></i> Sub-Events / Competitions:</span>
-                                        <span class="badge bg-warning text-dark px-2"><?php echo count($subEvents); ?> Tracks</span>
+                                <div class="bg-light p-2.5 rounded-3 border mb-3">
+                                    <div class="fw-bold text-dark small mb-2 d-flex justify-content-between align-items-center font-display">
+                                        <span><i class="fa-solid fa-diagram-project text-warning me-1"></i> Sub-Events / Tracks:</span>
+                                        <span class="badge bg-warning text-dark px-2 rounded-pill"><?php echo count($subEvents); ?> Tracks</span>
                                     </div>
                                     <ul class="list-unstyled mb-0 small text-secondary">
                                         <?php foreach (array_slice($subEvents, 0, 3) as $se): ?>
@@ -234,19 +234,19 @@ $events_bg = !empty($settings['events_hero_image']) ? uploadUrl('settings', $set
                                 </div>
                             <?php endif; ?>
 
-                            <div class="text-muted small mb-3 mt-auto">
+                            <div class="text-muted small mb-3 mt-auto" style="font-size: 12px;">
                                 <p class="mb-1"><i class="fa-solid fa-location-dot me-1 text-danger"></i> <strong>Venue:</strong> <?php echo htmlspecialchars($event['venue']); ?></p>
                                 <p class="mb-0"><i class="fa-solid fa-user-gear me-1 text-primary"></i> <strong>Organizer:</strong> <?php echo htmlspecialchars($event['organizer']); ?></p>
                             </div>
                             
                             <?php if ($type === 'upcoming' && $event['registration_required']): ?>
-                                <button class="btn btn-sm btn-primary w-100 rounded fw-bold" data-bs-toggle="modal" data-bs-target="#regModal-<?php echo $event['id']; ?>">
+                                <button class="btn btn-sm btn-primary w-100 rounded-pill font-semibold py-2" data-bs-toggle="modal" data-bs-target="#regModal-<?php echo $event['id']; ?>">
                                     <i class="fa-solid fa-file-pen me-1"></i> Register Online
                                 </button>
                             <?php elseif ($type === 'past'): ?>
-                                <span class="badge bg-secondary w-100 py-2">Event Concluded</span>
+                                <span class="badge bg-secondary rounded-pill w-100 py-2">Event Concluded</span>
                             <?php else: ?>
-                                <span class="badge bg-info text-dark w-100 py-2">No Registration Required</span>
+                                <span class="badge bg-info bg-opacity-25 text-primary rounded-pill w-100 py-2">Open Entry / No Registration</span>
                             <?php endif; ?>
                         </div>
                     </div>

@@ -141,63 +141,93 @@ $query .= " ORDER BY n.created_at DESC";
 $news_list = $db->fetchAll($query, $params);
 ?>
 
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom flex-wrap gap-2">
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-0"><i class="fa-solid fa-newspaper text-warning me-2"></i>News Review &amp; Management Queue</h1>
-        <small class="text-muted">Review, verify, edit, and publish press releases and campus announcements</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Press &amp; Media</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">News &amp; Announcements</h2>
+        <p class="text-muted small mb-0">Review, verify, edit, and publish press releases and campus announcements</p>
     </div>
     <?php if ($action !== 'list'): ?>
-        <a href="news.php" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-angle-left me-1"></i> Back to Queue</a>
+        <a href="news.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><i class="fa-solid fa-angle-left me-1"></i> Back to Queue</a>
     <?php endif; ?>
 </div>
 
 <?php if ($action === 'list'): ?>
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h5 class="fw-bold mb-0 text-primary-color"><i class="fa-solid fa-list-check text-warning me-2"></i>Submitted News Reports</h5>
-            <input type="text" id="newsFilterInput" class="form-control form-control-sm" placeholder="Search news title, author..." style="width: 220px;">
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden mb-4">
+        <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-3 border-bottom">
+            <div class="d-flex align-items-center gap-2">
+                <div class="stat-icon-sm bg-primary-subtle text-primary rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    <i class="fa-solid fa-newspaper"></i>
+                </div>
+                <h5 class="fw-bold mb-0 text-dark">News Releases Queue</h5>
+            </div>
+            <div class="input-group input-group-sm" style="max-width: 280px;">
+                <span class="input-group-text bg-light border-end-0 rounded-start-pill text-muted ps-3"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="text" id="newsFilterInput" class="form-control bg-light border-start-0 rounded-end-pill pe-3" placeholder="Search news title, author...">
+            </div>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0" id="newsTable">
-                    <thead class="table-dark">
+                <table class="table table-hover align-middle mb-0" id="newsTable">
+                    <thead class="table-light">
                         <tr>
-                            <th>Headline</th>
-                            <th>Author Name</th>
+                            <th class="ps-4">Headline</th>
+                            <th>Reporter / Author</th>
                             <th>Date Submitted</th>
                             <th>Reviewer</th>
                             <th class="text-center">Status</th>
-                            <th class="text-end">Actions</th>
+                            <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($news_list)): ?>
                             <tr>
-                                <td colspan="6" class="text-center text-muted p-4">No news submissions found.</td>
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <i class="fa-regular fa-newspaper display-6 text-secondary opacity-40 mb-3 d-block"></i>
+                                    No news releases logged in the review queue.
+                                </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($news_list as $n): 
                                 $authorDisplayName = $n['author_name'] ?: $n['user_full_name'];
                             ?>
                                 <tr>
-                                    <td class="fw-bold text-primary-color"><?php echo htmlspecialchars($n['title']); ?></td>
-                                    <td><?php echo htmlspecialchars($authorDisplayName); ?></td>
-                                    <td><?php echo formatDate($n['created_at']); ?></td>
-                                    <td><small class="text-muted"><?php echo htmlspecialchars($n['reviewer_name'] ?: '-'); ?></small></td>
+                                    <td class="ps-4">
+                                        <div class="fw-bold text-dark text-truncate" style="max-width: 300px;"><?php echo htmlspecialchars($n['title']); ?></div>
+                                        <?php if (!empty($n['image_path'])): ?>
+                                            <span class="badge bg-light text-muted border" style="font-size: 10px;"><i class="fa-solid fa-image me-1"></i> Has Media</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <div class="text-dark fw-medium small"><?php echo htmlspecialchars($authorDisplayName); ?></div>
+                                        <?php if (!empty($n['author_email'])): ?>
+                                            <div class="text-muted font-monospace" style="font-size: 11px;"><?php echo htmlspecialchars($n['author_email']); ?></div>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-muted small"><?php echo formatDate($n['created_at']); ?></td>
+                                    <td><small class="text-muted"><?php echo htmlspecialchars($n['reviewer_name'] ?: '—'); ?></small></td>
                                     <td class="text-center"><?php echo statusBadge($n['status']); ?></td>
-                                    <td class="text-end">
-                                        <div class="btn-group">
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group btn-group-sm">
                                             <?php if (Auth::hasPermission('approve_news')): ?>
-                                                <a href="news.php?action=review&id=<?php echo $n['id']; ?>" class="btn btn-sm btn-primary" title="Review Headline"><i class="fa-solid fa-file-signature me-1"></i> Review</a>
+                                                <a href="news.php?action=review&id=<?php echo $n['id']; ?>" class="btn btn-primary rounded-start-pill px-2.5" title="Review Headline">
+                                                    <i class="fa-solid fa-file-signature me-1"></i> Review
+                                                </a>
                                             <?php endif; ?>
                                             
                                             <!-- Edit Option for Reviewers and Authors -->
                                             <?php if (Auth::hasPermission('approve_news') || $n['author_id'] == Session::get('user_id')): ?>
-                                                <a href="news.php?action=edit&id=<?php echo $n['id']; ?>" class="btn btn-sm btn-outline-warning" title="Edit News Content"><i class="fa-solid fa-pen-to-square me-1"></i> Edit</a>
+                                                <a href="news.php?action=edit&id=<?php echo $n['id']; ?>" class="btn btn-outline-warning <?php echo !Auth::hasPermission('approve_news') ? 'rounded-start-pill' : ''; ?> px-2.5" title="Edit News Content">
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                </a>
                                             <?php endif; ?>
 
                                             <?php if (Auth::hasPermission('approve_news') || Auth::hasRole('Super Admin')): ?>
-                                                <a href="news.php?action=delete&id=<?php echo $n['id']; ?>" class="btn btn-sm btn-outline-danger" title="Delete News" onclick="return confirm('Are you sure you want to delete this news article?');"><i class="fa-solid fa-trash"></i></a>
+                                                <a href="news.php?action=delete&id=<?php echo $n['id']; ?>" class="btn btn-outline-danger rounded-end-pill px-2.5" title="Delete News" onclick="return confirm('Are you sure you want to delete this news article?');">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </a>
                                             <?php endif; ?>
                                         </div>
                                     </td>
@@ -228,25 +258,25 @@ $news_list = $db->fetchAll($query, $params);
 
 <?php elseif ($action === 'review' && $news): ?>
     <!-- Review Center -->
-    <div class="row">
+    <div class="row g-4">
         <!-- Draft Content Preview -->
         <div class="col-lg-7">
-            <div class="card border-0 shadow-sm p-4 mb-4">
-                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-                    <h5 class="fw-bold text-primary-color mb-0">News Headline Preview</h5>
-                    <a href="news.php?action=edit&id=<?php echo $news['id']; ?>" class="btn btn-sm btn-warning text-dark font-semibold">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                    <h5 class="fw-bold text-dark mb-0">News Headline Preview</h5>
+                    <a href="news.php?action=edit&id=<?php echo $news['id']; ?>" class="btn btn-sm btn-outline-warning rounded-pill px-3 font-semibold">
                         <i class="fa-solid fa-pen-to-square me-1"></i> Edit &amp; Revise News
                     </a>
                 </div>
-                <h4 class="fw-bold mb-3"><?php echo htmlspecialchars($news['title']); ?></h4>
-                <div class="text-muted small mb-4">
-                    <span>Reported by: <?php echo htmlspecialchars($news['author_name'] ?: $news['user_author_name']); ?></span> |
-                    <span>Submitted: <?php echo formatDate($news['created_at']); ?></span>
+                <h4 class="font-display fw-bold mb-3 text-dark"><?php echo htmlspecialchars($news['title']); ?></h4>
+                <div class="d-flex flex-wrap gap-2 small text-muted mb-4">
+                    <span class="badge bg-light text-dark border"><i class="fa-solid fa-user me-1 text-primary"></i> Reported by: <?php echo htmlspecialchars($news['author_name'] ?: $news['user_author_name']); ?></span>
+                    <span class="badge bg-light text-dark border"><i class="fa-solid fa-calendar me-1 text-primary"></i> Submitted: <?php echo formatDate($news['created_at']); ?></span>
                 </div>
                 <?php if ($news['image_path']): ?>
-                    <img src="<?php echo uploadUrl('news', $news['image_path']); ?>" alt="Cover" class="img-fluid rounded mb-3 shadow-xs" style="max-height: 250px; object-fit: cover;">
+                    <img src="<?php echo uploadUrl('news', $news['image_path']); ?>" alt="Cover" class="img-fluid rounded-4 mb-3 shadow-xs border" style="max-height: 280px; width: 100%; object-fit: cover;">
                 <?php endif; ?>
-                <div class="bg-light p-3 rounded small text-secondary" style="line-height: 1.7; min-height: 200px;">
+                <div class="bg-light p-3.5 rounded-3 small text-secondary border border-light-subtle" style="line-height: 1.8; min-height: 200px;">
                     <?php echo nl2br(htmlspecialchars($news['content'])); ?>
                 </div>
             </div>
@@ -254,15 +284,15 @@ $news_list = $db->fetchAll($query, $params);
 
         <!-- Verification Actions Form -->
         <div class="col-lg-5">
-            <div class="card border-0 shadow-sm p-4 mb-4">
-                <h5 class="fw-bold text-primary-color mb-3 border-bottom pb-2">Review &amp; Verification Decision</h5>
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                <h5 class="fw-bold text-dark mb-3 border-bottom pb-3">Editorial Verification Decision</h5>
                 <form method="POST" action="news.php">
                     <?php echo Security::csrfField(); ?>
                     <input type="hidden" name="news_id" value="<?php echo $news['id']; ?>">
                     
                     <div class="mb-3">
-                        <label class="form-label font-semibold">Verification Decision *</label>
-                        <select name="decision" class="form-select" required>
+                        <label class="form-label font-semibold text-dark">Verification Decision <span class="text-danger">*</span></label>
+                        <select name="decision" class="form-select rounded-3" required>
                             <option value="">Select decision...</option>
                             <option value="published">Approve &amp; Publish Live</option>
                             <option value="returned">Return for Correction (Draft status)</option>
@@ -270,12 +300,15 @@ $news_list = $db->fetchAll($query, $params);
                         </select>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label font-semibold">Reviewer Remarks / Feedback</label>
-                        <textarea name="reviewer_remarks" class="form-control" rows="4" placeholder="Feedback or publication remarks..."><?php echo htmlspecialchars($news['review_remarks'] ?? ''); ?></textarea>
+                    <div class="mb-4">
+                        <label class="form-label font-semibold text-dark">Reviewer Remarks / Feedback</label>
+                        <textarea name="reviewer_remarks" class="form-control rounded-3" rows="5" placeholder="Feedback or publication remarks..."><?php echo htmlspecialchars($news['review_remarks'] ?? ''); ?></textarea>
+                        <div class="form-text text-muted small mt-1">An automated status email with these remarks will be sent to the reporter.</div>
                     </div>
                     
-                    <button type="submit" name="submit_review_decision" class="btn btn-primary w-100 py-2.5 fw-bold"><i class="fa-solid fa-check-double me-1"></i> Log Decision</button>
+                    <button type="submit" name="submit_review_decision" class="btn btn-primary rounded-pill w-100 py-2.5 fw-bold shadow-sm hover-lift">
+                        <i class="fa-solid fa-check-double me-1.5"></i> Log &amp; Dispatch Decision
+                    </button>
                 </form>
             </div>
         </div>
@@ -285,15 +318,15 @@ $news_list = $db->fetchAll($query, $params);
     <!-- Full Edit / Revise News -->
     <div class="row justify-content-center">
         <div class="col-lg-9">
-            <div class="card border-0 shadow-sm p-4 mb-4">
-                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-                    <h4 class="fw-bold text-primary-color mb-0"><i class="fa-solid fa-pen-to-square text-warning me-2"></i>Edit &amp; Revise News Article</h4>
-                    <span class="badge bg-secondary"><?php echo statusBadge($news['status']); ?></span>
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                    <h4 class="font-display fw-bold text-dark mb-0"><i class="fa-solid fa-pen-to-square text-warning me-2"></i>Edit &amp; Revise News Article</h4>
+                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-3 py-1"><?php echo statusBadge($news['status']); ?></span>
                 </div>
                 
                 <?php if (!empty($news['review_remarks'])): ?>
-                    <div class="alert alert-warning small mb-4">
-                        <i class="fa-solid fa-circle-exclamation me-1"></i> <strong>Reviewer Feedback:</strong><br>
+                    <div class="alert alert-warning-subtle border border-warning-subtle rounded-3 small p-3.5 mb-4">
+                        <i class="fa-solid fa-circle-exclamation me-1 text-warning"></i> <strong>Reviewer Feedback:</strong><br>
                         <?php echo nl2br(htmlspecialchars($news['review_remarks'])); ?>
                     </div>
                 <?php endif; ?>
@@ -304,24 +337,24 @@ $news_list = $db->fetchAll($query, $params);
                     
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label font-semibold">News Headline / Title *</label>
-                            <input type="text" name="title" class="form-control" required value="<?php echo htmlspecialchars($news['title']); ?>">
+                            <label class="form-label font-semibold text-dark">News Headline / Title <span class="text-danger">*</span></label>
+                            <input type="text" name="title" class="form-control rounded-3" required value="<?php echo htmlspecialchars($news['title']); ?>">
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label font-semibold">Reporter / Author Name</label>
-                            <input type="text" name="author_name" class="form-control" value="<?php echo htmlspecialchars($news['author_name'] ?: $news['user_author_name']); ?>">
+                            <label class="form-label font-semibold text-dark">Reporter / Author Name</label>
+                            <input type="text" name="author_name" class="form-control rounded-3" value="<?php echo htmlspecialchars($news['author_name'] ?: $news['user_author_name']); ?>">
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label font-semibold">Author Email</label>
-                            <input type="email" name="author_email" class="form-control" value="<?php echo htmlspecialchars($news['author_email'] ?? ''); ?>">
+                            <label class="form-label font-semibold text-dark">Author Email</label>
+                            <input type="email" name="author_email" class="form-control rounded-3" value="<?php echo htmlspecialchars($news['author_email'] ?? ''); ?>">
                         </div>
 
                         <?php if (Auth::hasPermission('approve_news')): ?>
                             <div class="col-12">
-                                <label class="form-label font-semibold">Publication Status *</label>
-                                <select name="status" class="form-select" required>
+                                <label class="form-label font-semibold text-dark">Publication Status <span class="text-danger">*</span></label>
+                                <select name="status" class="form-select rounded-3" required>
                                     <option value="under_review" <?php echo $news['status'] === 'under_review' ? 'selected' : ''; ?>>Under Review</option>
                                     <option value="published" <?php echo $news['status'] === 'published' ? 'selected' : ''; ?>>Published Live</option>
                                     <option value="returned" <?php echo $news['status'] === 'returned' ? 'selected' : ''; ?>>Returned for Correction</option>
@@ -334,33 +367,33 @@ $news_list = $db->fetchAll($query, $params);
                         <?php endif; ?>
 
                         <div class="col-12">
-                            <label class="form-label font-semibold">News Content Body *</label>
-                            <textarea name="content" class="form-control" rows="10" required><?php echo htmlspecialchars($news['content']); ?></textarea>
+                            <label class="form-label font-semibold text-dark">News Content Body <span class="text-danger">*</span></label>
+                            <textarea name="content" class="form-control rounded-3" rows="10" required><?php echo htmlspecialchars($news['content']); ?></textarea>
                         </div>
 
                         <div class="col-md-8">
-                            <label class="form-label font-semibold">Replace Cover Image (Optional)</label>
-                            <input type="file" name="image" class="form-control" accept="image/*">
+                            <label class="form-label font-semibold text-dark">Replace Cover Image (Optional)</label>
+                            <input type="file" name="image" class="form-control rounded-3" accept="image/*">
                         </div>
 
                         <?php if (!empty($news['image_path'])): ?>
                             <div class="col-md-4">
-                                <label class="form-label font-semibold d-block">Current Cover</label>
-                                <img src="<?php echo uploadUrl('news', $news['image_path']); ?>" alt="Current" class="img-thumbnail" style="height: 60px; object-fit: cover;">
+                                <label class="form-label font-semibold d-block text-dark">Current Cover</label>
+                                <img src="<?php echo uploadUrl('news', $news['image_path']); ?>" alt="Current" class="img-thumbnail rounded-3 shadow-xs" style="height: 60px; object-fit: cover;">
                             </div>
                         <?php endif; ?>
 
                         <?php if (Auth::hasPermission('approve_news')): ?>
                             <div class="col-12">
-                                <label class="form-label font-semibold">Reviewer Notes &amp; Editorial Remarks</label>
-                                <textarea name="review_remarks" class="form-control" rows="2" placeholder="Editorial feedback or notes..."><?php echo htmlspecialchars($news['review_remarks'] ?? ''); ?></textarea>
+                                <label class="form-label font-semibold text-dark">Reviewer Notes &amp; Editorial Remarks</label>
+                                <textarea name="review_remarks" class="form-control rounded-3" rows="2" placeholder="Editorial feedback or notes..."><?php echo htmlspecialchars($news['review_remarks'] ?? ''); ?></textarea>
                             </div>
                         <?php endif; ?>
 
                         <div class="col-12 text-end mt-4">
-                            <a href="news.php" class="btn btn-outline-secondary me-2">Cancel</a>
-                            <button type="submit" name="save_news_edit" class="btn btn-primary px-4 py-2 font-semibold">
-                                <i class="fa-solid fa-floppy-disk me-1"></i> Save Changes
+                            <a href="news.php" class="btn btn-outline-secondary rounded-pill px-4 me-2">Cancel</a>
+                            <button type="submit" name="save_news_edit" class="btn btn-primary rounded-pill px-4 py-2 font-semibold shadow-sm hover-lift">
+                                <i class="fa-solid fa-floppy-disk me-1.5"></i> Save Changes
                             </button>
                         </div>
                     </div>

@@ -59,19 +59,22 @@ foreach ($analytics['chatbot_intents'] as $intent) {
 ?>
 
 <!-- Header Toolbar -->
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-4 border-bottom">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-1">
-            <i class="fa-solid fa-gauge-high text-warning me-2"></i>Executive Control Dashboard
-        </h1>
-        <p class="text-muted small mb-0">SOET MGM University Institutional Administration & AI Analytics Suite</p>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Management Center</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">
+            Executive Control Dashboard
+        </h2>
+        <p class="text-muted small mb-0">SOET MGM University Institutional Administration & CampusAI Analytics Suite</p>
     </div>
     <div class="btn-toolbar mb-2 mb-md-0 d-flex gap-2 align-items-center">
-        <span class="badge bg-light text-dark p-2 border shadow-xs">
+        <span class="badge bg-white text-dark p-2.5 border shadow-xs rounded-pill">
             <i class="fa-regular fa-clock me-1 text-warning"></i> <?php echo date('d M Y, h:i A'); ?>
         </span>
         <?php if (Auth::hasPermission('manage_users') || Auth::hasRole('Super Admin')): ?>
-            <a href="<?php echo APP_URL; ?>/admin/modules/logs.php" class="btn btn-sm btn-outline-secondary">
+            <a href="<?php echo APP_URL; ?>/admin/modules/logs.php" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
                 <i class="fa-solid fa-shield-halved me-1"></i> Audit Logs
             </a>
         <?php endif; ?>
@@ -79,41 +82,53 @@ foreach ($analytics['chatbot_intents'] as $intent) {
 </div>
 
 <!-- Quick Action Shortcuts -->
-<div class="row g-2 mb-4">
-    <div class="col-6 col-md-3 col-xl-2">
-        <a href="<?php echo APP_URL; ?>/admin/modules/admissions.php" class="btn btn-outline-primary w-100 py-2 d-flex flex-column align-items-center justify-content-center shadow-xs">
-            <i class="fa-solid fa-id-card fa-lg mb-1 text-primary"></i>
-            <span class="small font-semibold">Review Admissions</span>
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4 col-xl-2">
+        <a href="<?php echo APP_URL; ?>/admin/modules/admissions.php" class="card border-0 shadow-xs rounded-4 p-3 text-center text-decoration-none hover-lift bg-white h-100 transition-all">
+            <div class="stat-icon-wrapper bg-primary-subtle text-primary mx-auto mb-2" style="width: 44px; height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-id-card fa-lg"></i>
+            </div>
+            <span class="small font-semibold text-dark d-block">Review Admissions</span>
         </a>
     </div>
-    <div class="col-6 col-md-3 col-xl-2">
-        <a href="<?php echo APP_URL; ?>/admin/modules/courses.php?action=add" class="btn btn-outline-primary w-100 py-2 d-flex flex-column align-items-center justify-content-center shadow-xs">
-            <i class="fa-solid fa-book-medical fa-lg mb-1 text-success"></i>
-            <span class="small font-semibold">New Course</span>
+    <div class="col-6 col-md-4 col-xl-2">
+        <a href="<?php echo APP_URL; ?>/admin/modules/courses.php?action=add" class="card border-0 shadow-xs rounded-4 p-3 text-center text-decoration-none hover-lift bg-white h-100 transition-all">
+            <div class="stat-icon-wrapper bg-success-subtle text-success mx-auto mb-2" style="width: 44px; height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-book-medical fa-lg"></i>
+            </div>
+            <span class="small font-semibold text-dark d-block">New Course</span>
         </a>
     </div>
-    <div class="col-6 col-md-3 col-xl-2">
-        <a href="<?php echo APP_URL; ?>/admin/modules/notices.php?action=add" class="btn btn-outline-primary w-100 py-2 d-flex flex-column align-items-center justify-content-center shadow-xs">
-            <i class="fa-solid fa-bullhorn fa-lg mb-1 text-warning"></i>
-            <span class="small font-semibold">Post Notice</span>
+    <div class="col-6 col-md-4 col-xl-2">
+        <a href="<?php echo APP_URL; ?>/admin/modules/notices.php?action=add" class="card border-0 shadow-xs rounded-4 p-3 text-center text-decoration-none hover-lift bg-white h-100 transition-all">
+            <div class="stat-icon-wrapper bg-warning-subtle text-warning-emphasis mx-auto mb-2" style="width: 44px; height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-bullhorn fa-lg"></i>
+            </div>
+            <span class="small font-semibold text-dark d-block">Post Notice</span>
         </a>
     </div>
-    <div class="col-6 col-md-3 col-xl-2">
-        <a href="<?php echo APP_URL; ?>/admin/modules/events.php?action=add" class="btn btn-outline-primary w-100 py-2 d-flex flex-column align-items-center justify-content-center shadow-xs">
-            <i class="fa-solid fa-calendar-plus fa-lg mb-1 text-info"></i>
-            <span class="small font-semibold">Add Event</span>
+    <div class="col-6 col-md-4 col-xl-2">
+        <a href="<?php echo APP_URL; ?>/admin/modules/events.php?action=add" class="card border-0 shadow-xs rounded-4 p-3 text-center text-decoration-none hover-lift bg-white h-100 transition-all">
+            <div class="stat-icon-wrapper bg-info-subtle text-info mx-auto mb-2" style="width: 44px; height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-calendar-plus fa-lg"></i>
+            </div>
+            <span class="small font-semibold text-dark d-block">Add Event</span>
         </a>
     </div>
-    <div class="col-6 col-md-3 col-xl-2">
-        <a href="<?php echo APP_URL; ?>/admin/ai-chatbot/index.php" class="btn btn-outline-primary w-100 py-2 d-flex flex-column align-items-center justify-content-center shadow-xs">
-            <i class="fa-solid fa-robot fa-lg mb-1 text-warning"></i>
-            <span class="small font-semibold">AI Chatbot Suite</span>
+    <div class="col-6 col-md-4 col-xl-2">
+        <a href="<?php echo APP_URL; ?>/admin/ai-chatbot/index.php" class="card border-0 shadow-xs rounded-4 p-3 text-center text-decoration-none hover-lift bg-white h-100 transition-all">
+            <div class="stat-icon-wrapper bg-warning text-dark mx-auto mb-2" style="width: 44px; height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-robot fa-lg"></i>
+            </div>
+            <span class="small font-semibold text-dark d-block">AI Chatbot Suite</span>
         </a>
     </div>
-    <div class="col-6 col-md-3 col-xl-2">
-        <a href="<?php echo APP_URL; ?>/admin/modules/backup.php" class="btn btn-outline-primary w-100 py-2 d-flex flex-column align-items-center justify-content-center shadow-xs">
-            <i class="fa-solid fa-database fa-lg mb-1 text-secondary"></i>
-            <span class="small font-semibold">Backup DB</span>
+    <div class="col-6 col-md-4 col-xl-2">
+        <a href="<?php echo APP_URL; ?>/admin/modules/backup.php" class="card border-0 shadow-xs rounded-4 p-3 text-center text-decoration-none hover-lift bg-white h-100 transition-all">
+            <div class="stat-icon-wrapper bg-secondary-subtle text-secondary mx-auto mb-2" style="width: 44px; height: 44px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-database fa-lg"></i>
+            </div>
+            <span class="small font-semibold text-dark d-block">Backup DB</span>
         </a>
     </div>
 </div>
@@ -122,15 +137,15 @@ foreach ($analytics['chatbot_intents'] as $intent) {
 <div class="row g-3 mb-4">
     <!-- Visitors -->
     <div class="col-sm-6 col-xl-3">
-        <div class="card admin-stat-card bg-white p-3 border-0 shadow-sm h-100">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 hover-lift transition-all">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted small text-uppercase fw-semibold">Total Visitors</span>
-                    <h3 class="fw-bold text-primary-color mb-0 mt-1"><?php echo number_format($stats['visitors']); ?></h3>
-                    <small class="text-success"><i class="fa-solid fa-arrow-trend-up me-1"></i>Today: <?php echo number_format($stats['today_visitors']); ?></small>
+                    <span class="text-muted small text-uppercase font-semibold" style="letter-spacing: 0.5px;">Total Visitors</span>
+                    <h2 class="font-display fw-extrabold text-dark mb-1 mt-1"><?php echo number_format($stats['visitors']); ?></h2>
+                    <small class="text-success font-semibold"><i class="fa-solid fa-arrow-trend-up me-1"></i>Today: <?php echo number_format($stats['today_visitors']); ?></small>
                 </div>
-                <div class="p-3 rounded bg-primary bg-opacity-10 text-primary">
-                    <i class="fa-solid fa-users-viewfinder fa-2x"></i>
+                <div class="stat-icon-wrapper bg-primary-subtle text-primary rounded-4 p-3" style="width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-users-viewfinder fa-xl"></i>
                 </div>
             </div>
         </div>
@@ -138,15 +153,15 @@ foreach ($analytics['chatbot_intents'] as $intent) {
 
     <!-- Admissions Portal -->
     <div class="col-sm-6 col-xl-3">
-        <div class="card admin-stat-card bg-white p-3 border-0 shadow-sm h-100">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 hover-lift transition-all">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted small text-uppercase fw-semibold">Admissions Portal</span>
-                    <h3 class="fw-bold text-primary-color mb-0 mt-1"><?php echo number_format($stats['admissions']); ?></h3>
-                    <small class="text-warning"><i class="fa-solid fa-clock-rotate-left me-1"></i>Pending: <?php echo number_format($stats['pending_admissions']); ?></small>
+                    <span class="text-muted small text-uppercase font-semibold" style="letter-spacing: 0.5px;">Admissions Portal</span>
+                    <h2 class="font-display fw-extrabold text-dark mb-1 mt-1"><?php echo number_format($stats['admissions']); ?></h2>
+                    <small class="text-warning font-semibold"><i class="fa-solid fa-clock-rotate-left me-1"></i>Pending: <?php echo number_format($stats['pending_admissions']); ?></small>
                 </div>
-                <div class="p-3 rounded bg-warning bg-opacity-10 text-warning">
-                    <i class="fa-solid fa-id-card fa-2x"></i>
+                <div class="stat-icon-wrapper bg-warning-subtle text-warning-emphasis rounded-4 p-3" style="width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-id-card fa-xl"></i>
                 </div>
             </div>
         </div>
@@ -154,15 +169,15 @@ foreach ($analytics['chatbot_intents'] as $intent) {
 
     <!-- Active Faculty & Departments -->
     <div class="col-sm-6 col-xl-3">
-        <div class="card admin-stat-card bg-white p-3 border-0 shadow-sm h-100">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 hover-lift transition-all">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted small text-uppercase fw-semibold">Academic Staff</span>
-                    <h3 class="fw-bold text-primary-color mb-0 mt-1"><?php echo number_format($stats['faculty']); ?></h3>
-                    <small class="text-secondary">Depts: <?php echo $stats['departments']; ?> | Courses: <?php echo $stats['courses']; ?></small>
+                    <span class="text-muted small text-uppercase font-semibold" style="letter-spacing: 0.5px;">Academic Staff</span>
+                    <h2 class="font-display fw-extrabold text-dark mb-1 mt-1"><?php echo number_format($stats['faculty']); ?></h2>
+                    <small class="text-secondary font-semibold">Depts: <?php echo $stats['departments']; ?> | Courses: <?php echo $stats['courses']; ?></small>
                 </div>
-                <div class="p-3 rounded bg-success bg-opacity-10 text-success">
-                    <i class="fa-solid fa-user-tie fa-2x"></i>
+                <div class="stat-icon-wrapper bg-success-subtle text-success rounded-4 p-3" style="width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-user-tie fa-xl"></i>
                 </div>
             </div>
         </div>
@@ -170,15 +185,15 @@ foreach ($analytics['chatbot_intents'] as $intent) {
 
     <!-- CampusAI Usage -->
     <div class="col-sm-6 col-xl-3">
-        <div class="card admin-stat-card bg-white p-3 border-0 shadow-sm h-100">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 hover-lift transition-all">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted small text-uppercase fw-semibold">CampusAI Usage</span>
-                    <h3 class="fw-bold text-primary-color mb-0 mt-1"><?php echo number_format($stats['chatbot_queries']); ?></h3>
-                    <small class="text-info"><i class="fa-solid fa-circle-check me-1"></i>Conversations Active</small>
+                    <span class="text-muted small text-uppercase font-semibold" style="letter-spacing: 0.5px;">CampusAI Usage</span>
+                    <h2 class="font-display fw-extrabold text-dark mb-1 mt-1"><?php echo number_format($stats['chatbot_queries']); ?></h2>
+                    <small class="text-info font-semibold"><i class="fa-solid fa-circle-check me-1"></i>Queries Processed</small>
                 </div>
-                <div class="p-3 rounded bg-info bg-opacity-10 text-info">
-                    <i class="fa-solid fa-robot fa-2x"></i>
+                <div class="stat-icon-wrapper bg-info-subtle text-info rounded-4 p-3" style="width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-robot fa-xl"></i>
                 </div>
             </div>
         </div>
@@ -189,14 +204,14 @@ foreach ($analytics['chatbot_intents'] as $intent) {
 <div class="row g-4 mb-4">
     <!-- Traffic Trends (14-day Line Chart) -->
     <div class="col-lg-8">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-                <h5 class="mb-0 fw-bold text-primary-color">
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+            <div class="card-header bg-white py-3.5 px-4 d-flex justify-content-between align-items-center border-bottom">
+                <h5 class="mb-0 font-display fw-bold text-dark">
                     <i class="fa-solid fa-chart-line text-warning me-2"></i>14-Day Portal Traffic Trends
                 </h5>
-                <span class="badge bg-light text-muted border">Daily Aggregates</span>
+                <span class="badge bg-light text-muted border rounded-pill px-3 py-1">Daily Aggregates</span>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 <div style="height: 270px;">
                     <canvas id="trafficChart"></canvas>
                 </div>
@@ -206,14 +221,14 @@ foreach ($analytics['chatbot_intents'] as $intent) {
 
     <!-- Chatbot Top Topics Doughnut -->
     <div class="col-lg-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-                <h5 class="mb-0 fw-bold text-primary-color">
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+            <div class="card-header bg-white py-3.5 px-4 d-flex justify-content-between align-items-center border-bottom">
+                <h5 class="mb-0 font-display fw-bold text-dark">
                     <i class="fa-solid fa-chart-pie text-warning me-2"></i>AI Inquiries by Intent
                 </h5>
-                <span class="badge bg-light text-muted border">Top Intents</span>
+                <span class="badge bg-light text-muted border rounded-pill px-3 py-1">Top Intents</span>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 <div style="height: 270px;" class="d-flex align-items-center justify-content-center">
                     <canvas id="intentChart"></canvas>
                 </div>
@@ -225,15 +240,15 @@ foreach ($analytics['chatbot_intents'] as $intent) {
 <!-- Program Seat Occupancy & Capacity Bar Chart -->
 <div class="row g-4 mb-4">
     <div class="col-12">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-                <h5 class="mb-0 fw-bold text-primary-color">
+        <div class="card border-0 shadow-sm rounded-4 bg-white">
+            <div class="card-header bg-white py-3.5 px-4 d-flex justify-content-between align-items-center border-bottom">
+                <h5 class="mb-0 font-display fw-bold text-dark">
                     <i class="fa-solid fa-chart-simple text-warning me-2"></i>Degree Programs Seat Capacity vs. Filled Seats
                 </h5>
-                <a href="<?php echo APP_URL; ?>/admin/modules/admissions.php" class="btn btn-xs btn-outline-primary py-1 px-2 rounded" style="font-size: 11px;">Manage Seats</a>
+                <a href="<?php echo APP_URL; ?>/admin/modules/admissions.php" class="btn btn-sm btn-outline-primary rounded-pill px-3 font-semibold">Manage Seats</a>
             </div>
-            <div class="card-body">
-                <div style="height: 230px;">
+            <div class="card-body p-4">
+                <div style="height: 240px;">
                     <canvas id="seatsChart"></canvas>
                 </div>
             </div>
@@ -246,10 +261,10 @@ foreach ($analytics['chatbot_intents'] as $intent) {
     <!-- Left Column: Pending Admissions & Visitors -->
     <div class="col-lg-7">
         <!-- Pending Admissions Applications -->
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-                <h5 class="mb-0 fw-bold text-primary-color"><i class="fa-solid fa-user-clock text-warning me-2"></i>Pending Admissions Review</h5>
-                <a href="<?php echo APP_URL; ?>/admin/modules/admissions.php" class="btn btn-xs btn-outline-primary py-1 px-2 rounded" style="font-size: 11px;">View All</a>
+        <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white overflow-hidden">
+            <div class="card-header bg-white py-3.5 px-4 d-flex justify-content-between align-items-center border-bottom">
+                <h5 class="mb-0 font-display fw-bold text-dark"><i class="fa-solid fa-user-clock text-warning me-2"></i>Pending Admissions Review</h5>
+                <a href="<?php echo APP_URL; ?>/admin/modules/admissions.php" class="btn btn-sm btn-outline-primary rounded-pill px-3 font-semibold" style="font-size: 11px;">View All</a>
             </div>
             <div class="card-body p-0">
                 <?php if (empty($pending_admissions_list)): ?>
@@ -261,22 +276,22 @@ foreach ($analytics['chatbot_intents'] as $intent) {
                         <table class="table table-hover align-middle mb-0 small">
                             <thead class="table-light">
                                 <tr>
-                                    <th>App No</th>
+                                    <th class="ps-4">App No</th>
                                     <th>Student Name</th>
                                     <th>Course</th>
                                     <th class="text-center">12th %</th>
-                                    <th class="text-end">Actions</th>
+                                    <th class="text-end pe-4">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php foreach ($pending_admissions_list as $app): ?>
                                     <tr>
-                                        <td class="fw-bold"><?php echo htmlspecialchars($app['application_number']); ?></td>
+                                        <td class="fw-bold ps-4"><?php echo htmlspecialchars($app['application_number']); ?></td>
                                         <td><?php echo htmlspecialchars($app['student_name']); ?></td>
-                                        <td><span class="badge bg-secondary"><?php echo htmlspecialchars($app['course_code']); ?></span></td>
-                                        <td class="text-center"><?php echo $app['percentage_12th']; ?>%</td>
-                                        <td class="text-end">
-                                            <a href="<?php echo APP_URL; ?>/admin/modules/admissions.php?action=view&id=<?php echo $app['id']; ?>" class="btn btn-xs btn-primary py-0.5 px-2 rounded" style="font-size: 10px;">Review</a>
+                                        <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill"><?php echo htmlspecialchars($app['course_code']); ?></span></td>
+                                        <td class="text-center font-semibold"><?php echo $app['percentage_12th']; ?>%</td>
+                                        <td class="text-end pe-4">
+                                            <a href="<?php echo APP_URL; ?>/admin/modules/admissions.php?action=view&id=<?php echo $app['id']; ?>" class="btn btn-sm btn-primary rounded-pill py-1 px-3 font-semibold" style="font-size: 11px;">Review</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -288,29 +303,29 @@ foreach ($analytics['chatbot_intents'] as $intent) {
         </div>
 
         <!-- Recent Visitor Traffic -->
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold text-primary-color"><i class="fa-solid fa-chart-bar text-warning me-2"></i>Live Visitor Pulse</h5>
-                <a href="<?php echo APP_URL; ?>/admin/modules/visitors.php" class="btn btn-xs btn-outline-secondary py-1 px-2 rounded" style="font-size: 11px;">Full Logs</a>
+        <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+            <div class="card-header bg-white py-3.5 px-4 border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 font-display fw-bold text-dark"><i class="fa-solid fa-chart-bar text-warning me-2"></i>Live Visitor Pulse</h5>
+                <a href="<?php echo APP_URL; ?>/admin/modules/visitors.php" class="btn btn-sm btn-outline-secondary rounded-pill px-3 font-semibold" style="font-size: 11px;">Full Logs</a>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0 small">
                         <thead class="table-light">
                             <tr>
-                                <th>IP Address</th>
+                                <th class="ps-4">IP Address</th>
                                 <th>Date</th>
                                 <th>Views</th>
-                                <th>Last Active Page</th>
+                                <th class="pe-4">Last Active Page</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($latest_visitors as $v): ?>
                                 <tr>
-                                    <td><code><?php echo htmlspecialchars($v['ip_address']); ?></code></td>
+                                    <td class="ps-4"><code><?php echo htmlspecialchars($v['ip_address']); ?></code></td>
                                     <td><?php echo formatDate($v['visit_date']); ?></td>
-                                    <td><span class="badge bg-info text-dark"><?php echo $v['page_views']; ?> views</span></td>
-                                    <td><span class="text-muted font-semibold"><?php echo htmlspecialchars($v['last_page']); ?></span></td>
+                                    <td><span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill"><?php echo $v['page_views']; ?> views</span></td>
+                                    <td class="pe-4"><span class="text-muted font-semibold"><?php echo htmlspecialchars($v['last_page']); ?></span></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -323,61 +338,61 @@ foreach ($analytics['chatbot_intents'] as $intent) {
     <!-- Right Column: Editorial Queues & System Health -->
     <div class="col-lg-5">
         <!-- System Health Widget -->
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold text-primary-color"><i class="fa-solid fa-server text-warning me-2"></i>System Health & Environment</h5>
-                <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i>Operational</span>
+        <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white overflow-hidden">
+            <div class="card-header bg-white py-3.5 px-4 border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 font-display fw-bold text-dark"><i class="fa-solid fa-server text-warning me-2"></i>System Health & Environment</h5>
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1"><i class="fa-solid fa-check me-1"></i>Operational</span>
             </div>
-            <div class="card-body p-3 small">
-                <div class="d-flex justify-content-between py-1 border-bottom">
+            <div class="card-body p-4 small">
+                <div class="d-flex justify-content-between py-2 border-bottom">
                     <span class="text-muted">PHP Version:</span>
                     <strong class="text-dark"><?php echo $health['php_version']; ?></strong>
                 </div>
-                <div class="d-flex justify-content-between py-1 border-bottom">
+                <div class="d-flex justify-content-between py-2 border-bottom">
                     <span class="text-muted">Database Engine:</span>
                     <strong class="text-dark"><?php echo $health['pdo_driver']; ?></strong>
                 </div>
-                <div class="d-flex justify-content-between py-1 border-bottom">
+                <div class="d-flex justify-content-between py-2 border-bottom">
                     <span class="text-muted">Session Mode:</span>
-                    <span class="badge bg-light text-dark border"><?php echo $health['session_lifetime']; ?></span>
+                    <span class="badge bg-light text-dark border rounded-pill"><?php echo $health['session_lifetime']; ?></span>
                 </div>
-                <div class="d-flex justify-content-between py-1 border-bottom">
+                <div class="d-flex justify-content-between py-2 border-bottom">
                     <span class="text-muted">Memory Limit / Upload Max:</span>
-                    <span class="text-dark"><?php echo $health['memory_limit']; ?> / <?php echo $health['upload_max_filesize']; ?></span>
+                    <span class="text-dark font-semibold"><?php echo $health['memory_limit']; ?> / <?php echo $health['upload_max_filesize']; ?></span>
                 </div>
-                <div class="mt-2 pt-1">
-                    <div class="d-flex justify-content-between mb-1">
+                <div class="mt-3 pt-1">
+                    <div class="d-flex justify-content-between mb-1.5">
                         <span class="text-muted">Disk Storage Free:</span>
-                        <strong><?php echo $health['disk_free_gb']; ?> GB</strong>
+                        <strong class="text-dark"><?php echo $health['disk_free_gb']; ?> GB</strong>
                     </div>
-                    <div class="progress" style="height: 6px;">
-                        <div class="progress-bar bg-info" role="progressbar" style="width: <?php echo $health['disk_usage_percent']; ?>%;" aria-valuenow="<?php echo $health['disk_usage_percent']; ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div class="progress rounded-pill" style="height: 7px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: <?php echo $health['disk_usage_percent']; ?>%;" aria-valuenow="<?php echo $health['disk_usage_percent']; ?>" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Blogs Review -->
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-                <h5 class="mb-0 fw-bold text-primary-color"><i class="fa-solid fa-pen-nib text-warning me-2"></i>Blog Editorial Queue</h5>
-                <span class="badge bg-danger"><?php echo $stats['pending_blogs']; ?> Pending</span>
+        <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white overflow-hidden">
+            <div class="card-header bg-white py-3.5 px-4 d-flex justify-content-between align-items-center border-bottom">
+                <h5 class="mb-0 font-display fw-bold text-dark"><i class="fa-solid fa-pen-nib text-warning me-2"></i>Blog Editorial Queue</h5>
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1"><?php echo $stats['pending_blogs']; ?> Pending</span>
             </div>
             <div class="card-body p-0">
                 <?php if (empty($pending_blogs_list)): ?>
-                    <div class="p-3 text-center text-muted small">
+                    <div class="p-4 text-center text-muted small">
                         <p class="mb-0">No blogs submitted for review.</p>
                     </div>
                 <?php else: ?>
                     <div class="list-group list-group-flush">
                         <?php foreach ($pending_blogs_list as $blog): ?>
-                            <div class="list-group-item p-3">
+                            <div class="list-group-item p-3.5 px-4">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <span class="text-muted small">By <?php echo htmlspecialchars($blog['author_name']); ?></span>
                                     <?php echo statusBadge($blog['status']); ?>
                                 </div>
-                                <h6 class="fw-bold mb-1 text-primary-color"><?php echo htmlspecialchars($blog['title']); ?></h6>
-                                <a href="<?php echo APP_URL; ?>/admin/modules/blogs.php?action=review&id=<?php echo $blog['id']; ?>" class="btn btn-xs btn-outline-warning py-0.5 px-2 rounded mt-1" style="font-size: 11px;">Review Content</a>
+                                <h6 class="font-display fw-bold mb-1 text-dark"><?php echo htmlspecialchars($blog['title']); ?></h6>
+                                <a href="<?php echo APP_URL; ?>/admin/modules/blogs.php?action=review&id=<?php echo $blog['id']; ?>" class="btn btn-sm btn-outline-warning rounded-pill py-0.5 px-2.5 mt-1 font-semibold" style="font-size: 11px;">Review Content</a>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -386,26 +401,26 @@ foreach ($analytics['chatbot_intents'] as $intent) {
         </div>
 
         <!-- News Review -->
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-                <h5 class="mb-0 fw-bold text-primary-color"><i class="fa-solid fa-newspaper text-warning me-2"></i>News Editorial Queue</h5>
-                <span class="badge bg-danger"><?php echo $stats['pending_news']; ?> Pending</span>
+        <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+            <div class="card-header bg-white py-3.5 px-4 d-flex justify-content-between align-items-center border-bottom">
+                <h5 class="mb-0 font-display fw-bold text-dark"><i class="fa-solid fa-newspaper text-warning me-2"></i>News Editorial Queue</h5>
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1"><?php echo $stats['pending_news']; ?> Pending</span>
             </div>
             <div class="card-body p-0">
                 <?php if (empty($pending_news_list)): ?>
-                    <div class="p-3 text-center text-muted small">
+                    <div class="p-4 text-center text-muted small">
                         <p class="mb-0">No news articles submitted for review.</p>
                     </div>
                 <?php else: ?>
                     <div class="list-group list-group-flush">
                         <?php foreach ($pending_news_list as $news): ?>
-                            <div class="list-group-item p-3">
+                            <div class="list-group-item p-3.5 px-4">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <span class="text-muted small"><?php echo formatDate($news['created_at']); ?></span>
                                     <?php echo statusBadge($news['status']); ?>
                                 </div>
-                                <h6 class="fw-bold mb-1 text-primary-color"><?php echo htmlspecialchars($news['title']); ?></h6>
-                                <a href="<?php echo APP_URL; ?>/admin/modules/news.php?action=review&id=<?php echo $news['id']; ?>" class="btn btn-xs btn-outline-warning py-0.5 px-2 rounded mt-1" style="font-size: 11px;">Review Article</a>
+                                <h6 class="font-display fw-bold mb-1 text-dark"><?php echo htmlspecialchars($news['title']); ?></h6>
+                                <a href="<?php echo APP_URL; ?>/admin/modules/news.php?action=review&id=<?php echo $news['id']; ?>" class="btn btn-sm btn-outline-warning rounded-pill py-0.5 px-2.5 mt-1 font-semibold" style="font-size: 11px;">Review Article</a>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -430,22 +445,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     {
                         label: 'Page Views',
                         data: <?php echo json_encode($trafficViews); ?>,
-                        borderColor: '#0d6efd',
-                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        borderColor: '#1e3a5f',
+                        backgroundColor: 'rgba(30, 58, 95, 0.08)',
                         fill: true,
                         tension: 0.35,
-                        borderWidth: 2,
-                        pointRadius: 3
+                        borderWidth: 2.5,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#1e3a5f'
                     },
                     {
                         label: 'Unique Visitors',
                         data: <?php echo json_encode($trafficVisitors); ?>,
-                        borderColor: '#bfa15f',
+                        borderColor: '#f59e0b',
                         backgroundColor: 'transparent',
                         borderDash: [4, 4],
                         tension: 0.35,
                         borderWidth: 2,
-                        pointRadius: 3
+                        pointRadius: 3,
+                        pointBackgroundColor: '#f59e0b'
                     }
                 ]
             },
@@ -453,10 +470,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } }
+                    legend: { position: 'top', labels: { boxWidth: 12, font: { family: 'Inter', size: 12, weight: 600 } } }
                 },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' } },
                     x: { grid: { display: false } }
                 }
             }
@@ -472,7 +489,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 labels: <?php echo json_encode(!empty($intentLabels) ? $intentLabels : ['General', 'Admission', 'Fees', 'Courses']); ?>,
                 datasets: [{
                     data: <?php echo json_encode(!empty($intentCounts) ? $intentCounts : [40, 25, 20, 15]); ?>,
-                    backgroundColor: ['#0d233a', '#bfa15f', '#0d6efd', '#198754', '#ffc107', '#6c757d'],
+                    backgroundColor: ['#0f172a', '#f59e0b', '#1e3a5f', '#10b981', '#06b6d4', '#8b5cf6'],
                     borderWidth: 2
                 }]
             },
@@ -480,9 +497,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
+                    legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Inter', size: 11 } } }
                 },
-                cutout: '68%'
+                cutout: '70%'
             }
         });
     }
@@ -498,16 +515,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     {
                         label: 'Total Intake Capacity',
                         data: <?php echo json_encode($courseIntake); ?>,
-                        backgroundColor: 'rgba(13, 35, 58, 0.25)',
-                        borderColor: '#0d233a',
+                        backgroundColor: 'rgba(15, 23, 42, 0.2)',
+                        borderColor: '#0f172a',
                         borderWidth: 1,
-                        borderRadius: 4
+                        borderRadius: 6
                     },
                     {
                         label: 'Filled / Approved Seats',
                         data: <?php echo json_encode($courseFilled); ?>,
-                        backgroundColor: '#bfa15f',
-                        borderRadius: 4
+                        backgroundColor: '#f59e0b',
+                        borderRadius: 6
                     }
                 ]
             },
@@ -515,10 +532,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } }
+                    legend: { position: 'top', labels: { boxWidth: 12, font: { family: 'Inter', size: 12, weight: 600 } } }
                 },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' } },
                     x: { grid: { display: false } }
                 }
             }

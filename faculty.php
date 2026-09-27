@@ -19,15 +19,15 @@ foreach ($faculty_list as $fac) {
 }
 ?>
 
-<!-- Breadcrumb Header -->
-<div class="py-5 text-white mb-5 position-relative overflow-hidden" style="<?php echo $faculty_bg ? "background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), url('{$faculty_bg}') center/cover no-repeat;" : "background-color: var(--primary-color);"; ?>">
+<!-- Page Hero Banner -->
+<div class="page-hero mb-5">
     <div class="container position-relative z-1">
-        <h1 class="fw-extrabold mb-1 text-white display-5">Faculty Directory</h1>
-        <p class="lead opacity-75 mb-3">Meet our distinguished professors, department heads, and research mentors</p>
+        <h1 class="font-display fw-extrabold mb-2 text-white">Faculty Directory &amp; Mentors</h1>
+        <p class="lead opacity-80 mb-3" style="font-size: 1.1rem; max-width: 650px;">Meet our distinguished engineering professors, doctorates, research mentors, and academic leadership.</p>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="index.php" class="text-white opacity-75 text-decoration-none">Home</a></li>
-                <li class="breadcrumb-item active text-warning" aria-current="page">Faculty</li>
+                <li class="breadcrumb-item"><a href="index.php" class="text-white opacity-75 text-decoration-none"><i class="fa-solid fa-house me-1"></i> Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Faculty Directory</li>
             </ol>
         </nav>
     </div>
@@ -35,19 +35,19 @@ foreach ($faculty_list as $fac) {
 
 <div class="container mb-5">
     <!-- Filter & Live Search Bar -->
-    <div class="row g-3 mb-5">
+    <div class="row g-3 mb-5 align-items-center">
         <div class="col-md-6 col-lg-5">
-            <div class="input-group shadow-sm">
-                <span class="input-group-text bg-white border-end-0 text-warning"><i class="fa-solid fa-magnifying-glass"></i></span>
-                <input type="text" id="facultySearchInput" class="form-control border-start-0" placeholder="Search faculty by name, specialization, or qualification...">
+            <div class="input-group shadow-xs">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="text" id="facultySearchInput" class="form-control border-start-0 ps-0" placeholder="Search faculty by name, specialization, or qualification...">
             </div>
         </div>
         <div class="col-md-6 col-lg-7">
-            <div class="card border-0 shadow-sm p-2 bg-light d-flex flex-row justify-content-md-end align-items-center gap-2 flex-wrap">
-                <span class="small fw-bold text-muted me-1"><i class="fa-solid fa-filter text-warning me-1"></i> Dept:</span>
-                <a href="faculty.php" class="btn btn-xs <?php echo !$selected_dept ? 'btn-primary' : 'btn-outline-primary'; ?> rounded-pill px-2.5 py-1" style="font-size: 12px;">All (<?php echo count($faculty_list); ?>)</a>
+            <div class="card border-0 shadow-xs p-2 bg-white d-flex flex-row justify-content-md-end align-items-center gap-1.5 flex-wrap rounded-3" style="border: 1px solid #e2e8f0 !important;">
+                <span class="small font-semibold text-muted me-1"><i class="fa-solid fa-filter text-warning me-1"></i> Dept:</span>
+                <a href="faculty.php" class="btn btn-xs <?php echo !$selected_dept ? 'btn-primary' : 'btn-outline-primary'; ?> rounded-pill px-3 py-1 font-semibold" style="font-size: 12px;">All (<?php echo count($faculty_list); ?>)</a>
                 <?php foreach ($departments as $dept): ?>
-                    <a href="faculty.php?dept_id=<?php echo $dept['id']; ?>" class="btn btn-xs <?php echo $selected_dept === $dept['id'] ? 'btn-primary' : 'btn-outline-primary'; ?> rounded-pill px-2.5 py-1" style="font-size: 12px;">
+                    <a href="faculty.php?dept_id=<?php echo $dept['id']; ?>" class="btn btn-xs <?php echo $selected_dept === $dept['id'] ? 'btn-primary' : 'btn-outline-primary'; ?> rounded-pill px-3 py-1 font-semibold" style="font-size: 12px;">
                         <?php echo htmlspecialchars($dept['code']); ?>
                     </a>
                 <?php endforeach; ?>
@@ -59,7 +59,7 @@ foreach ($faculty_list as $fac) {
     <div id="facultyPartitionContainer">
         <?php if (empty($grouped_faculty)): ?>
             <div class="text-center text-muted py-5">
-                <i class="fa-solid fa-users-slash fa-3x mb-3 text-secondary"></i>
+                <i class="fa-solid fa-users-slash fa-3x mb-3 text-secondary opacity-50"></i>
                 <p>No faculty members found in this department category.</p>
             </div>
         <?php else: ?>
@@ -68,11 +68,11 @@ foreach ($faculty_list as $fac) {
                     
                     <!-- Department Header & Divider Line -->
                     <div class="d-flex align-items-center mb-4">
-                        <h4 class="fw-bold text-primary-color mb-0 me-3">
+                        <h4 class="fw-bold text-primary-color mb-0 me-3 font-display">
                             <i class="fa-solid fa-building-columns text-warning me-2"></i><?php echo htmlspecialchars($dept_name); ?>
                         </h4>
                         <div class="flex-grow-1 border-bottom border-2 border-warning opacity-50"></div>
-                        <span class="badge bg-light text-dark border ms-3 fw-semibold px-2.5 py-1.5"><?php echo count($fac_members); ?> Faculty</span>
+                        <span class="badge bg-light text-dark border ms-3 font-semibold px-3 py-1.5 rounded-pill"><?php echo count($fac_members); ?> Faculty Mentors</span>
                     </div>
 
                     <!-- Cards Row for Department -->
@@ -84,47 +84,47 @@ foreach ($faculty_list as $fac) {
                                  data-dept="<?php echo strtolower(htmlspecialchars($fac['department_name'])); ?>"
                                  data-spec="<?php echo strtolower(htmlspecialchars($fac['specialization'] ?: '')); ?>"
                                  data-qual="<?php echo strtolower(htmlspecialchars($fac['qualification'] ?: '')); ?>">
-                                <div class="card custom-card h-100 text-center p-3 border-0 shadow-sm hover-elevate <?php echo $isDirector ? 'border-warning' : ''; ?>" 
-                                     style="<?php echo $isDirector ? 'border: 2px solid #bfa15f !important; box-shadow: 0 12px 32px rgba(191, 161, 95, 0.28) !important; background: linear-gradient(145deg, #ffffff, #fffcf5);' : ''; ?>">
+                                <div class="card h-100 text-center p-3.5 border-0 shadow-sm hover-lift <?php echo $isDirector ? 'border-warning' : ''; ?>" 
+                                     style="<?php echo $isDirector ? 'border: 2px solid var(--accent) !important; box-shadow: 0 12px 32px rgba(245, 158, 11, 0.2) !important; background: linear-gradient(145deg, #ffffff, #fffcf5); border-radius: 18px;' : 'border-radius: 16px; border: 1px solid #e2e8f0 !important; background: #ffffff;'; ?>">
                                     
                                     <?php if ($isDirector): ?>
                                         <div class="position-absolute top-0 start-50 translate-middle-x mt-2">
-                                            <span class="badge bg-danger text-white px-3 py-1.5 rounded-pill shadow-sm" style="font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">
+                                            <span class="badge bg-danger text-white px-3 py-1.5 rounded-pill shadow-sm" style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.5px;">
                                                 <i class="fa-solid fa-crown text-warning me-1"></i> INSTITUTE DIRECTORATE
                                             </span>
                                         </div>
                                     <?php endif; ?>
 
                                     <div class="text-center <?php echo $isDirector ? 'mt-4 mb-3' : 'my-3'; ?>">
-                                        <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm" 
-                                             style="width: <?php echo $isDirector ? '130px' : '110px'; ?>; height: <?php echo $isDirector ? '130px' : '110px'; ?>; overflow: hidden; border: <?php echo $isDirector ? '4px solid #bfa15f' : '3px solid var(--secondary-color)'; ?>;">
+                                        <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle shadow-xs" 
+                                             style="width: <?php echo $isDirector ? '130px' : '110px'; ?>; height: <?php echo $isDirector ? '130px' : '110px'; ?>; overflow: hidden; border: <?php echo $isDirector ? '4px solid var(--accent)' : '3px solid #e2e8f0'; ?>;">
                                             <?php if (!empty($fac['image_path'])): ?>
                                                 <img src="<?php echo uploadUrl('faculty', $fac['image_path']); ?>" alt="<?php echo htmlspecialchars($fac['name']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
                                             <?php else: ?>
-                                                <i class="fa-solid fa-user-tie text-secondary fa-4x"></i>
+                                                <i class="fa-solid fa-user-tie text-secondary fa-3x"></i>
                                             <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="card-body p-1">
-                                        <h5 class="<?php echo $isDirector ? 'fw-extrabold text-primary-color fs-4' : 'fw-bold text-primary-color'; ?> mb-1"><?php echo htmlspecialchars($fac['name']); ?></h5>
-                                        <span class="badge <?php echo $isDirector ? 'bg-danger text-white' : 'bg-warning text-dark'; ?> mb-2"><?php echo htmlspecialchars($fac['designation']); ?></span>
-                                        <span class="d-block text-secondary small fw-semibold mb-3"><?php echo htmlspecialchars($fac['department_name']); ?></span>
+                                        <h5 class="<?php echo $isDirector ? 'fw-extrabold text-primary-color fs-4' : 'fw-bold text-primary-color'; ?> mb-1 font-display"><?php echo htmlspecialchars($fac['name']); ?></h5>
+                                        <span class="badge <?php echo $isDirector ? 'bg-danger text-white' : 'bg-warning bg-opacity-25 text-dark'; ?> rounded-pill mb-2"><?php echo htmlspecialchars($fac['designation']); ?></span>
+                                        <span class="d-block text-secondary small font-semibold mb-3"><?php echo htmlspecialchars($fac['department_name']); ?></span>
                                         
-                                        <hr class="my-2 bg-light">
+                                        <hr class="my-2 border-light">
                                         
-                                        <div class="text-start text-muted small my-3">
+                                        <div class="text-start text-muted small my-3" style="font-size: 12.5px; line-height: 1.6;">
                                             <p class="mb-1"><strong class="text-dark">Qualification:</strong> <?php echo htmlspecialchars($fac['qualification']); ?></p>
                                             <p class="mb-1"><strong class="text-dark">Specialization:</strong> <?php echo htmlspecialchars($fac['specialization'] ?: 'General'); ?></p>
-                                            <p class="mb-1"><strong class="text-dark">Experience:</strong> <span class="badge bg-light text-dark border"><?php echo $fac['experience_years']; ?>+ Years</span></p>
+                                            <p class="mb-1"><strong class="text-dark">Experience:</strong> <span class="badge bg-light text-dark border rounded-pill"><?php echo $fac['experience_years']; ?>+ Years</span></p>
                                         </div>
                                         
-                                        <hr class="my-2 bg-light">
+                                        <hr class="my-2 border-light">
                                         
-                                        <div class="d-flex justify-content-center gap-3 mt-3 text-secondary small">
-                                            <a href="mailto:<?php echo htmlspecialchars($fac['email']); ?>" class="btn btn-xs btn-outline-primary py-1 px-2 rounded" title="<?php echo htmlspecialchars($fac['email']); ?>">
+                                        <div class="d-flex justify-content-center gap-2 mt-3 text-secondary small">
+                                            <a href="mailto:<?php echo htmlspecialchars($fac['email']); ?>" class="btn btn-xs btn-outline-primary py-1 px-3 rounded-pill" title="<?php echo htmlspecialchars($fac['email']); ?>">
                                                 <i class="fa-regular fa-envelope me-1"></i> Email
                                             </a>
-                                            <a href="tel:<?php echo htmlspecialchars($fac['phone']); ?>" class="btn btn-xs btn-outline-success py-1 px-2 rounded" title="<?php echo htmlspecialchars($fac['phone']); ?>">
+                                            <a href="tel:<?php echo htmlspecialchars($fac['phone']); ?>" class="btn btn-xs btn-outline-success py-1 px-3 rounded-pill" title="<?php echo htmlspecialchars($fac['phone']); ?>">
                                                 <i class="fa-solid fa-phone me-1"></i> Call
                                             </a>
                                         </div>

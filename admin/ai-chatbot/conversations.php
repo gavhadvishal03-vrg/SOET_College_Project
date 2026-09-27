@@ -73,19 +73,22 @@ if ($sessionId) {
 }
 ?>
 
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom flex-wrap gap-2">
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-0"><i class="fa-solid fa-comments text-warning me-2"></i>Conversation Transcripts</h1>
-        <small class="text-muted">Inspect live visitor interactions, AI response accuracy, and query intents</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Chatbot Transcripts</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">Conversation Transcripts</h2>
+        <p class="text-muted small mb-0">Inspect live visitor interactions, AI response accuracy, and query intents</p>
     </div>
     <div class="d-flex gap-2 align-items-center flex-wrap">
         <?php if (!empty($sessions)): ?>
-            <a href="conversations.php?export=csv" class="btn btn-sm btn-success">
-                <i class="fa-solid fa-file-excel me-1"></i> Export Transcripts CSV
+            <a href="conversations.php?export=csv" class="btn btn-outline-success btn-sm rounded-pill px-3 shadow-xs font-semibold">
+                <i class="fa-solid fa-file-excel me-1 text-success"></i> Export CSV
             </a>
             <form method="POST" action="conversations.php" onsubmit="return confirm('WARNING: Are you sure you want to permanently clear ALL chatbot transcripts?');">
                 <?php echo Security::csrfField(); ?>
-                <button type="submit" name="clear_all_chats" class="btn btn-sm btn-outline-danger">
+                <button type="submit" name="clear_all_chats" class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-xs font-semibold">
                     <i class="fa-solid fa-trash-can me-1"></i> Clear All Logs
                 </button>
             </form>
@@ -94,59 +97,76 @@ if ($sessionId) {
 </div>
 
 <!-- Navigation Pills -->
-<ul class="nav nav-pills mb-4 bg-light p-2 rounded border">
-    <li class="nav-item"><a class="nav-link font-semibold" href="index.php"><i class="fa-solid fa-chart-line me-1"></i> Dashboard</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="knowledge-base.php"><i class="fa-solid fa-book me-1"></i> Knowledge Base</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="faq.php"><i class="fa-solid fa-circle-question me-1"></i> FAQs</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="documents.php"><i class="fa-solid fa-file-arrow-up me-1"></i> Doc Upload &amp; Text Extractor</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="unanswered.php"><i class="fa-solid fa-question me-1"></i> Unanswered Queue</a></li>
-    <li class="nav-item"><a class="nav-link active font-semibold" href="conversations.php"><i class="fa-solid fa-comments me-1"></i> Conversations</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="feedback.php"><i class="fa-solid fa-thumbs-up me-1"></i> User Feedback</a></li>
-    <li class="nav-item"><a class="nav-link font-semibold" href="settings.php"><i class="fa-solid fa-gears me-1"></i> AI Settings</a></li>
-</ul>
+<div class="card border-0 shadow-sm rounded-4 bg-white p-2 mb-4">
+    <ul class="nav nav-pills gap-1 flex-wrap" id="aiSubNav">
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="index.php"><i class="fa-solid fa-chart-line me-1.5 text-primary"></i> Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="knowledge-base.php"><i class="fa-solid fa-book me-1.5 text-primary"></i> Knowledge Base</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="faq.php"><i class="fa-solid fa-circle-question me-1.5 text-info"></i> FAQs</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="documents.php"><i class="fa-solid fa-file-arrow-up me-1.5 text-warning"></i> Documents Extractor</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="unanswered.php"><i class="fa-solid fa-question me-1.5 text-danger"></i> Unanswered</a></li>
+        <li class="nav-item"><a class="nav-link active rounded-pill font-semibold px-3 py-2 text-sm" href="conversations.php"><i class="fa-solid fa-comments me-1.5"></i> Conversations</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="feedback.php"><i class="fa-solid fa-thumbs-up me-1.5 text-warning"></i> Feedback</a></li>
+        <li class="nav-item"><a class="nav-link rounded-pill font-semibold px-3 py-2 text-sm text-secondary" href="settings.php"><i class="fa-solid fa-gears me-1.5 text-muted"></i> AI Config</a></li>
+    </ul>
+</div>
 
-<div class="row g-4">
+<div class="row g-4 mb-4">
     <!-- Sessions Table List -->
     <div class="<?php echo $sessionId ? 'col-lg-6' : 'col-12'; ?>">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <h5 class="fw-bold mb-0 text-primary-color"><i class="fa-solid fa-list text-warning me-2"></i>Recorded Sessions (<?php echo count($sessions); ?>)</h5>
-                <input type="text" id="sessionSearchInput" class="form-control form-control-sm" placeholder="Search session token, IP..." style="width: 220px;">
+        <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+            <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="stat-icon-sm bg-primary-subtle text-primary rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0 text-dark">Recorded Sessions <span class="badge bg-secondary-subtle text-secondary rounded-pill ms-1" style="font-size: 11px;"><?php echo count($sessions); ?></span></h5>
+                </div>
+                <div class="input-group input-group-sm" style="max-width: 220px;">
+                    <span class="input-group-text bg-light border-end-0 rounded-start-pill text-muted ps-3"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="sessionSearchInput" class="form-control bg-light border-start-0 rounded-end-pill pe-3" placeholder="Search session...">
+                </div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
                     <table class="table table-hover align-middle mb-0 small" id="sessionsTable">
-                        <thead class="table-dark sticky-top">
+                        <thead class="table-light sticky-top">
                             <tr>
-                                <th>Session ID</th>
+                                <th class="ps-4">Session ID</th>
                                 <th>Visitor / Role</th>
                                 <th>IP Address</th>
                                 <th class="text-center">Messages</th>
                                 <th>Started At</th>
-                                <th class="text-end">Actions</th>
+                                <th class="text-end pe-4">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($sessions)): ?>
-                                <tr><td colspan="6" class="text-center py-4 text-muted">No chat conversations recorded.</td></tr>
+                                <tr>
+                                    <td colspan="6" class="text-center py-5 text-muted">
+                                        <i class="fa-regular fa-comments display-6 text-secondary opacity-40 mb-3 d-block"></i>
+                                        No chat conversations recorded.
+                                    </td>
+                                </tr>
                             <?php else: ?>
                                 <?php foreach ($sessions as $s): ?>
-                                    <tr class="<?php echo $sessionId === (int)$s['id'] ? 'table-primary font-bold' : ''; ?>">
-                                        <td><code>#<?php echo $s['id']; ?></code></td>
+                                    <tr class="<?php echo $sessionId === (int)$s['id'] ? 'table-primary bg-primary-subtle' : ''; ?>">
+                                        <td class="ps-4"><span class="badge bg-light text-dark border font-monospace">#<?php echo $s['id']; ?></span></td>
                                         <td>
-                                            <span class="fw-bold text-primary-color"><?php echo htmlspecialchars($s['user_name'] ?: 'Public Visitor'); ?></span>
-                                            <span class="badge bg-secondary ms-1 text-uppercase" style="font-size: 9px;"><?php echo htmlspecialchars($s['language'] ?? 'en'); ?></span>
+                                            <span class="fw-bold text-dark"><?php echo htmlspecialchars($s['user_name'] ?: 'Public Visitor'); ?></span>
+                                            <span class="badge bg-light text-muted border ms-1 text-uppercase" style="font-size: 9px;"><?php echo htmlspecialchars($s['language'] ?? 'en'); ?></span>
                                         </td>
-                                        <td><code><?php echo htmlspecialchars($s['visitor_id']); ?></code></td>
-                                        <td class="text-center"><span class="badge bg-info text-dark"><?php echo $s['msg_count']; ?> msgs</span></td>
-                                        <td><?php echo formatDateTime($s['started_at']); ?></td>
-                                        <td class="text-end text-nowrap">
-                                            <a href="conversations.php?session_id=<?php echo $s['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="View Thread"><i class="fa-solid fa-eye"></i></a>
-                                            <form method="POST" action="conversations.php" class="d-inline" onsubmit="return confirm('Delete this conversation log?');">
-                                                <?php echo Security::csrfField(); ?>
-                                                <input type="hidden" name="session_id" value="<?php echo $s['id']; ?>">
-                                                <button type="submit" name="delete_session" class="btn btn-sm btn-outline-danger" title="Delete Session"><i class="fa-solid fa-trash"></i></button>
-                                            </form>
+                                        <td><code class="text-muted"><?php echo htmlspecialchars($s['visitor_id']); ?></code></td>
+                                        <td class="text-center"><span class="badge bg-info-subtle text-info-emphasis border border-info-subtle rounded-pill px-2 py-0.5"><?php echo $s['msg_count']; ?> msgs</span></td>
+                                        <td class="text-muted"><?php echo formatDateTime($s['started_at']); ?></td>
+                                        <td class="text-end pe-4 text-nowrap">
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="conversations.php?session_id=<?php echo $s['id']; ?>" class="btn btn-outline-primary rounded-start-pill px-2.5" title="View Thread"><i class="fa-solid fa-eye"></i></a>
+                                                <form method="POST" action="conversations.php" class="d-inline" onsubmit="return confirm('Delete this conversation log?');">
+                                                    <?php echo Security::csrfField(); ?>
+                                                    <input type="hidden" name="session_id" value="<?php echo $s['id']; ?>">
+                                                    <button type="submit" name="delete_session" class="btn btn-outline-danger rounded-end-pill px-2.5" title="Delete Session"><i class="fa-solid fa-trash"></i></button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -161,25 +181,28 @@ if ($sessionId) {
     <!-- Active Transcript Thread Inspector -->
     <?php if ($sessionId): ?>
         <div class="col-lg-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold mb-0 text-white"><i class="fa-solid fa-comments text-warning me-2"></i>Session #<?php echo $sessionId; ?> Transcript</h5>
-                    <a href="conversations.php" class="btn btn-sm btn-outline-light"><i class="fa-solid fa-xmark"></i> Close</a>
+            <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden h-100">
+                <div class="card-header bg-slate-900 text-white py-3 px-4 d-flex justify-content-between align-items-center" style="background: var(--dark-bg);">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-comments text-warning"></i>
+                        <h5 class="fw-bold mb-0 text-white font-display">Session #<?php echo $sessionId; ?> Transcript</h5>
+                    </div>
+                    <a href="conversations.php" class="btn btn-sm btn-outline-light rounded-pill px-3"><i class="fa-solid fa-xmark me-1"></i> Close</a>
                 </div>
-                <div class="card-body p-3 bg-light" style="max-height: 600px; overflow-y: auto;">
+                <div class="card-body p-4 bg-light" style="max-height: 560px; overflow-y: auto;">
                     <?php if (empty($activeMessages)): ?>
                         <p class="text-muted text-center py-4">No messages found in this session.</p>
                     <?php else: ?>
                         <?php foreach ($activeMessages as $m): ?>
                             <div class="mb-3 d-flex flex-column <?php echo $m['sender'] === 'user' ? 'align-items-end' : 'align-items-start'; ?>">
-                                <div class="small text-muted mb-1">
+                                <div class="small text-muted mb-1 px-1">
                                     <strong><?php echo $m['sender'] === 'user' ? '👤 Visitor' : '🤖 CampusAI'; ?></strong>
                                     <span class="ms-1" style="font-size: 10px;"><?php echo formatDateTime($m['created_at']); ?></span>
                                     <?php if (!empty($m['intent'])): ?>
-                                        <span class="badge bg-secondary ms-1" style="font-size: 9px;"><?php echo htmlspecialchars($m['intent']); ?></span>
+                                        <span class="badge bg-secondary-subtle text-secondary border rounded-pill ms-1" style="font-size: 9px;"><?php echo htmlspecialchars($m['intent']); ?></span>
                                     <?php endif; ?>
                                 </div>
-                                <div class="p-3 rounded shadow-xs <?php echo $m['sender'] === 'user' ? 'bg-primary text-white' : 'bg-white border text-dark'; ?>" style="max-width: 90%; font-size: 13px;">
+                                <div class="p-3.5 rounded-4 shadow-xs <?php echo $m['sender'] === 'user' ? 'bg-primary text-white' : 'bg-white border border-light-subtle text-dark'; ?>" style="max-width: 88%; font-size: 13.5px; line-height: 1.6;">
                                     <?php echo $m['sender'] === 'user' ? nl2br(htmlspecialchars($m['message'])) : $m['message']; ?>
                                 </div>
                             </div>

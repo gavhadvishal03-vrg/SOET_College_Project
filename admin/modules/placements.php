@@ -133,40 +133,43 @@ $placements = $db->fetchAll(
 );
 ?>
 
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom flex-wrap gap-2">
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-0"><i class="fa-solid fa-briefcase text-warning me-2"></i>Placements Registry</h1>
-        <small class="text-muted">Manage student corporate hiring records, compensation LPA, and company statistics</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Corporate Relations</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">Placements Registry</h2>
+        <p class="text-muted small mb-0">Manage student corporate hiring records, compensation LPA packages, and hiring statistics</p>
     </div>
     <?php if ($action === 'list'): ?>
         <div class="d-flex gap-2 align-items-center">
-            <a href="placements.php?action=export_csv" class="btn btn-success btn-sm">
+            <a href="placements.php?action=export_csv" class="btn btn-success btn-sm rounded-pill px-3 font-semibold">
                 <i class="fa-solid fa-file-excel me-1"></i> Export CSV
             </a>
-            <a href="placements.php?action=add" class="btn btn-primary btn-sm">
-                <i class="fa-solid fa-plus me-1"></i> Log Placement
+            <a href="placements.php?action=add" class="btn btn-primary btn-sm rounded-pill px-3 font-semibold">
+                <i class="fa-solid fa-plus me-1 text-warning"></i> Log Placement
             </a>
         </div>
     <?php else: ?>
-        <a href="placements.php" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
+        <a href="placements.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
     <?php endif; ?>
 </div>
 
 <?php if ($action === 'list'): ?>
-    <div class="card border-0 shadow-sm">
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0">
-                    <thead class="table-dark">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
                         <tr>
-                            <th>Student Name</th>
+                            <th class="ps-4">Student Name</th>
                             <th>Department</th>
                             <th>Course</th>
                             <th>Company Name</th>
                             <th class="text-end">Package (LPA)</th>
                             <th class="text-center">Year</th>
                             <th class="text-center">Status</th>
-                            <th class="text-end">Actions</th>
+                            <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -177,16 +180,16 @@ $placements = $db->fetchAll(
                         <?php else: ?>
                             <?php foreach ($placements as $pl): ?>
                                 <tr>
-                                    <td class="fw-bold text-primary-color"><?php echo htmlspecialchars($pl['student_name']); ?></td>
+                                    <td class="ps-4 font-display fw-bold text-dark"><?php echo htmlspecialchars($pl['student_name']); ?></td>
                                     <td><span class="small font-semibold text-secondary"><?php echo htmlspecialchars($pl['department_name']); ?></span></td>
                                     <td><span class="small text-muted"><?php echo htmlspecialchars($pl['course_name']); ?></span></td>
-                                    <td class="fw-bold"><?php echo htmlspecialchars($pl['company_name']); ?></td>
+                                    <td class="font-display fw-bold text-primary"><?php echo htmlspecialchars($pl['company_name']); ?></td>
                                     <td class="text-end text-success fw-bold">₹<?php echo number_format($pl['package_lpa'], 2); ?> LPA</td>
-                                    <td class="text-center"><?php echo $pl['placement_year']; ?></td>
+                                    <td class="text-center font-semibold"><?php echo $pl['placement_year']; ?></td>
                                     <td class="text-center"><?php echo statusBadge($pl['is_active'] ? 'active' : 'inactive'); ?></td>
-                                    <td class="text-end text-nowrap">
-                                        <a href="placements.php?action=edit&id=<?php echo $pl['id']; ?>" class="btn btn-sm btn-outline-primary font-semibold me-1"><i class="fa-solid fa-pen-to-square me-1"></i> Edit Placement</a>
-                                        <a href="placements.php?action=delete&id=<?php echo $pl['id']; ?>" class="btn btn-sm btn-outline-danger btn-delete-confirm font-semibold"><i class="fa-solid fa-trash-can me-1"></i> Delete</a>
+                                    <td class="text-end pe-4 text-nowrap">
+                                        <a href="placements.php?action=edit&id=<?php echo $pl['id']; ?>" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 font-semibold me-1"><i class="fa-solid fa-pen-to-square me-1"></i> Edit</a>
+                                        <a href="placements.php?action=delete&id=<?php echo $pl['id']; ?>" class="btn btn-sm btn-outline-danger rounded-pill px-2.5 btn-delete-confirm font-semibold" onclick="return confirm('Delete this placement record?');"><i class="fa-solid fa-trash-can me-1"></i> Delete</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

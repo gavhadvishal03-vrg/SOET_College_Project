@@ -73,14 +73,15 @@ include_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Breadcrumb Header -->
-<div class="bg-light py-4 border-bottom mb-5">
-    <div class="container">
-        <h1 class="fw-bold mb-1 text-primary-color"><i class="fa-solid fa-pen-nib text-warning me-2"></i>Submit a Blog Article</h1>
+<div class="page-hero mb-5">
+    <div class="container position-relative z-1">
+        <h1 class="font-display fw-extrabold mb-2 text-white">Submit a Blog Article</h1>
+        <p class="lead opacity-80 mb-3">Share your research breakthroughs, tutorials, technical analyses, or campus innovations</p>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="index.php" class="text-decoration-none">Home</a></li>
-                <li class="breadcrumb-item"><a href="blogs.php" class="text-decoration-none">Blogs</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Submit Blog</li>
+                <li class="breadcrumb-item"><a href="index.php" class="text-white opacity-75 text-decoration-none"><i class="fa-solid fa-house me-1"></i> Home</a></li>
+                <li class="breadcrumb-item"><a href="blogs.php" class="text-white opacity-75 text-decoration-none">Blogs</a></li>
+                <li class="breadcrumb-item active text-warning" aria-current="page">Submit Article</li>
             </ol>
         </nav>
     </div>
@@ -90,32 +91,37 @@ include_once __DIR__ . '/includes/header.php';
     <div class="row g-4">
         <!-- Guidelines column -->
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm p-4 bg-light mb-4" style="border-top: 4px solid var(--secondary-color);">
-                <h5 class="fw-bold text-primary-color mb-3"><i class="fa-solid fa-scale-balanced text-warning me-2"></i>Blog Submission Guidelines</h5>
-                <ul class="small text-muted ps-3 d-flex flex-column gap-2">
-                    <li>Public submissions are open to all students, alumni, faculty, and technical writers.</li>
-                    <li>Articles should focus on engineering trends, programming guides, campus events, or research papers.</li>
-                    <li>Plagiarism is strictly prohibited. Cite references when mentioning facts or studies.</li>
-                    <li>Cover images should be clean and relevant (max size: 5MB).</li>
-                    <li>All submitted blogs enter an admin review queue and will be published upon verification.</li>
+            <div class="card border-0 shadow-sm p-4 bg-white mb-4 rounded-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3 py-1 font-semibold">Editorial Guidelines</span>
+                </div>
+                <h5 class="font-display fw-bold text-dark mb-3">Submission Checklist</h5>
+                <ul class="small text-muted ps-3 d-flex flex-column gap-2 mb-0">
+                    <li>Open to all students, faculty members, alumni, and campus researchers.</li>
+                    <li>Focus on engineering advancements, hands-on tutorials, software projects, or campus updates.</li>
+                    <li>Plagiarism is strictly prohibited. Clearly attribute code repositories and references.</li>
+                    <li>Include high-resolution cover photos (PNG, JPG, WEBP under 5MB).</li>
+                    <li>Submitted drafts undergo editorial review before appearing on the public feed.</li>
                 </ul>
             </div>
             
-            <div class="card border-0 shadow-sm p-4 bg-dark text-white text-center">
-                <i class="fa-solid fa-timeline fa-2x text-warning mb-3"></i>
-                <h5 class="fw-bold">Public Submission Workflow</h5>
-                <div class="text-start text-white-50 small mt-3">
-                    <div class="workflow-step active">
-                        <strong>Step 1: Write & Submit</strong>
-                        <p class="mb-0 text-white-50" style="font-size: 11px;">Author submits details and article draft online.</p>
+            <div class="card border-0 shadow-sm p-4 text-white rounded-4" style="background: linear-gradient(135deg, var(--primary), var(--primary-600));">
+                <div class="stat-icon-wrapper bg-white bg-opacity-10 text-warning mx-auto mb-3" style="width: 50px; height: 50px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-timeline fa-xl"></i>
+                </div>
+                <h5 class="font-display fw-bold text-center mb-3">Submission Process</h5>
+                <div class="d-flex flex-column gap-3 text-start small">
+                    <div class="p-2.5 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10">
+                        <strong class="text-warning d-block mb-0.5">1. Write & Upload</strong>
+                        <span class="text-white opacity-75" style="font-size: 11px;">Author writes article and uploads cover media.</span>
                     </div>
-                    <div class="workflow-step">
-                        <strong>Step 2: Admin Verification</strong>
-                        <p class="mb-0 text-white-50" style="font-size: 11px;">Editorial team or HOD reviews draft details.</p>
+                    <div class="p-2.5 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10">
+                        <strong class="text-warning d-block mb-0.5">2. Editorial Review</strong>
+                        <span class="text-white opacity-75" style="font-size: 11px;">Department coordinators verify technical accuracy.</span>
                     </div>
-                    <div class="workflow-step">
-                        <strong>Step 3: Go Live</strong>
-                        <p class="mb-0 text-white-50" style="font-size: 11px;">Approved blog goes live on the college feed.</p>
+                    <div class="p-2.5 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10">
+                        <strong class="text-warning d-block mb-0.5">3. Live Publication</strong>
+                        <span class="text-white opacity-75" style="font-size: 11px;">Approved article appears on the portal with author credit.</span>
                     </div>
                 </div>
             </div>
@@ -123,32 +129,35 @@ include_once __DIR__ . '/includes/header.php';
 
         <!-- Submission Form -->
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm p-4 bg-white">
-                <h4 class="fw-bold text-primary-color mb-4"><i class="fa-solid fa-feather-pointed text-warning me-2"></i>Write Article Form</h4>
+            <div class="card border-0 shadow-sm p-4 p-md-5 bg-white rounded-4">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 font-semibold">Author Submission</span>
+                </div>
+                <h4 class="font-display fw-bold text-dark mb-4">Write Article Details</h4>
                 
                 <form method="POST" action="submit-blog.php" enctype="multipart/form-data">
                     <?php echo Security::csrfField(); ?>
                     
-                    <div class="row g-3 mb-3">
+                    <div class="row g-4 mb-4">
                         <div class="col-md-6">
-                            <label class="form-label font-semibold">Your Full Name *</label>
-                            <input type="text" name="author_name" class="form-control" value="<?php echo Session::get('full_name') ?? ''; ?>" placeholder="e.g. Prof. Sneha Patil (Faculty - CSE)" required>
+                            <label class="form-label font-semibold text-dark">Your Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="author_name" class="form-control rounded-3 py-2.5" value="<?php echo Session::get('full_name') ?? ''; ?>" placeholder="e.g. Prof. Sneha Patil (Faculty - CSE)" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label font-semibold">Your Email Address *</label>
-                            <input type="email" name="author_email" class="form-control" value="<?php echo Session::get('email') ?? ''; ?>" placeholder="e.g. sneha.patil@mgmu.ac.in" required>
+                            <label class="form-label font-semibold text-dark">Your Email Address <span class="text-danger">*</span></label>
+                            <input type="email" name="author_email" class="form-control rounded-3 py-2.5" value="<?php echo Session::get('email') ?? ''; ?>" placeholder="e.g. sneha.patil@mgmu.ac.in" required>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label font-semibold">Blog Title *</label>
-                        <input type="text" name="title" class="form-control" placeholder="Enter a descriptive and engaging title" required>
+                    <div class="mb-4">
+                        <label class="form-label font-semibold text-dark">Blog Title <span class="text-danger">*</span></label>
+                        <input type="text" name="title" class="form-control rounded-3 py-2.5" placeholder="Enter a descriptive and engaging title" required>
                     </div>
 
-                    <div class="row g-3 mb-3">
+                    <div class="row g-4 mb-4">
                         <div class="col-md-6">
-                            <label class="form-label font-semibold">Related Department</label>
-                            <select name="department_id" class="form-select">
+                            <label class="form-label font-semibold text-dark">Related Department</label>
+                            <select name="department_id" class="form-select rounded-3 py-2.5">
                                 <option value="">General / Interdisciplinary</option>
                                 <?php foreach ($departments as $dept): ?>
                                     <option value="<?php echo $dept['id']; ?>"><?php echo htmlspecialchars($dept['name']); ?></option>
@@ -156,19 +165,19 @@ include_once __DIR__ . '/includes/header.php';
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label font-semibold">Cover Image (JPEG / PNG / WEBP)</label>
-                            <input type="file" name="image" class="form-control" accept="image/*">
+                            <label class="form-label font-semibold text-dark">Cover Image (JPEG / PNG / WEBP)</label>
+                            <input type="file" name="image" class="form-control rounded-3 py-2" accept="image/*">
                         </div>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label font-semibold">Article Content *</label>
-                        <textarea name="content" class="form-control" rows="10" placeholder="Start writing your article details, code examples, or research findings here..." required></textarea>
+                        <label class="form-label font-semibold text-dark">Article Content <span class="text-danger">*</span></label>
+                        <textarea name="content" class="form-control rounded-3" rows="10" placeholder="Start writing your article details, code examples, or research findings here..." required></textarea>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center">
-                        <a href="blogs.php" class="btn btn-outline-secondary px-3"><i class="fa-solid fa-arrow-left me-1"></i> Back to Blogs</a>
-                        <button type="submit" name="submit_blog" class="btn btn-warning text-dark fw-bold px-4 shadow-sm"><i class="fa-solid fa-paper-plane me-1"></i> Submit Article for Approval</button>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pt-2 border-top">
+                        <a href="blogs.php" class="btn btn-outline-secondary rounded-pill px-4"><i class="fa-solid fa-arrow-left me-1"></i> Back to Blogs</a>
+                        <button type="submit" name="submit_blog" class="btn btn-warning text-dark font-semibold rounded-pill px-4 py-2.5 shadow-sm"><i class="fa-solid fa-paper-plane me-1"></i> Submit Article for Approval</button>
                     </div>
                 </form>
             </div>

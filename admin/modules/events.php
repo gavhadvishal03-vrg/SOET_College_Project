@@ -201,32 +201,35 @@ $events = $db->fetchAll(
 );
 ?>
 
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom">
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-0">Events & Sub-Events Management</h1>
-        <small class="text-muted">Manage main college events, tech fests, cultural activities, and sub-event competitions</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Campus Activities</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">Events & Sub-Events Management</h2>
+        <p class="text-muted small mb-0">Manage college conferences, hackathons, cultural festivals, and track competitions</p>
     </div>
     <?php if ($action === 'list'): ?>
-        <a href="events.php?action=add" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus me-1"></i> Schedule New Event</a>
+        <a href="events.php?action=add" class="btn btn-primary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-plus me-1 text-warning"></i> Schedule New Event</a>
     <?php else: ?>
-        <a href="events.php" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
+        <a href="events.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
     <?php endif; ?>
 </div>
 
 <?php if ($action === 'list'): ?>
-    <div class="card border-0 shadow-sm">
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0">
-                    <thead class="table-dark">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
                         <tr>
-                            <th>Event Title</th>
+                            <th class="ps-4">Event Title</th>
                             <th>Schedule Date & Time</th>
                             <th>Venue</th>
                             <th>Sub-Events / Tracks</th>
                             <th class="text-center">Reg. Count</th>
                             <th class="text-center">Status</th>
-                            <th class="text-end">Actions</th>
+                            <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>

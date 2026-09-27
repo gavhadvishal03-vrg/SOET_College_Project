@@ -121,40 +121,43 @@ if ($action === 'delete' && isset($_GET['id'])) {
 $notices = $db->fetchAll("SELECT * FROM notices ORDER BY is_pinned DESC, created_at DESC");
 ?>
 
-<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom flex-wrap gap-2">
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
-        <h1 class="h2 fw-bold text-primary-color mb-0"><i class="fa-solid fa-bullhorn text-warning me-2"></i>Notice Board / Announcements</h1>
-        <small class="text-muted">Publish campus alerts, exam circulars, academic notices, and pinned alerts</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Announcements</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-dark mb-1">Notice Board & Announcements</h2>
+        <p class="text-muted small mb-0">Publish campus alerts, examination circulars, fee deadlines, and pinned announcements</p>
     </div>
     <?php if ($action === 'list'): ?>
         <div class="d-flex gap-2 align-items-center">
-            <a href="notices.php?action=export_csv" class="btn btn-sm btn-success">
+            <a href="notices.php?action=export_csv" class="btn btn-sm btn-success rounded-pill px-3 font-semibold">
                 <i class="fa-solid fa-file-excel me-1"></i> Export CSV
             </a>
-            <a href="notices.php?action=add" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus me-1"></i> Post Announcement</a>
+            <a href="notices.php?action=add" class="btn btn-primary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-plus me-1 text-warning"></i> Post Announcement</a>
         </div>
     <?php else: ?>
-        <a href="notices.php" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
+        <a href="notices.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
     <?php endif; ?>
 </div>
 
 <?php if ($action === 'list'): ?>
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h5 class="fw-bold mb-0 text-primary-color"><i class="fa-solid fa-clipboard-list text-warning me-2"></i>Active Circulars (<?php echo count($notices); ?>)</h5>
-            <input type="text" id="noticeSearchInput" class="form-control form-control-sm" placeholder="Search notices by title, description..." style="width: 250px;">
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="card-header bg-white py-3.5 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom">
+            <h5 class="font-display fw-bold mb-0 text-dark"><i class="fa-solid fa-clipboard-list text-warning me-2"></i>Active Circulars (<?php echo count($notices); ?>)</h5>
+            <input type="text" id="noticeSearchInput" class="form-control form-control-sm rounded-pill px-3" placeholder="Search notices by title, description..." style="width: 250px;">
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0" id="noticesTable">
-                    <thead class="table-dark">
+                <table class="table table-hover align-middle mb-0" id="noticesTable">
+                    <thead class="table-light">
                         <tr>
-                            <th>Notice Title</th>
+                            <th class="ps-4">Notice Title</th>
                             <th>Description</th>
                             <th>Expiry Date</th>
                             <th class="text-center">Pinned</th>
                             <th class="text-center">Status</th>
-                            <th class="text-end">Actions</th>
+                            <th class="text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -165,29 +168,29 @@ $notices = $db->fetchAll("SELECT * FROM notices ORDER BY is_pinned DESC, created
                         <?php else: ?>
                             <?php foreach ($notices as $nt): ?>
                                 <tr>
-                                    <td class="fw-bold text-primary-color">
-                                        <?php echo htmlspecialchars($nt['title']); ?>
-                                        <?php if ($nt['attachment_path']): ?>
-                                            <a href="<?php echo uploadUrl('notices', $nt['attachment_path']); ?>" target="_blank" class="ms-1 small text-decoration-none" title="Download PDF Circular"><i class="fa-solid fa-file-pdf text-danger"></i></a>
-                                        <?php endif; ?>
+                                    <td class="ps-4">
+                                        <div class="font-display fw-bold text-dark">
+                                            <?php echo htmlspecialchars($nt['title']); ?>
+                                            <?php if ($nt['attachment_path']): ?>
+                                                <a href="<?php echo uploadUrl('notices', $nt['attachment_path']); ?>" target="_blank" class="ms-1 small text-decoration-none" title="Download PDF Circular"><i class="fa-solid fa-file-pdf text-danger"></i></a>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                     <td class="text-muted small" style="max-width: 350px;"><?php echo truncate(htmlspecialchars($nt['content']), 100); ?></td>
                                     <td><span class="small font-semibold text-secondary"><?php echo $nt['expires_at'] ? formatDate($nt['expires_at']) : 'Never Expires'; ?></span></td>
                                     <td class="text-center">
                                         <a href="notices.php?action=toggle_pin&id=<?php echo $nt['id']; ?>" class="text-decoration-none" title="Click to Toggle Pin">
                                             <?php if ($nt['is_pinned']): ?>
-                                                <span class="badge bg-danger"><i class="fa-solid fa-thumbtack me-1"></i> Pinned</span>
+                                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1"><i class="fa-solid fa-thumbtack me-1"></i> Pinned</span>
                                             <?php else: ?>
-                                                <span class="badge bg-light text-muted border">Regular</span>
+                                                <span class="badge bg-light text-muted border rounded-pill">Regular</span>
                                             <?php endif; ?>
                                         </a>
                                     </td>
                                     <td class="text-center"><?php echo statusBadge($nt['is_active'] ? 'active' : 'inactive'); ?></td>
-                                    <td class="text-end">
-                                        <div class="btn-group">
-                                            <a href="notices.php?action=edit&id=<?php echo $nt['id']; ?>" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fa-solid fa-pen"></i></a>
-                                            <a href="notices.php?action=delete&id=<?php echo $nt['id']; ?>" class="btn btn-sm btn-outline-danger btn-delete-confirm" title="Delete" onclick="return confirm('Delete this announcement?');"><i class="fa-solid fa-trash"></i></a>
-                                        </div>
+                                    <td class="text-end pe-4 text-nowrap">
+                                        <a href="notices.php?action=edit&id=<?php echo $nt['id']; ?>" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 font-semibold me-1" title="Edit"><i class="fa-solid fa-pen me-1"></i> Edit</a>
+                                        <a href="notices.php?action=delete&id=<?php echo $nt['id']; ?>" class="btn btn-sm btn-outline-danger rounded-pill px-2.5 btn-delete-confirm font-semibold" title="Delete" onclick="return confirm('Delete this announcement?');"><i class="fa-solid fa-trash me-1"></i> Delete</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
