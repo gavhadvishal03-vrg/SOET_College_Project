@@ -1,7 +1,13 @@
 <?php
 /**
- * SOET MGM University — 1-Click Database Auto-Installer & System Initializer
- * Enables zero-config 100% fail-proof execution on ANY computer / OS / server.
+ * Automated Database Installer & Environment Initializer
+ *
+ * Provides a 1-click installer for zero-config database provisioning:
+ * - Probes MySQL/MariaDB across multiple ports (3307, 3306) and hosts
+ * - Creates the target database 'soet_college' with utf8mb4 collation
+ * - Executes database/schema.sql to import all tables, views, and seed datasets
+ * - Automatically generates required upload folder structures with write permissions
+ * - Runs seamlessly via browser UI or CLI execution (`php setup.php`)
  */
 
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
@@ -92,7 +98,7 @@ if ($isCli) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SOET System Auto-Installer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <style>
         body { background: #0f172a; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
         .setup-card { background: #ffffff; color: #1e293b; border-radius: 20px; max-width: 550px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.5); overflow: hidden; border-top: 6px solid #bfa15f; }

@@ -1,8 +1,15 @@
 <?php
 /**
- * 🤖 CampusAI — Centralized Natural Language & Synonym Mapper Engine
- * Translates natural language variations, synonyms, spelling mistakes,
- * and abbreviations into standard canonical intents & queries.
+ * CampusAI — Centralized Natural Language & Synonym Mapper Engine
+ *
+ * Maps natural language variations, synonyms, typos, and abbreviations
+ * into canonical search intents:
+ * 1. Query Normalization: Lowercases, strips punctuation, corrects typos, normalizes plurals.
+ * 2. Intent Pattern Matching: Evaluates regex rules defined in config/synonyms.php.
+ * 3. Context Disambiguation: Distinguishes programming concepts from college degree programs.
+ *
+ * @package SOET_College_Project
+ * @subpackage Chatbot_Services
  */
 
 class SynonymMapper

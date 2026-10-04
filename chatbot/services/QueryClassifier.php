@@ -1,11 +1,17 @@
 <?php
 /**
- * 🤖 CampusAI — Master Query Classification & Routing Engine
- * Implements strict 4-tier Classification:
- * 1. WEBSITE   -> SOET Database & Website Content (Priority 1)
- * 2. TECHNICAL -> Technical & Programming Knowledge (ChatGPT style, max 2-3 lines)
- * 3. GENERAL   -> General Knowledge (ChatGPT style, max 2-3 lines)
- * 4. MIXED     -> Combined: Website DB first + Technical/General explanation
+ * CampusAI — Master Query Classification & Routing Engine
+ *
+ * Implements strict multi-tier query classification:
+ * 1. GREETING   -> Interactive welcoming greetings and introductory suggestions.
+ * 2. DATABASE   -> Live dynamic metrics (real-time seat matrix, vacancies, quotas).
+ * 3. WEBSITE    -> SOET verified programs, admissions, faculty, fees, placements, documents.
+ * 4. TECHNICAL  -> Technical, programming, and algorithm queries (concise ChatGPT style).
+ * 5. GENERAL    -> Open-domain educational and general questions.
+ * 6. HYBRID     -> Combined: Institutional database match + conceptual technical explanation.
+ *
+ * @package SOET_College_Project
+ * @subpackage Chatbot_Services
  */
 
 require_once __DIR__ . '/SynonymMapper.php';
@@ -30,7 +36,9 @@ class QueryClassifier
         // Courses & Academics
         'course', 'courses', 'program', 'programs', 'branch', 'branches', 'stream', 'streams',
         'degree', 'degrees', 'btech', 'mtech', 'phd', 'b.tech', 'm.tech', 'syllabus', 'curriculum',
+        'engineering', 'aerospace', 'chemical', 'aeronautical', 'automobile',
         'cse', 'ece', 'mech', 'mechanical', 'civil', 'electrical', 'applied science', 'specialization', 'department', 'departments',
+        'diploma', 'lateral', 'lateral entry', 'direct 2nd', 'direct second', 'integrated',
         // Fees & Aid
         'fee', 'fees', 'fee structure', 'tuition', 'tuition fee', 'course fee', 'cost', 'charges',
         'scholarship', 'scholarships', 'waiver', 'concession', 'tfws',
@@ -47,9 +55,10 @@ class QueryClassifier
         // Facilities & Life
         'hostel', 'hostels', 'mess', 'canteen', 'library', 'sports', 'gym', 'bus', 'transport',
         'infrastructure', 'laboratory', 'labs', 'auditorium', 'event', 'events', 'fest', 'notice', 'notices',
+        'document', 'documents', 'brochure', 'brochures', 'leaflet', 'leaflets', 'booklet', 'booklets',
         // Contacts & Institutional Info
         'contact', 'phone', 'helpline', 'mobile', 'call', 'email', 'address', 'location', 'reach us', 'where is the college',
-        'vision', 'mission', 'institution', 'campusai', 'reference guide', 'training document', 'qna guide'
+        'vision', 'mission', 'institution', 'campusai'
     ];
 
     // Technical domains: Coding, CS, Networking, AI, DB, Security
@@ -81,8 +90,9 @@ class QueryClassifier
         'supervised learning', 'unsupervised learning', 'regression', 'classification',
         'cloud computing', 'aws', 'azure', 'gcp', 'docker', 'container', 'kubernetes', 'devops',
         'ci/cd', 'microservices', 'iot', 'internet of things', 'embedded system', 'arduino', 'raspberry pi',
+        'vlsi', 'vlsi design', 'robotics', 'automation', 'blockchain', 'semiconductor',
         // Cybersecurity
-        'cybersecurity', 'cryptography', 'encryption', 'decryption', 'rsa', 'aes', 'firewall',
+        'cybersecurity', 'cyber security', 'cryptography', 'encryption', 'decryption', 'rsa', 'aes', 'firewall',
         'sql injection', 'xss', 'phishing', 'malware', 'penetration testing',
         // Code request triggers
         'code', 'function', 'snippet', 'syntax', 'implement', 'write code', 'how to code', 'computer program', 'write a program'
@@ -109,6 +119,21 @@ class QueryClassifier
             ];
         }
 
+        // 1.5 Pure definitional queries (e.g. "What is AI?", "What is VLSI?", "Define Blockchain")
+        $cleanDefQuery = trim($rawQuery, " \t\n\r\0\x0B?.,!:");
+        if (preg_match('/^(what is|what are|define|explain|meaning of)\s+([a-z0-9\s\+\#\-\.\/]+)$/i', $cleanDefQuery, $defMatch)) {
+            $hasInstitutional = $this->matchesAnyKeyword($normalized, $this->institutionalKeywords);
+            if (!$hasInstitutional && !preg_match('/\b(admission|admissions|fee|fees|seat|seats|intake|faculty|hod|campus|eligibility|apply|soet|mgm|branch|branches|course|courses|program|programs)\b/i', $cleanDefQuery)) {
+                return [
+                    'category' => 'TECHNICAL',
+                    'intent' => 'TECHNICAL',
+                    'source' => 'openai',
+                    'confidence' => 0.98,
+                    'description' => 'Technical Definition Query'
+                ];
+            }
+        }
+
         // Detect underlying intent via SynonymMapper
         $detected = $this->synonymMapper->detectIntent($rawQuery);
         $intent = $detected['intent'] ?? 'GENERAL';
@@ -121,7 +146,8 @@ class QueryClassifier
         // College-specific intent triggers
         $isCollegeIntent = in_array($intent, [
             'SEAT_AVAILABILITY', 'ADMISSION', 'PROGRAM', 'FEE', 'FACULTY',
-            'PLACEMENT', 'NOTICE', 'EVENT', 'CONTACT', 'SCHOLARSHIP', 'HOSTEL', 'DIRECTOR'
+            'PLACEMENT', 'NOTICE', 'EVENT', 'CONTACT', 'SCHOLARSHIP', 'HOSTEL', 'DIRECTOR',
+            'DOCUMENT', 'FACILITY'
         ]);
 
         $isWebsite = ($hasInstitutional || $hasWebsiteSynonym || $isCollegeIntent);

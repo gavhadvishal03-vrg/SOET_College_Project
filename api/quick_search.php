@@ -1,7 +1,17 @@
 <?php
 /**
- * ⚡ Spotlight Quick Search & Navigation API (Ctrl+K Command Palette)
- * SOET MGM University
+ * Spotlight Quick Search & Command Palette API Endpoint
+ *
+ * Powers the real-time search modal (Ctrl+K palette).
+ * Performs federated instant search across static pages, academic courses,
+ * departments, faculty directory, upcoming events, and circular notices.
+ *
+ * HTTP Method: GET
+ * Query Parameters:
+ *   - q (string, optional): Search query string. If empty, returns default featured links.
+ * Response:
+ *   - JSON object with 'success' (bool) and categorized 'results' mapping
+ *     ('pages', 'courses', 'departments', 'faculty', 'events', 'notices').
  */
 
 header('Access-Control-Allow-Origin: *');

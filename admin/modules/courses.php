@@ -1,4 +1,16 @@
 <?php
+/**
+ * Academic Programs & Degree Courses Management Module
+ *
+ * Full CRUD administrative interface for academic offerings:
+ * - Course creation, updating, sort ordering, and activation status
+ * - Program type categorization (UG 4-Year, Integrated 6-Year, DSE, Diploma)
+ * - Intake capacities, duration years, semester counts, and 4-year tuition fee breakdowns
+ * - Syllabus PDF and curriculum booklet file attachments
+ * - Real-time filled seats calculation and program CSV roster export
+ *
+ * Required Permission: 'manage_courses'
+ */
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requirePermission('manage_courses');
 
@@ -108,30 +120,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_course'])) {
         }
     }
 
-    if (!Security::validateCSRF($csrf)) {
-        setFlash('danger', 'CSRF validation failed.');
-    } elseif (empty($name) || empty($code) || empty($dept_id) || empty($duration)) {
-        setFlash('danger', 'Please enter all mandatory fields.');
-    } else {
-        $data = [
-            'department_id' => $dept_id,
-            'name' => $name,
-            'code' => $code,
-            'description' => $description,
-            'duration_years' => $duration,
-            'semester_count' => $semesters,
-            'intake_capacity' => $capacity,
-            'fee_year_1' => $fee_year_1,
-            'fee_year_2' => $fee_year_2,
-            'fee_year_3' => $fee_year_3,
-            'fee_year_4' => $fee_year_4,
-            'image_path' => $image_path,
-            'syllabus_pdf_year_1' => $syl_pdf_1,
-            'syllabus_pdf_year_2' => $syl_pdf_2,
-            'syllabus_pdf_year_3' => $syl_pdf_3,
-            'syllabus_pdf_year_4' => $syl_pdf_4,
-            'is_active' => $is_active
-        ];
+        $program_type = trim($_POST['program_type'] ?? 'Regular');
+        $brochure_doc = trim($_POST['brochure_document'] ?? '');
+        $curriculum_overview = trim($_POST['curriculum_overview'] ?? '');
+        $admission_info = trim($_POST['admission_info'] ?? '');
+        $sort_order = (int)($_POST['sort_order'] ?? 0);
+
+        // Upload Course Booklet Document
+        if (isset($_FILES['brochure_file']) && $_FILES['brochure_file']['error'] === UPLOAD_ERR_OK) {
+            $doc_errors = Security::validateUpload($_FILES['brochure_file'], ALLOWED_DOC_TYPES);
+            if (empty($doc_errors)) {
+                $uploadedDoc = Security::uploadFile($_FILES['brochure_file'], 'documents', 'booklet_');
+                if ($uploadedDoc) {
+                    $brochure_doc = 'uploads/documents/' . $uploadedDoc;
+                }
+            } else {
+                setFlash('danger', implode(' ', $doc_errors));
+            }
+        }
+
+        if (!Security::validateCSRF($csrf)) {
+            setFlash('danger', 'CSRF validation failed.');
+        } elseif (empty($name) || empty($code) || empty($dept_id) || empty($duration)) {
+            setFlash('danger', 'Please enter all mandatory fields.');
+        } else {
+            $data = [
+                'department_id' => $dept_id,
+                'name' => $name,
+                'code' => $code,
+                'program_type' => $program_type,
+                'description' => $description,
+                'curriculum_overview' => $curriculum_overview,
+                'admission_info' => $admission_info,
+                'duration_years' => $duration,
+                'semester_count' => $semesters,
+                'intake_capacity' => $capacity,
+                'fee_year_1' => $fee_year_1,
+                'fee_year_2' => $fee_year_2,
+                'fee_year_3' => $fee_year_3,
+                'fee_year_4' => $fee_year_4,
+                'image_path' => $image_path,
+                'brochure_document' => $brochure_doc,
+                'syllabus_pdf_year_1' => $syl_pdf_1,
+                'syllabus_pdf_year_2' => $syl_pdf_2,
+                'syllabus_pdf_year_3' => $syl_pdf_3,
+                'syllabus_pdf_year_4' => $syl_pdf_4,
+                'sort_order' => $sort_order,
+                'is_active' => $is_active
+            ];
 
         if ($course_id) {
             $db->update('courses', $data, 'id = ?', [$course_id]);
@@ -157,18 +193,29 @@ if ($action === 'delete' && isset($_GET['id'])) {
 }
 
 // Handle Delete Specific Syllabus PDF
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_syllabus_pdf'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['delete_syllabus_pdf']) || isset($_POST['year']))) {
     $csrf = $_POST[CSRF_TOKEN_NAME] ?? '';
-    $course_id = (int)$_POST['course_id'];
-    $year = (int)$_POST['year'];
+    $course_id = (int)($_POST['course_id'] ?? 0);
+    $year = (int)($_POST['year'] ?? 0);
     $field = "syllabus_pdf_year_" . $year;
 
-    if (!Security::validateCSRF($csrf)) {
-        setFlash('danger', 'CSRF validation failed.');
-    } else {
-        $db->update('courses', [$field => null], 'id = ?', [$course_id]);
-        setFlash('success', "Year {$year} Syllabus PDF file unlinked and deleted successfully.");
-        redirect("courses.php?action=edit&id={$course_id}");
+    if ($course_id > 0 && $year >= 1 && $year <= 4) {
+        if (!Security::validateCSRF($csrf)) {
+            setFlash('danger', 'CSRF validation failed.');
+        } else {
+            $course = $db->fetchOne("SELECT * FROM courses WHERE id = ?", [$course_id]);
+            if ($course && !empty($course[$field])) {
+                $filePath = UPLOAD_PATH . 'courses/' . $course[$field];
+                if (file_exists($filePath)) {
+                    @unlink($filePath);
+                } elseif (file_exists(__DIR__ . '/../../assets/uploads/courses/' . $course[$field])) {
+                    @unlink(__DIR__ . '/../../assets/uploads/courses/' . $course[$field]);
+                }
+            }
+            $db->update('courses', [$field => null], 'id = ?', [$course_id]);
+            setFlash('success', "Year {$year} Syllabus PDF file unlinked and deleted successfully.");
+            redirect("courses.php?action=edit&id={$course_id}");
+        }
     }
 }
 
@@ -183,9 +230,9 @@ $courses = $db->fetchAll(
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Academics & Curricula</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Academics & Curricula</span>
         </div>
-        <h2 class="font-display fw-extrabold text-dark mb-1">Courses, Fees & Syllabus Manager</h2>
+        <h2 class="font-display fw-extrabold text-dark mb-1">Programs, Fees & Syllabus Manager</h2>
         <p class="text-muted small mb-0">Manage degree tracks, four-year tuition structures, intake quotas, and official curriculum documents</p>
     </div>
     <?php if ($action === 'list'): ?>
@@ -193,7 +240,7 @@ $courses = $db->fetchAll(
             <a href="courses.php?action=export_csv" class="btn btn-sm btn-success rounded-pill px-3 font-semibold">
                 <i class="fa-solid fa-file-excel me-1"></i> Export CSV
             </a>
-            <a href="courses.php?action=add" class="btn btn-primary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-plus me-1 text-warning"></i> Register New Course</a>
+            <a href="courses.php?action=add" class="btn btn-primary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-plus me-1 text-warning"></i> Register New Program</a>
         </div>
     <?php else: ?>
         <a href="courses.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3 font-semibold"><i class="fa-solid fa-angle-left me-1"></i> Back to List</a>
@@ -213,9 +260,10 @@ $courses = $db->fetchAll(
                         <tr>
                             <th class="ps-4">Cover</th>
                             <th>Course Name &amp; Code</th>
+                            <th>Category</th>
                             <th>Department</th>
                             <th>Year-Wise Fees Breakdown</th>
-                            <th>Syllabus PDFs</th>
+                            <th>Syllabus &amp; Booklet</th>
                             <th class="text-center">Capacity</th>
                             <th class="text-center">Status</th>
                             <th class="text-end pe-4">Actions</th>
@@ -229,13 +277,23 @@ $courses = $db->fetchAll(
                                     <?php if (!empty($c['image_path'])): ?>
                                         <img src="<?php echo uploadUrl('courses', $c['image_path']); ?>" alt="Cover" class="rounded-3 shadow-xs" style="width: 48px; height: 48px; object-fit: cover;">
                                     <?php else: ?>
-                                        <div class="bg-light rounded-3 text-muted d-flex align-items-center justify-content-center border" style="width: 48px; height: 48px; font-size: 10px;">No Image</div>
+                                        <div class="bg-light rounded-3 text-muted d-flex align-items-center justify-content-center border" style="width: 48px; height: 48px; font-size: 14px;">No Image</div>
                                     <?php endif; ?>
                                 </td>
                                 <td>
                                     <div class="font-display fw-bold text-dark mb-0.5"><?php echo htmlspecialchars($c['name']); ?></div>
                                     <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill"><?php echo htmlspecialchars($c['code']); ?></span>
                                     <small class="text-muted opacity-75 ms-1"><?php echo $c['duration_years']; ?> Years (<?php echo $c['semester_count']; ?> Semesters)</small>
+                                </td>
+                                <td>
+                                    <?php 
+                                    $pt = $c['program_type'] ?? 'Regular';
+                                    $pClass = 'bg-primary-subtle text-primary';
+                                    if ($pt === 'Integrated') $pClass = 'bg-success-subtle text-success';
+                                    elseif ($pt === 'Direct Second Year') $pClass = 'bg-warning-subtle text-dark';
+                                    elseif ($pt === 'Diploma') $pClass = 'bg-purple-subtle text-purple';
+                                    ?>
+                                    <span class="badge <?php echo $pClass; ?> rounded-pill px-2.5 py-1 small"><?php echo htmlspecialchars($pt); ?></span>
                                 </td>
                                 <td><span class="text-muted small font-semibold"><?php echo htmlspecialchars($c['department_name']); ?></span></td>
                                 <td>
@@ -247,16 +305,22 @@ $courses = $db->fetchAll(
                                 </td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
+                                        <?php if (!empty($c['brochure_document'])): ?>
+                                            <a href="<?php echo htmlspecialchars($c['brochure_document']); ?>" target="_blank" class="btn btn-outline-primary btn-xs py-0.5 px-2 rounded-pill font-semibold" title="Official Booklet" style="font-size: 14px;">
+                                                <i class="fa-solid fa-file-pdf me-1"></i>Booklet
+                                            </a>
+                                        <?php endif; ?>
                                         <?php for ($y = 1; $y <= 4; $y++): ?>
                                             <?php $pdfKey = "syllabus_pdf_year_{$y}"; ?>
                                             <?php if (!empty($c[$pdfKey])): ?>
-                                                <a href="<?php echo uploadUrl('courses', $c[$pdfKey]); ?>" target="_blank" class="btn btn-outline-danger btn-xs py-0.5 px-2 rounded-pill font-semibold" title="Year <?php echo $y; ?> Syllabus PDF" style="font-size: 10px;">
-                                                    <i class="fa-solid fa-file-pdf me-1"></i>Y<?php echo $y; ?> PDF
+                                                <a href="<?php echo uploadUrl('courses', $c[$pdfKey]); ?>" target="_blank" class="btn btn-outline-danger btn-xs py-0.5 px-2 rounded-pill font-semibold" title="Year <?php echo $y; ?> Syllabus PDF" style="font-size: 14px;">
+                                                    <i class="fa-solid fa-file-lines me-1"></i>Y<?php echo $y; ?>
                                                 </a>
-                                            <?php else: ?>
-                                                <span class="badge bg-light text-muted border rounded-pill" style="font-size: 10px;">Y<?php echo $y; ?>: None</span>
                                             <?php endif; ?>
                                         <?php endfor; ?>
+                                        <?php if (empty($c['brochure_document']) && empty($c['syllabus_pdf_year_1'])): ?>
+                                            <span class="badge bg-light text-muted border rounded-pill" style="font-size: 14px;">No PDFs</span>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                                 <td class="text-center fw-bold fs-6"><?php echo $c['intake_capacity']; ?></td>
@@ -317,15 +381,26 @@ $courses = $db->fetchAll(
                             <input type="text" name="name" class="form-control" required value="<?php echo htmlspecialchars($edit_course['name'] ?? ''); ?>" placeholder="B.Tech in Artificial Intelligence & Data Science">
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <label class="form-label font-semibold">Program Category *</label>
+                            <select name="program_type" class="form-select" required>
+                                <?php 
+                                $currType = $edit_course['program_type'] ?? 'Regular';
+                                $types = ['Regular', 'Integrated', 'Direct Second Year', 'Diploma'];
+                                foreach ($types as $t): ?>
+                                    <option value="<?php echo $t; ?>" <?php echo ($currType === $t) ? 'selected' : ''; ?>><?php echo $t; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <label class="form-label font-semibold">Course Code *</label>
                             <input type="text" name="code" class="form-control" required value="<?php echo htmlspecialchars($edit_course['code'] ?? ''); ?>" placeholder="BTECH-AIDS">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label font-semibold">Duration (Years) *</label>
                             <input type="number" name="duration_years" class="form-control" required value="<?php echo htmlspecialchars($edit_course['duration_years'] ?? '4'); ?>" min="1" max="6">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label font-semibold">Semester Count *</label>
                             <input type="number" name="semester_count" class="form-control" required value="<?php echo htmlspecialchars($edit_course['semester_count'] ?? '8'); ?>" min="1" max="12">
                         </div>
@@ -335,14 +410,38 @@ $courses = $db->fetchAll(
                             <input type="number" name="intake_capacity" class="form-control" required value="<?php echo htmlspecialchars($edit_course['intake_capacity'] ?? '60'); ?>" min="1">
                         </div>
 
-                        <div class="col-md-8">
+                        <div class="col-md-4">
                             <label class="form-label font-semibold">Upload Course Cover Image</label>
                             <input type="file" name="course_image" class="form-control" accept="image/*">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label font-semibold">Official Curriculum Booklet PDF</label>
+                            <input type="file" name="brochure_file" class="form-control" accept=".pdf">
+                            <?php if (!empty($edit_course['brochure_document'])): ?>
+                                <small class="text-muted d-block mt-1">Current: <a href="<?php echo htmlspecialchars($edit_course['brochure_document']); ?>" target="_blank" class="text-primary"><?php echo basename($edit_course['brochure_document']); ?></a></small>
+                                <input type="hidden" name="brochure_document" value="<?php echo htmlspecialchars($edit_course['brochure_document']); ?>">
+                            <?php endif; ?>
                         </div>
 
                         <div class="col-12">
                             <label class="form-label font-semibold">Course Description &amp; Highlights</label>
                             <textarea name="description" class="form-control" rows="3" placeholder="Brief outline of curriculum focus, lab infrastructure, and career prospects..."><?php echo htmlspecialchars($edit_course['description'] ?? ''); ?></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label font-semibold">Curriculum &amp; Laboratory Overview</label>
+                            <textarea name="curriculum_overview" class="form-control" rows="3" placeholder="NEP 2020 structure, core subjects, specializations, practical labs..."><?php echo htmlspecialchars($edit_course['curriculum_overview'] ?? ''); ?></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label font-semibold">Admission Eligibility &amp; Selection Criteria</label>
+                            <textarea name="admission_info" class="form-control" rows="3" placeholder="10+2 / HSC PCM min 45% (40% reserved) + JEE/MHT-CET score..."><?php echo htmlspecialchars($edit_course['admission_info'] ?? ''); ?></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label font-semibold">Display Sort Order</label>
+                            <input type="number" name="sort_order" class="form-control" value="<?php echo $edit_course ? (int)($edit_course['sort_order'] ?? 0) : 0; ?>">
                         </div>
 
                         <!-- Year-Wise Fees Section -->
@@ -388,7 +487,7 @@ $courses = $db->fetchAll(
                                                         <a href="<?php echo uploadUrl('courses', $currentPdf); ?>" target="_blank" class="btn btn-outline-danger btn-xs py-0.5 px-2">
                                                             <i class="fa-solid fa-file-pdf me-1"></i> View PDF
                                                         </a>
-                                                        <button type="submit" form="deletePdfForm<?php echo $y; ?>" class="btn btn-outline-danger btn-xs py-0.5 px-2 font-semibold">
+                                                        <button type="submit" name="delete_syllabus_pdf" value="1" form="deletePdfForm<?php echo $y; ?>" class="btn btn-outline-danger btn-xs py-0.5 px-2 font-semibold">
                                                             <i class="fa-solid fa-trash me-1"></i> Delete
                                                         </button>
                                                     </div>
@@ -418,8 +517,9 @@ $courses = $db->fetchAll(
                 <!-- Hidden Delete PDF Forms -->
                 <?php if ($edit_course): ?>
                     <?php for ($y = 1; $y <= 4; $y++): ?>
-                        <form id="deletePdfForm<?php echo $y; ?>" method="POST" action="courses.php" onsubmit="return confirm('Delete this Year <?php echo $y; ?> Syllabus file?');">
+                        <form id="deletePdfForm<?php echo $y; ?>" method="POST" action="courses.php?action=edit&id=<?php echo $edit_course['id']; ?>" onsubmit="return confirm('Delete this Year <?php echo $y; ?> Syllabus file?');">
                             <?php echo Security::csrfField(); ?>
+                            <input type="hidden" name="delete_syllabus_pdf" value="1">
                             <input type="hidden" name="course_id" value="<?php echo $edit_course['id']; ?>">
                             <input type="hidden" name="year" value="<?php echo $y; ?>">
                         </form>

@@ -1,16 +1,28 @@
-# Environments & Uploads cache
-uploads/cache/
+# Environments & Local Secrets
+.env
+.env.local
 *.log
+
+# OS & Temporary
 .DS_Store
 Thumbs.db
-node_modules/
-.env.local
+ehthumbs.db
+desktop.ini
 
-# Keep uploads structure
-!uploads/
-!uploads/**
-
-# IDE
+# IDE & Editors
 .idea/
+.vscode/
 *.suo
 *.user
+*.sublime-project
+*.sublime-workspace
+
+# Database backups & SQL dumps (keep schema.sql)
+database/backups/*.sql
+!database/backups/.gitkeep
+!database/schema.sql
+
+# Keep uploads folder structure while ignoring dynamic user uploads
+uploads/admissions/*
+!uploads/admissions/.gitkeep
+uploads/cache/*

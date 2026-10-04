@@ -1,4 +1,15 @@
 <?php
+/**
+ * Blogs Moderation & Editorial Review Center Module
+ *
+ * Implements the editorial publishing pipeline for submitted blog articles:
+ * - Review submitted student and faculty articles (Submitted -> Under Review -> Published / Returned / Rejected)
+ * - Assign editorial remarks and publish dates
+ * - Automatically dispatches branded HTML notification emails to authors on review decisions
+ * - Complete CRUD capabilities for published blog posts with image uploads
+ *
+ * Required Permission: 'approve_blogs' or 'submit_blogs'
+ */
 $page_title = "Blogs Review & Management Center";
 include_once __DIR__ . '/../includes/header.php';
 Auth::requireLogin();
@@ -155,7 +166,7 @@ $blogs = $db->fetchAll($query, $params);
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Editorial Desk</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Editorial Desk</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">Blog Review &amp; Management</h2>
         <p class="text-muted small mb-0">Review, verify, edit, and publish technical articles and student blog submissions</p>
@@ -209,13 +220,13 @@ $blogs = $db->fetchAll($query, $params);
                                     <td class="ps-4">
                                         <div class="fw-bold text-dark text-truncate" style="max-width: 260px;"><?php echo htmlspecialchars($b['title']); ?></div>
                                         <?php if (!empty($b['image_path'])): ?>
-                                            <span class="badge bg-light text-muted border" style="font-size: 10px;"><i class="fa-solid fa-image me-1"></i> Has Cover</span>
+                                            <span class="badge bg-light text-muted border" style="font-size: 14px;"><i class="fa-solid fa-image me-1"></i> Has Cover</span>
                                         <?php endif; ?>
                                     </td>
                                     <td>
                                         <div class="text-dark fw-medium small"><?php echo htmlspecialchars($authorDisplayName); ?></div>
                                         <?php if (!empty($b['author_email'])): ?>
-                                            <div class="text-muted font-monospace" style="font-size: 11px;"><?php echo htmlspecialchars($b['author_email']); ?></div>
+                                            <div class="text-muted font-monospace" style="font-size: 14px;"><?php echo htmlspecialchars($b['author_email']); ?></div>
                                         <?php endif; ?>
                                     </td>
                                     <td><span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1 font-semibold"><?php echo htmlspecialchars($b['department_name'] ?: 'General'); ?></span></td>

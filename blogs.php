@@ -1,4 +1,12 @@
 <?php
+/**
+ * Public Blogs Portal Controller & View
+ *
+ * Provides the public student & faculty blog directory and single article reader:
+ * - Single article view via unique URL slugs (with estimated reading time, author, and department)
+ * - Paginated published blog catalog with cover images and summaries
+ * - Public submission callout encouraging students/faculty to contribute articles
+ */
 $page_title = "Blogs Portal";
 include_once __DIR__ . '/includes/header.php';
 
@@ -109,12 +117,11 @@ if (!empty($slug)) {
          WHERE b.status = 'published' ORDER BY b.published_at DESC LIMIT ? OFFSET ?",
         [$paginator['per_page'], $paginator['offset']]
     );
-    $settings = $cms->getSiteSettings();
-    $blogs_bg = !empty($settings['blogs_hero_image']) ? uploadUrl('settings', $settings['blogs_hero_image']) : null;
+    $blogs_bg = !empty($settings['blogs_hero_image']) ? uploadUrl('settings', $settings['blogs_hero_image']) : uploadUrl('gallery', 'soet_future_tech_banner.jpg');
     ?>
 
     <!-- Breadcrumb Header -->
-    <div class="page-hero mb-5" style="<?php echo $blogs_bg ? "background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 95, 0.85) 100%), url('{$blogs_bg}') center/cover no-repeat;" : ""; ?>">
+    <div class="page-hero mb-5" style="<?php echo $blogs_bg ? "background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 58, 95, 0.88) 100%), url('{$blogs_bg}') center/cover no-repeat;" : ""; ?>">
         <div class="container position-relative z-1 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <h1 class="font-display fw-extrabold mb-2 text-white">Blogs & Tech Insights</h1>
@@ -171,7 +178,7 @@ if (!empty($slug)) {
                                 <div>
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="text-muted small"><i class="fa-regular fa-calendar me-1 text-warning"></i><?php echo formatDate($blog['published_at']); ?></span>
-                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;"><?php echo htmlspecialchars($blog['department_name'] ?? 'General'); ?></span>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;"><?php echo htmlspecialchars($blog['department_name'] ?? 'General'); ?></span>
                                     </div>
                                     <h5 class="font-display fw-bold text-dark mb-2"><?php echo htmlspecialchars($blog['title']); ?></h5>
                                     <p class="text-muted small mb-3"><?php echo truncate(htmlspecialchars($blog['content']), 120); ?></p>

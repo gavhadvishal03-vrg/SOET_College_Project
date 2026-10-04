@@ -1,9 +1,20 @@
 <?php
+/**
+ * News Review & Management Module (Admin Panel)
+ *
+ * Handles editorial moderation, verification workflows, editing, publishing,
+ * and deletion of press releases and campus announcements.
+ * Integrates email alerts to submitters upon editorial decisions.
+ *
+ * @package SOET_College_Project
+ * @subpackage Admin_Modules
+ */
+
 $page_title = "News Review & Management Center";
 include_once __DIR__ . '/../includes/header.php';
 Auth::requireLogin();
 
-// Users with approve_news or submit_news can view this section
+// Verify that the user has permission to either approve or submit news
 if (!Auth::hasPermission('approve_news') && !Auth::hasPermission('submit_news')) {
     setFlash('danger', 'Access denied.');
     redirect(APP_URL . '/admin/dashboard.php');
@@ -13,6 +24,7 @@ $db = Database::getInstance();
 $action = isset($_GET['action']) ? $_GET['action'] : 'list';
 $news = null;
 
+// Fetch single news item for review or edit view
 if (in_array($action, ['review', 'edit']) && isset($_GET['id'])) {
     $news = $db->fetchOne(
         "SELECT n.*, u.full_name as user_author_name 
@@ -21,14 +33,18 @@ if (in_array($action, ['review', 'edit']) && isset($_GET['id'])) {
         [(int)$_GET['id']]
     );
     
-    // Change status to under_review if currently submitted
+    // Automatically transition status to 'under_review' when a reviewer opens a submitted article
     if ($news && $news['status'] === 'submitted' && Auth::hasPermission('approve_news')) {
         $db->update('news', ['status' => 'under_review', 'reviewer_id' => Session::get('user_id')], 'id = ?', [$news['id']]);
         $news['status'] = 'under_review';
     }
 }
 
-// Handle Admin Review Decision
+// -------------------------------------------------------------------------
+// POST: Submit Editorial Review Decision
+// -------------------------------------------------------------------------
+// Processes reviewer actions (published, returned, rejected) and dispatches
+// transactional email feedback to the original author.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review_decision'])) {
     $csrf = $_POST[CSRF_TOKEN_NAME] ?? '';
     $news_id = (int)$_POST['news_id'];
@@ -63,7 +79,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review_decisio
     }
 }
 
-// Handle Complete Edit / Revision of News Item
+// -------------------------------------------------------------------------
+// POST: Save Full Edit / Content Revision
+// -------------------------------------------------------------------------
+// Allows editors or authors to revise headline text, article body, reporter
+// info, cover photo uploads, and workflow status.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_news_edit'])) {
     $csrf = $_POST[CSRF_TOKEN_NAME] ?? '';
     $news_id = (int)$_POST['news_id'];
@@ -82,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_news_edit'])) {
         $existing = $db->fetchOne("SELECT * FROM news WHERE id = ?", [$news_id]);
         $uploaded_image = $existing['image_path'] ?? null;
 
-        // Check if new cover image was uploaded
+        // Check if new cover image was uploaded with MIME validation
         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
             $errors = Security::validateUpload($_FILES['image'], ALLOWED_IMAGE_TYPES);
             if (!empty($errors)) {
@@ -106,6 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_news_edit'])) {
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
+        // Record publishing timestamp and reviewer if transitioned to published
         if ($status === 'published' && empty($existing['published_at'])) {
             $updateData['published_at'] = date('Y-m-d H:i:s');
             $updateData['reviewer_id'] = Session::get('user_id');
@@ -118,7 +139,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_news_edit'])) {
     }
 }
 
-// Handle Delete News
+// -------------------------------------------------------------------------
+// GET: Delete News Article
+// -------------------------------------------------------------------------
 if ($action === 'delete' && isset($_GET['id']) && Auth::hasPermission('approve_news')) {
     $news_id = (int)$_GET['id'];
     $db->delete('news', 'id = ?', [$news_id]);
@@ -126,7 +149,10 @@ if ($action === 'delete' && isset($_GET['id']) && Auth::hasPermission('approve_n
     redirect('news.php');
 }
 
-// Fetch lists depending on user permissions
+// -------------------------------------------------------------------------
+// Query News Queue List
+// -------------------------------------------------------------------------
+// Reviewers view all submitted items; standard contributors view only their own submissions.
 $query = "SELECT n.*, u.full_name as user_full_name, r.full_name as reviewer_name
           FROM news n 
           JOIN users u ON n.author_id = u.id 
@@ -144,7 +170,7 @@ $news_list = $db->fetchAll($query, $params);
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Press &amp; Media</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Press &amp; Media</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">News &amp; Announcements</h2>
         <p class="text-muted small mb-0">Review, verify, edit, and publish press releases and campus announcements</p>
@@ -197,13 +223,13 @@ $news_list = $db->fetchAll($query, $params);
                                     <td class="ps-4">
                                         <div class="fw-bold text-dark text-truncate" style="max-width: 300px;"><?php echo htmlspecialchars($n['title']); ?></div>
                                         <?php if (!empty($n['image_path'])): ?>
-                                            <span class="badge bg-light text-muted border" style="font-size: 10px;"><i class="fa-solid fa-image me-1"></i> Has Media</span>
+                                            <span class="badge bg-light text-muted border" style="font-size: 14px;"><i class="fa-solid fa-image me-1"></i> Has Media</span>
                                         <?php endif; ?>
                                     </td>
                                     <td>
                                         <div class="text-dark fw-medium small"><?php echo htmlspecialchars($authorDisplayName); ?></div>
                                         <?php if (!empty($n['author_email'])): ?>
-                                            <div class="text-muted font-monospace" style="font-size: 11px;"><?php echo htmlspecialchars($n['author_email']); ?></div>
+                                            <div class="text-muted font-monospace" style="font-size: 14px;"><?php echo htmlspecialchars($n['author_email']); ?></div>
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-muted small"><?php echo formatDate($n['created_at']); ?></td>

@@ -1,10 +1,23 @@
 <?php
+/**
+ * User Chat Feedback & Quality Review (Admin Panel)
+ *
+ * Displays visitor satisfaction ratings (thumbs up / thumbs down),
+ * evaluated response snippets, engine source types (Database, OpenAI, Hybrid),
+ * optional user comment explanations, and provides CSV export capabilities.
+ *
+ * @package SOET_College_Project
+ * @subpackage Admin_AI_Chatbot
+ */
+
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requirePermission('manage_chatbot_kb');
 
 $db = Database::getInstance();
 
-// Handle CSV Export
+// -------------------------------------------------------------------------
+// CSV Data Export: Feedback Records
+// -------------------------------------------------------------------------
 if (isset($_GET['action']) && $_GET['action'] === 'export_csv') {
     $rows = $db->fetchAll(
         "SELECT f.id, f.rating, f.comments, m.message, m.source, f.created_at 
@@ -34,6 +47,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'export_csv') {
 $page_title = "User Chat Feedback Review";
 include_once __DIR__ . '/../../admin/includes/header.php';
 
+// -------------------------------------------------------------------------
+// Fetch Evaluated Feedback Records with Chat Context
+// -------------------------------------------------------------------------
 $feedbacks = $db->fetchAll(
     "SELECT f.*, m.message, m.sender, m.source, s.visitor_id 
      FROM chat_feedback f 
@@ -46,7 +62,7 @@ $feedbacks = $db->fetchAll(
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Sentiment &amp; Telemetry</span>
+            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Sentiment &amp; Telemetry</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">User Ratings &amp; Feedback</h2>
         <p class="text-muted small mb-0">Review visitor satisfaction metrics and individual response evaluations from CampusAI chats</p>

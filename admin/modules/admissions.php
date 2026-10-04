@@ -1,4 +1,16 @@
 <?php
+/**
+ * Admissions & Real-Time Seat Capacity Management Module
+ *
+ * Provides administrative oversight of student admission applications:
+ * - Application review queue (Filtering by course, status, search query)
+ * - Detailed applicant inspector with uploaded marksheet document viewer
+ * - Transactional application status updates with course capacity verification
+ * - Real-time seat intake and admission status (OPEN/CLOSED) adjustment
+ * - Complete admission roster CSV export generator
+ *
+ * Required Permission: 'manage_admissions'
+ */
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requirePermission('manage_admissions');
 
@@ -130,7 +142,7 @@ $seatMetrics = $cms->getCourseSeatMetrics();
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Admissions & Quota</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Admissions & Quota</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">Admissions & Real-Time Seat Manager</h2>
         <p class="text-muted small mb-0">Live real-time synchronization between Admission Portal &bull; Database &bull; 🤖 CampusAI Chatbot Engine</p>

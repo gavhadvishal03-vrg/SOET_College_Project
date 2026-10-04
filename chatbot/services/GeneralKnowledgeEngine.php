@@ -1,10 +1,17 @@
 <?php
 /**
- * 🤖 CampusAI — High-Precision Knowledge & Direct Response Engine
- * Follows strict ChatGPT-style response rules:
- * - Exact answer directly (zero unnecessary introductions, no meta-talk)
- * - Maximum 2-3 lines unless details explicitly requested
- * - Smallest useful code example when code is requested
+ * CampusAI — High-Precision Knowledge & Direct Response Engine
+ *
+ * Provides instant, zero-API-cost answers for technical, engineering,
+ * programming, and general concepts using a comprehensive dictionary:
+ * - Programming Languages: Python, Java, C++, C, JavaScript, PHP, SQL, Rust.
+ * - Data Structures & Algorithms: Binary search, Quick sort, Merge sort, Stacks, Queues, Graphs.
+ * - Core Systems & Hardware: Operating Systems, Linux, Docker, Git, Networking, VLSI, Semiconductors.
+ * - Emerging Technologies: Artificial Intelligence, Machine Learning, Deep Learning, IoT, Robotics.
+ * - Direct Concise Answers: Strict 2-3 sentence explanations with optional minimal code snippets.
+ *
+ * @package SOET_College_Project
+ * @subpackage Chatbot_Services
  */
 
 class GeneralKnowledgeEngine
@@ -146,11 +153,44 @@ class GeneralKnowledgeEngine
         'cybersecurity' => [
             'desc' => "Cybersecurity is the discipline of protecting computer systems, networks, devices, and digital assets from unauthorized access, cyberattacks, data theft, and damage."
         ],
+        'cyber security' => [
+            'desc' => "Cyber Security is the practice of defending electronic systems, networks, programs, and data from digital attacks, unauthorized access, ransomware, and vulnerabilities."
+        ],
         'cloud computing' => [
             'desc' => "Cloud computing provides on-demand access to computing resources—including virtual servers, storage, databases, and software—over the internet with pay-as-you-go pricing (e.g., AWS, Azure, GCP)."
         ],
         'iot' => [
             'desc' => "The Internet of Things (IoT) refers to a network of physical objects embedded with sensors, processing ability, and wireless connectivity to collect and exchange data in real time."
+        ],
+        'internet of things' => [
+            'desc' => "The Internet of Things (IoT) connects physical devices—such as sensors, home automation systems, and industrial machines—to the internet for real-time monitoring, telemetry, and automated control."
+        ],
+        'vlsi' => [
+            'desc' => "VLSI (Very Large Scale Integration) is the engineering process of creating integrated circuits (ICs) by combining millions or billions of MOS transistors onto a single silicon semiconductor microchip."
+        ],
+        'vlsi design' => [
+            'desc' => "VLSI (Very Large Scale Integration) Design involves creating microelectronic semiconductor integrated circuits by combining millions of MOS transistors onto a single silicon chip using HDLs (Verilog/VHDL) and physical synthesis."
+        ],
+        'very large scale integration' => [
+            'desc' => "Very Large Scale Integration (VLSI) is the technology of integrating hundreds of thousands to billions of transistors onto a single microchip to create microprocessors and complex digital hardware."
+        ],
+        'robotics' => [
+            'desc' => "Robotics is an interdisciplinary branch of engineering and computer science involving the design, construction, operation, and programming of autonomous or semi-autonomous robots to execute tasks."
+        ],
+        'automation' => [
+            'desc' => "Automation is the application of control systems, programmable logic controllers (PLCs), sensors, and software algorithms to operate industrial equipment and processes with minimal human intervention."
+        ],
+        'robotics and automation' => [
+            'desc' => "Robotics and Automation integrates mechanical systems, electronics, microcontrollers, and artificial intelligence to design smart robotic systems for manufacturing, healthcare, and industrial automation."
+        ],
+        'icbt' => [
+            'desc' => "ICBT stands for Internet of Things, Cyber Security, and Blockchain Technology—an interdisciplinary engineering domain combining smart connected devices, digital defense, and decentralized ledgers."
+        ],
+        'embedded systems' => [
+            'desc' => "An embedded system is a dedicated computer hardware and software combination designed to perform a specific dedicated function within a larger mechanical or electronic system."
+        ],
+        'semiconductor' => [
+            'desc' => "A semiconductor is a material with electrical conductivity between a conductor and an insulator (typically silicon or germanium), forming the foundation of modern transistors, diodes, and ICs."
         ],
         'artificial intelligence' => [
             'desc' => "Artificial Intelligence (AI) is the branch of computer science dedicated to developing systems capable of performing tasks that typically require human cognition, such as reasoning, learning, and perception."
@@ -166,6 +206,9 @@ class GeneralKnowledgeEngine
         ],
         'data science' => [
             'desc' => "Data science is an interdisciplinary field that combines statistics, mathematics, specialized programming, and machine learning to extract actionable insights from structured and unstructured data."
+        ],
+        'generative ai' => [
+            'desc' => "Generative AI refers to artificial intelligence models capable of generating new text, images, audio, synthetic data, or code based on patterns learned from training data."
         ],
         'chatgpt' => [
             'desc' => "ChatGPT is an artificial intelligence chatbot developed by OpenAI, trained on large language models (LLMs) to engage in natural dialogue, write and debug code, and summarize complex topics."
@@ -321,31 +364,7 @@ class GeneralKnowledgeEngine
             }
         }
 
-        // 6. Generic Exact Synthesizer for unlisted technical/general terms (Strictly 2 lines)
-        return self::synthesizeDirectResponse($query, $category, $isCodeRequested);
-    }
-
-    /**
-     * Synthesize clean, direct 2-line response without introductory fluff
-     */
-    private static function synthesizeDirectResponse(string $query, string $category, bool $isCodeRequested): string
-    {
-        $clean = trim($query);
-        $clean = preg_replace('/^(what is|what are|explain|tell me about|how to|define|where is|meaning of|definition of)\s+/i', '', $clean);
-        $clean = rtrim($clean, '?.,!');
-        $term = ucwords(trim($clean));
-
-        if (empty($term)) {
-            return "Please specify a concept or question to receive a direct answer.";
-        }
-
-        if ($category === 'TECHNICAL' || preg_match('/\b(programming|code|algorithm|software|hardware|network|server|protocol)\b/i', $query)) {
-            if ($isCodeRequested) {
-                return "Here is a minimal example for **{$term}**:\n\n```python\n# Basic {$term} demonstration\ndef solution(data):\n    return data\n```";
-            }
-            return "**{$term}** is a technical computing concept utilized to solve domain-specific problems efficiently in software development and systems engineering.";
-        }
-
-        return "**{$term}** refers to a standard subject of knowledge and inquiry. It is primarily understood and applied according to its functional definition and practical context.";
+        // 6. If not in topic database, return empty string to allow fallback handling
+        return "";
     }
 }

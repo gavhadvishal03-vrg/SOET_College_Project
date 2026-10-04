@@ -1,8 +1,15 @@
 <?php
 /**
- * 🤖 CampusAI — Q&A Document Training & Ingestion Service
- * Ingests PDF/DOCX Q&A guides, extracts questions & answers,
- * and publishes them directly into the Knowledge Base & FAQ databases.
+ * CampusAI — Q&A Document Training & Ingestion Service
+ *
+ * Automates institutional knowledge training workflows:
+ * 1. Master Guide Sync: Imports the canonical 63 Q&As from dataset JSON/PDF directly into FAQ & KB tables.
+ * 2. Uploaded Document Parser: Extracts question-and-answer pairs from uploaded PDF, DOCX, or TXT guides.
+ * 3. Dual Publishing: Automatically upserts parsed questions into both `faq` and `knowledge_base` database tables.
+ * 4. Ingestion Tracking: Logs document records and extraction status in `uploaded_documents`.
+ *
+ * @package SOET_College_Project
+ * @subpackage Chatbot_Services
  */
 
 class TrainingService

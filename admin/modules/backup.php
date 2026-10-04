@@ -1,4 +1,14 @@
 <?php
+/**
+ * Database Backup & Restoration Manager Module
+ *
+ * Provides database disaster recovery utilities for Super Administrators:
+ * - Generates full SQL dump exports containing DROP, CREATE TABLE, and INSERT statements
+ * - Imports and restores database schema from uploaded .sql backup files
+ * - Disables foreign key checks during import for seamless table re-creation
+ *
+ * Required Permission: 'backup_restore' (Super Admin only)
+ */
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requireLogin();
 Auth::requirePermission('backup_restore');
@@ -117,7 +127,7 @@ include_once __DIR__ . '/../includes/header.php';
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">System Maintenance</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">System Maintenance</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">Database Backup &amp; Restore</h2>
         <p class="text-muted small mb-0">Export system snapshots or restore the complete institutional database schema</p>
@@ -143,7 +153,7 @@ include_once __DIR__ . '/../includes/header.php';
                 <a href="backup.php?action=export" class="btn btn-primary rounded-pill w-100 py-2.5 fw-bold shadow-sm hover-lift">
                     <i class="fa-solid fa-download me-1.5"></i> Download SQL Backup Snapshot
                 </a>
-                <div class="text-muted small mt-2" style="font-size: 11px;"><i class="fa-solid fa-shield-halved me-1 text-success"></i> Includes foreign keys and transactional state</div>
+                <div class="text-muted small mt-2" style="font-size: 14px;"><i class="fa-solid fa-shield-halved me-1 text-success"></i> Includes foreign keys and transactional state</div>
             </div>
         </div>
     </div>

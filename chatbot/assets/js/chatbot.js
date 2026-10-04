@@ -1,14 +1,17 @@
 /**
- * 🤖 CampusAI — SOET Intelligent Chatbot Manager (Vanilla JavaScript)
- * Features:
- * - Multi-lingual (EN / HI / MR)
- * - Voice Input (Speech-to-Text)
- * - Audio Response Reader (Text-to-Speech)
- * - Real-Time Dynamic Autocomplete Suggestions
- * - 1-Click Conversation Transcript Export
- * - Maximize / Minimize Studio Expansion
- * - Dynamic Contextual Follow-up Chips
- * - Formatted Code Block Copying
+ * CampusAI — SOET Intelligent Chatbot Frontend Manager (Vanilla JavaScript)
+ *
+ * Handles client-side chat interactions, including:
+ * - Multilingual switching (English, Hindi, Marathi)
+ * - Web Speech API Voice Recognition (Speech-to-Text)
+ * - Browser Web Speech Text-to-Speech (Audio Voice Reader)
+ * - Dynamic Autocomplete Query Suggestions
+ * - Downloadable plain text conversation transcript exports
+ * - Response evaluation ratings (Thumbs Up / Down feedback)
+ * - Message formatting, code snippet copy actions, and typing indicators
+ *
+ * @package SOET_College_Project
+ * @subpackage Chatbot_Frontend
  */
 
 document.addEventListener('DOMContentLoaded', () => {

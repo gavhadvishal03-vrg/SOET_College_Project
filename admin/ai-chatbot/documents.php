@@ -1,4 +1,17 @@
 <?php
+/**
+ * Q&A Training Documents & Ingestion Pipeline (Admin Panel)
+ *
+ * Provides document parsing and knowledge base ingestion pipelines:
+ * 1. 1-Click Master Guide Sync (synchronizes 63 canonical Q&As from PDF/DOCX to DB).
+ * 2. Automated Q&A file extractor (detects Question/Answer structures from PDF, DOCX, TXT).
+ * 3. General Document parser for unstructured text extraction into Knowledge Base articles.
+ * 4. Extracted text review, editing, and publishing workflow.
+ *
+ * @package SOET_College_Project
+ * @subpackage Admin_AI_Chatbot
+ */
+
 $page_title = "Q&A Training Documents & Ingestion";
 include_once __DIR__ . '/../../admin/includes/header.php';
 require_once __DIR__ . '/../../chatbot/services/DocumentExtractor.php';
@@ -9,7 +22,10 @@ Auth::requirePermission('manage_chatbot_kb');
 $db = Database::getInstance();
 $trainingService = new TrainingService();
 
-// Handle 1-Click Master Guide Sync
+// -------------------------------------------------------------------------
+// Action: 1-Click Master Guide Sync
+// -------------------------------------------------------------------------
+// Reads the canonical QnA Master Guide file and inserts/updates FAQ and KB entries.
 if (isset($_GET['action']) && $_GET['action'] === 'sync_master_guide') {
     $res = $trainingService->publishMasterGuide();
     if ($res['success']) {
@@ -20,7 +36,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'sync_master_guide') {
     redirect('documents.php');
 }
 
-// Handle Document Upload (Q&A or General Document)
+// -------------------------------------------------------------------------
+// POST: Document Upload & Ingestion (Q&A or General Doc)
+// -------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_doc'])) {
     $csrf = $_POST[CSRF_TOKEN_NAME] ?? '';
     $importMode = $_POST['import_mode'] ?? 'qna';
@@ -45,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_doc'])) {
 
             if (move_uploaded_file($file['tmp_name'], $targetPath)) {
                 if ($importMode === 'qna') {
+                    // Extract structured question-answer pairs
                     $res = $trainingService->importUploadedQnADocument($targetPath, $file['name'], $category);
                     if ($res['success'] && $res['is_qna_document']) {
                         setFlash('success', "Q&A Document '{$file['name']}' uploaded and processed! Successfully extracted and published {$res['qna_count']} questions and answers directly into the Chatbot FAQ & Knowledge Base databases.");
@@ -53,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_doc'])) {
                         redirect('documents.php?action=review&id=' . ($res['doc_id'] ?? 0));
                     }
                 } else {
+                    // Raw text extraction for review
                     $extractedText = DocumentExtractor::extractText($targetPath, $file['type']);
                     $docId = $db->insert('uploaded_documents', [
                         'filename' => $targetName,
@@ -73,7 +93,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_doc'])) {
     }
 }
 
-// Handle Import of Manual Document into Knowledge Base
+// -------------------------------------------------------------------------
+// POST: Import Manual Extracted Text into Knowledge Base
+// -------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['import_kb'])) {
     $docId = (int)$_POST['doc_id'];
     $title = trim($_POST['title']);
@@ -97,7 +119,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['import_kb'])) {
     }
 }
 
-// Handle Document Deletion
+// -------------------------------------------------------------------------
+// GET: Delete Uploaded Document
+// -------------------------------------------------------------------------
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $docId = (int)$_GET['id'];
     $db->delete('uploaded_documents', 'id = ?', [$docId]);
@@ -114,7 +138,7 @@ if ($action === 'review' && isset($_GET['id'])) {
 $docs = $db->fetchAll("SELECT * FROM uploaded_documents ORDER BY id DESC");
 $categories = $db->fetchAll("SELECT * FROM chatbot_categories ORDER BY name");
 
-// Master Guide Status
+// Master Guide Status & Counts
 $masterGuideFile = __DIR__ . '/../../chatbot/train/CampusAI_Chatbot_QnA_Master_Guide.pdf';
 $masterGuideDocx = __DIR__ . '/../../chatbot/train/CampusAI_Chatbot_QnA_Master_Guide.docx';
 $masterGuideExists = file_exists($masterGuideFile);
@@ -125,7 +149,7 @@ $faqCount = $db->fetchOne("SELECT COUNT(*) as cnt FROM faq WHERE status = 'activ
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Document Ingestion Pipeline</span>
+            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Document Ingestion Pipeline</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">Training Documents &amp; Ingestion</h2>
         <p class="text-muted small mb-0">Upload, parse, and publish Q&A PDF/DOCX guides directly into the CampusAI verified knowledge base</p>

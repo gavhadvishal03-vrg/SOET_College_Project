@@ -1,4 +1,15 @@
-// SOET College Website - Global JavaScript
+/**
+ * SOET College Website - Global Public Frontend Script
+ *
+ * Provides shared client-side interactivity across all public pages:
+ * - Dynamic base URL autodetection
+ * - Legacy chatbot drawer toggle and AJAX messaging handler
+ * - Smooth scroll navigation for anchor links
+ * - Auto-dismissible alert notification timers
+ * - Floating 'Back to Top' scroll button
+ * - Automatic broken image detection with context-aware SVG fallback
+ */
+
 if (typeof APP_URL === 'undefined') { var APP_URL = window.location.origin + '/project'; }
 document.addEventListener('DOMContentLoaded', function() {
     // Chatbot functionality
@@ -143,6 +154,32 @@ document.addEventListener('DOMContentLoaded', function() {
             top: 0,
             behavior: 'smooth'
         });
+    });
+
+    // Automatic image error fallback & clarity handler
+    function handleImageError(img) {
+        if (img.dataset.fallbackApplied) return;
+        img.dataset.fallbackApplied = "true";
+        const src = (img.getAttribute('src') || '').toLowerCase();
+        const alt = (img.getAttribute('alt') || '').toLowerCase();
+        const className = (img.className || '').toLowerCase();
+
+        if (src.includes('faculty') || alt.includes('faculty') || alt.includes('director') || alt.includes('student') || className.includes('rounded-circle')) {
+            img.src = APP_URL + '/assets/images/default_avatar.svg';
+        } else if (src.includes('dept') || alt.includes('department') || alt.includes('campus') || src.includes('building')) {
+            img.src = APP_URL + '/assets/images/default_building.svg';
+        } else {
+            img.src = APP_URL + '/assets/images/default_banner.svg';
+        }
+    }
+
+    document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('error', function() {
+            handleImageError(this);
+        });
+        if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) {
+            handleImageError(img);
+        }
     });
 });
 

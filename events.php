@@ -1,4 +1,13 @@
 <?php
+/**
+ * Public Campus Events & Registration Controller & View
+ *
+ * Manages institutional event calendars, hackathons, symposiums, and cultural fests:
+ * - Filter events by upcoming vs past timeline
+ * - Detailed sub-event schedule breakdown (e.g. tracks, rounds, keynote speeches)
+ * - Online participant registration with CSRF validation and input sanitization
+ * - Instant digital event pass / badge generation with printable pass modal
+ */
 $page_title = "Events & Sub-Events Calendar";
 include_once __DIR__ . '/includes/header.php';
 
@@ -69,10 +78,10 @@ $eventPass = Session::flash('event_pass');
 // Fetch events
 $today = date('Y-m-d');
 if ($type === 'past') {
-    $sql = "SELECT * FROM events WHERE event_date < ? AND is_active = 1 ORDER BY event_date DESC";
+    $sql = "SELECT * FROM events WHERE event_date < ? AND is_active = 1 ORDER BY is_featured DESC, sort_order ASC, event_date DESC";
     $params = [$today];
 } else {
-    $sql = "SELECT * FROM events WHERE event_date >= ? AND is_active = 1 ORDER BY event_date ASC";
+    $sql = "SELECT * FROM events WHERE event_date >= ? AND is_active = 1 ORDER BY is_featured DESC, sort_order ASC, event_date ASC";
     $params = [$today];
 }
 $events = $cms->db->fetchAll($sql, $params);
@@ -81,7 +90,7 @@ $events_bg = !empty($settings['events_hero_image']) ? uploadUrl('settings', $set
 ?>
 
 <!-- Page Hero Banner -->
-<div class="page-hero mb-5">
+<div class="page-hero mb-5" style="<?php echo $events_bg ? "background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 58, 95, 0.88) 100%), url('{$events_bg}') center/cover no-repeat;" : ""; ?>">
     <div class="container position-relative z-1">
         <h1 class="font-display fw-extrabold mb-2 text-white">Campus Events &amp; Fests Calendar</h1>
         <p class="lead opacity-80 mb-3" style="font-size: 1.1rem; max-width: 650px;">Hackathons, robotics championships, tech symposiums, workshops, and annual cultural extravaganzas.</p>
@@ -168,10 +177,10 @@ $events_bg = !empty($settings['events_hero_image']) ? uploadUrl('settings', $set
     <div class="row g-3 mb-5 align-items-center">
         <div class="col-md-6 text-center text-md-start">
             <div class="btn-group shadow-xs rounded-pill overflow-hidden bg-white p-1 border">
-                <a href="events.php?type=upcoming" class="btn px-4 py-2 rounded-pill font-semibold <?php echo $type === 'upcoming' ? 'btn-primary' : 'btn-light text-muted'; ?>" style="font-size: 13.5px;">
+                <a href="events.php?type=upcoming" class="btn px-4 py-2 rounded-pill font-semibold <?php echo $type === 'upcoming' ? 'btn-primary' : 'btn-light text-muted'; ?>" style="font-size: 14px;">
                     <i class="fa-regular fa-calendar-check me-1.5"></i> Upcoming Events &amp; Fests
                 </a>
-                <a href="events.php?type=past" class="btn px-4 py-2 rounded-pill font-semibold <?php echo $type === 'past' ? 'btn-primary' : 'btn-light text-muted'; ?>" style="font-size: 13.5px;">
+                <a href="events.php?type=past" class="btn px-4 py-2 rounded-pill font-semibold <?php echo $type === 'past' ? 'btn-primary' : 'btn-light text-muted'; ?>" style="font-size: 14px;">
                     <i class="fa-solid fa-history me-1.5"></i> Past Archive
                 </a>
             </div>
@@ -202,12 +211,21 @@ $events_bg = !empty($settings['events_hero_image']) ? uploadUrl('settings', $set
                         <?php if ($event['image_path']): ?>
                             <img src="<?php echo uploadUrl('events', $event['image_path']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($event['title']); ?>" style="height: 190px; object-fit: cover;">
                         <?php else: ?>
-                            <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Event banner" style="height: 190px; object-fit: cover;">
+                            <img src="<?php echo uploadUrl('events', 'event_supernova_group.jpg'); ?>" class="card-img-top" alt="Event banner" style="height: 190px; object-fit: cover;">
                         <?php endif; ?>
                         <div class="card-body d-flex flex-column p-4">
-                            <div class="d-flex justify-content-between align-items-center text-muted small mb-2">
-                                <span><i class="fa-regular fa-calendar me-1 text-warning"></i><?php echo formatDate($event['event_date']); ?></span>
-                                <span><i class="fa-regular fa-clock me-1 text-warning"></i><?php echo date('h:i A', strtotime($event['event_time'])); ?></span>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex align-items-center gap-1 flex-wrap">
+                                    <?php if (!empty($event['is_featured'])): ?>
+                                        <span class="badge bg-warning text-dark px-2 py-1 rounded-pill small font-semibold"><i class="fa-solid fa-star me-1"></i>Featured</span>
+                                    <?php endif; ?>
+                                    <?php if (!empty($event['category'])): ?>
+                                        <span class="badge bg-light text-secondary border px-2 py-1 rounded-pill small"><?php echo htmlspecialchars(ucwords(str_replace('_', ' ', $event['category']))); ?></span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="text-muted small">
+                                    <span><i class="fa-regular fa-calendar me-1 text-warning"></i><?php echo formatDate($event['event_date']); ?></span>
+                                </div>
                             </div>
                             <h5 class="fw-bold text-primary-color mb-2 font-display"><?php echo htmlspecialchars($event['title']); ?></h5>
                             <p class="text-muted small mb-3" style="line-height: 1.6;"><?php echo htmlspecialchars($event['description']); ?></p>
@@ -234,7 +252,7 @@ $events_bg = !empty($settings['events_hero_image']) ? uploadUrl('settings', $set
                                 </div>
                             <?php endif; ?>
 
-                            <div class="text-muted small mb-3 mt-auto" style="font-size: 12px;">
+                            <div class="text-muted small mb-3 mt-auto" style="font-size: 14px;">
                                 <p class="mb-1"><i class="fa-solid fa-location-dot me-1 text-danger"></i> <strong>Venue:</strong> <?php echo htmlspecialchars($event['venue']); ?></p>
                                 <p class="mb-0"><i class="fa-solid fa-user-gear me-1 text-primary"></i> <strong>Organizer:</strong> <?php echo htmlspecialchars($event['organizer']); ?></p>
                             </div>

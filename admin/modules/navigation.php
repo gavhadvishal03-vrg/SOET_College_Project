@@ -1,4 +1,16 @@
 <?php
+/**
+ * Dynamic Website Navigation Menu Builder Module
+ *
+ * Configures the multi-level navigation bar for the public website:
+ * - Top-level navbar item and nested dropdown submenu link management
+ * - Custom link URLs (internal routes or external HTTP targets)
+ * - Target attribute configuration (_self vs _blank)
+ * - FontAwesome icon class assignment for submenu items
+ * - Sort order configuration and navigation menu CSV export
+ *
+ * Required Role: Super Admin / Authenticated Admin
+ */
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requireLogin();
 
@@ -118,7 +130,7 @@ foreach ($allSubItems as $sub) {
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Site Navigation</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Site Navigation</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">Navbar Menu Manager</h2>
         <p class="text-muted small mb-0">Manage, add, rename, reorder, and hide menu items &amp; dropdown links in real-time</p>
@@ -159,7 +171,7 @@ foreach ($allSubItems as $sub) {
                         <div class="col-md-6">
                             <label class="form-label font-semibold text-dark">URL / Link Path <span class="text-danger">*</span></label>
                             <input type="text" name="url" class="form-control rounded-3" placeholder="e.g. courses.php or https://..." value="<?php echo htmlspecialchars($edit_item['url'] ?? ''); ?>" required>
-                            <small class="text-muted" style="font-size: 11px;">Use <code>#</code> for dropdown headers</small>
+                            <small class="text-muted" style="font-size: 14px;">Use <code>#</code> for dropdown headers</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label font-semibold text-dark">Parent Dropdown Category</label>
@@ -251,7 +263,7 @@ foreach ($allSubItems as $sub) {
                                         <i class="fa-solid <?php echo !empty($main['icon']) ? htmlspecialchars($main['icon']) : 'fa-link'; ?> me-2 text-primary"></i>
                                         <span class="fw-bold text-dark"><?php echo htmlspecialchars($main['title']); ?></span>
                                         <?php if ($hasSub): ?>
-                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill ms-2" style="font-size: 10px;"><?php echo count($subItemsByParent[$main['id']]); ?> Sub-Items</span>
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill ms-2" style="font-size: 14px;"><?php echo count($subItemsByParent[$main['id']]); ?> Sub-Items</span>
                                         <?php endif; ?>
                                     </td>
                                     <td><code class="text-dark"><?php echo htmlspecialchars($main['url']); ?></code></td>

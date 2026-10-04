@@ -1,10 +1,13 @@
 <?php
 /**
- * WhatsApp Direct Chat Support Component
- * SOET MGM University
- * 
- * Target Phone Number: +91 93717 14253
- * Format: https://wa.me/919371714253
+ * WhatsApp Direct Admissions & Support Float Component
+ *
+ * Renders a high-visibility floating WhatsApp button on all public portal pages.
+ * Includes client-side device capability detection to automatically route:
+ * - Mobile/Tablet visitors -> Native WhatsApp protocol intent (wa.me)
+ * - Desktop/Laptop visitors -> WhatsApp Web interface (web.whatsapp.com)
+ *
+ * Target Institutional Contact: +91 93717 14253
  */
 $waCleanPhone = '919371714253';
 ?>
@@ -87,9 +90,9 @@ $waCleanPhone = '919371714253';
 .soet-wa-tooltip {
     background: #0f172a;
     color: #ffffff;
-    font-size: 12.5px;
+    font-size: 14px;
     font-weight: 600;
-    font-family: 'Inter', -apple-system, sans-serif;
+    font-family: 'Times New Roman', Times, serif;
     padding: 7px 14px;
     border-radius: 20px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);

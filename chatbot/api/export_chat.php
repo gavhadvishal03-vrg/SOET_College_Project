@@ -1,6 +1,15 @@
 <?php
 /**
- * 🤖 CampusAI — Export Conversation Transcript Endpoint
+ * CampusAI — Export Conversation Transcript Endpoint
+ *
+ * Formats and streams an entire chat session dialogue as a downloadable
+ * plain-text transcript file (.txt) for user archival and recordkeeping.
+ *
+ * @endpoint GET /chatbot/api/export_chat.php?session_token={token}
+ * @output text/plain file attachment
+ *
+ * @package SOET_College_Project
+ * @subpackage Chatbot_API
  */
 
 require_once __DIR__ . '/../../core/bootstrap.php';

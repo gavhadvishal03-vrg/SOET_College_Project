@@ -1,4 +1,15 @@
 <?php
+/**
+ * Contact Inquiries & Helpdesk Messages Management Module
+ *
+ * Provides administrative oversight of public contact inquiries:
+ * - List and filter messages (read/unread status, date range, search)
+ * - Detailed message inspection with auto-mark-as-read
+ * - Direct email response dispatching to inquirers via Mailer service
+ * - Inquiry database CSV export utility
+ *
+ * Required Permission: 'view_contacts'
+ */
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requirePermission('view_contacts');
 
@@ -92,7 +103,7 @@ $messages = $db->fetchAll("SELECT * FROM contact_messages ORDER BY created_at DE
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Communication Hub</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Communication Hub</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">Contact Inquiries</h2>
         <p class="text-muted small mb-0">Review, manage, and respond to public visitor questions and admissions helpdesk messages</p>
@@ -160,7 +171,7 @@ $messages = $db->fetchAll("SELECT * FROM contact_messages ORDER BY created_at DE
                                     <td class="ps-4">
                                         <div class="fw-bold text-dark"><?php echo htmlspecialchars($m['name']); ?></div>
                                         <?php if ($m['status'] === 'unread'): ?>
-                                            <span class="badge bg-danger rounded-pill px-2 py-0.5" style="font-size: 10px;">NEW</span>
+                                            <span class="badge bg-danger rounded-pill px-2 py-0.5" style="font-size: 14px;">NEW</span>
                                         <?php endif; ?>
                                     </td>
                                     <td><span class="badge bg-light text-dark border font-monospace"><?php echo htmlspecialchars($m['email']); ?></span></td>

@@ -1,4 +1,13 @@
 <?php
+/**
+ * Admin Panel Top Header & Navigation Layout
+ *
+ * Renders the top administrator navbar:
+ * - Enforces active session login guard (Auth::requireLogin)
+ * - Restricts non-administrative roles (e.g. Students) from accessing the control panel
+ * - Displays logged in user profile, role badge, quick links to public site, and logout action
+ * - Contains sidebar collapse toggle trigger
+ */
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requireLogin();
 
@@ -21,7 +30,7 @@ $current_admin_page = basename($_SERVER['PHP_SELF']);
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <!-- Custom stylesheet -->
     <link href="<?php echo APP_URL; ?>/assets/css/style.css" rel="stylesheet">
     <link href="<?php echo APP_URL; ?>/assets/css/admin.css" rel="stylesheet">
@@ -35,27 +44,29 @@ $current_admin_page = basename($_SERVER['PHP_SELF']);
             <button class="btn btn-sm btn-outline-light me-3 d-none d-md-inline-flex align-items-center justify-content-center" id="sidebarToggleBtn" style="width: 34px; height: 34px; border-radius: 8px; border-color: rgba(255,255,255,0.2);" title="Toggle Sidebar (Expand/Collapse)">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <a class="navbar-brand d-flex align-items-center" href="<?php echo APP_URL; ?>/admin/dashboard.php">
-                <img src="<?php echo APP_URL; ?>/assets/images/logo.svg" alt="MGMU Logo" class="me-2" style="height: 42px; object-fit: contain;">
-                <div>
-                    <span class="d-block lh-1 text-uppercase" style="font-size: 18px; font-weight: 800; color: var(--accent); letter-spacing: 0.5px; font-family: 'Outfit', sans-serif;">SOET Admin</span>
-                    <small class="text-white-50" style="font-size: 10px; font-weight: 500; font-family: 'Inter', sans-serif;">Role: <?php echo htmlspecialchars($user['role_name']); ?></small>
+            <a class="navbar-brand d-flex align-items-center brand-highlight-link" href="<?php echo APP_URL; ?>/admin/dashboard.php">
+                <div class="brand-logo-frame me-2">
+                    <img src="<?php echo APP_URL; ?>/assets/images/logo.svg" alt="MGMU Logo" class="brand-logo-img" style="height: 38px;">
+                </div>
+                <div class="brand-text-block">
+                    <span class="d-block lh-1 text-uppercase brand-acronym" style="font-size: 19px;">SOET Admin</span>
+                    <small class="text-white-50" style="font-size: 14px; font-weight: 500;">Role: <?php echo htmlspecialchars($user['role_name']); ?></small>
                 </div>
             </a>
         </div>
         <div class="ms-auto d-flex align-items-center gap-3">
             <div class="text-white d-none d-md-block text-end">
-                <small class="d-block lh-1 font-semibold text-warning"><?php echo htmlspecialchars($user['full_name']); ?></small>
-                <small class="opacity-75" style="font-size: 11px;"><?php echo htmlspecialchars($user['email']); ?></small>
+                <small class="d-block lh-1 font-semibold text-warning" style="font-size: 15px;"><?php echo htmlspecialchars($user['full_name']); ?></small>
+                <small class="opacity-75" style="font-size: 14px;"><?php echo htmlspecialchars($user['email']); ?></small>
             </div>
             <div class="dropdown">
                 <button class="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false" style="width: 36px; height: 36px; border-color: rgba(255,255,255,0.25);">
                     <i class="fa-regular fa-user"></i>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" aria-labelledby="userMenu" style="border-radius: 12px;">
-                    <li><a class="dropdown-item py-2 small" href="<?php echo APP_URL; ?>/index.php" target="_blank"><i class="fa-solid fa-globe me-2 text-muted"></i> View Website</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item py-2 small text-danger fw-bold" href="<?php echo APP_URL; ?>/admin/logout.php"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border-0" aria-labelledby="userMenu" style="border-radius: 12px; background: #1e293b;">
+                    <li><a class="dropdown-item py-2 px-3 text-white font-semibold small d-flex align-items-center" href="<?php echo APP_URL; ?>/index.php" target="_blank"><i class="fa-solid fa-globe me-2 text-warning"></i> View Website</a></li>
+                    <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                    <li><a class="dropdown-item py-2 px-3 text-danger font-bold small d-flex align-items-center" href="<?php echo APP_URL; ?>/admin/logout.php"><i class="fa-solid fa-right-from-bracket me-2 text-danger"></i> Logout</a></li>
                 </ul>
             </div>
         </div>

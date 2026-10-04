@@ -10,7 +10,7 @@ Options -Indexes
 AddDefaultCharset UTF-8
 
 # Prevent Direct Access to Sensitive Configs, Logs, and SQL Files
-<FilesMatch "\.(sql|log|md|env|json|git|gitignore)$">
+<FilesMatch "(\.(sql|log|md|env|json|git|gitignore)|\.env.*)$">
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>
@@ -24,10 +24,15 @@ AddDefaultCharset UTF-8
 <IfModule mod_rewrite.c>
     RewriteEngine On
     
-    # Handle Headers Security
+    # Backward compatibility: rewrite legacy assets/uploads requests to root uploads/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^assets/uploads/(.*)$ uploads/$1 [L,QSA]
+
+    # Handle Security Response Headers
     <IfModule mod_headers.c>
         Header set X-Content-Type-Options "nosniff"
         Header set X-Frame-Options "SAMEORIGIN"
         Header set X-XSS-Protection "1; mode=block"
+        Header set Referrer-Policy "strict-origin-when-cross-origin"
     </IfModule>
 </IfModule>

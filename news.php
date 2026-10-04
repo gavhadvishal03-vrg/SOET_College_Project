@@ -1,4 +1,13 @@
 <?php
+/**
+ * Public News & Press Releases Controller & View
+ *
+ * Displays official university news bulletins, academic achievements,
+ * and press announcements:
+ * - Single article reading mode with author metadata and reading time estimation
+ * - Paginated published news cards with thumbnails and publication dates
+ * - Community news submission callout
+ */
 $page_title = "News Portal";
 include_once __DIR__ . '/includes/header.php';
 
@@ -26,7 +35,7 @@ if (!empty($slug)) {
     <div class="page-hero mb-5">
         <div class="container position-relative z-1">
             <div class="d-flex align-items-center gap-2 mb-2">
-                <span class="badge bg-warning text-dark rounded-pill px-3 py-1 font-semibold" style="font-size: 11px;">Campus Press Release</span>
+                <span class="badge bg-warning text-dark rounded-pill px-3 py-1 font-semibold" style="font-size: 14px;">Campus Press Release</span>
                 <span class="text-white-50 small">&bull;</span>
                 <span class="text-white-50 small"><i class="fa-regular fa-clock me-1"></i><?php echo $readMinutes; ?> min read</span>
             </div>
@@ -79,7 +88,7 @@ if (!empty($slug)) {
                             foreach ($others as $oth) {
                                 echo '<a href="news.php?slug=' . urlencode($oth['slug']) . '" class="list-group-item list-group-item-action py-3 small">';
                                 echo '<strong class="text-primary-color d-block font-display mb-1">' . htmlspecialchars($oth['title']) . '</strong>';
-                                echo '<span class="text-muted" style="font-size: 11px;"><i class="fa-regular fa-clock me-1"></i>' . formatDate($oth['published_at']) . '</span>';
+                                echo '<span class="text-muted" style="font-size: 14px;"><i class="fa-regular fa-clock me-1"></i>' . formatDate($oth['published_at']) . '</span>';
                                 echo '</a>';
                             }
                             echo '</div>';
@@ -90,7 +99,7 @@ if (!empty($slug)) {
                 <div class="card border-0 shadow-sm p-4 text-center text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); border-radius: 16px; border-top: 3px solid var(--accent) !important;">
                     <i class="fa-solid fa-paper-plane fa-2x text-warning mb-2"></i>
                     <h6 class="fw-bold mb-1 font-display">Campus Media Desk</h6>
-                    <p class="small text-white-50 mb-3" style="font-size: 12px; line-height: 1.5;">Submit official departmental press releases, academic milestones, or research symposium coverage.</p>
+                    <p class="small text-white-50 mb-3" style="font-size: 14px; line-height: 1.5;">Submit official departmental press releases, academic milestones, or research symposium coverage.</p>
                     <a href="submit-news.php" class="btn btn-warning btn-sm font-bold rounded-pill px-4 shadow-xs text-dark">Submit News Report</a>
                 </div>
             </div>
@@ -108,12 +117,11 @@ if (!empty($slug)) {
          WHERE n.status = 'published' ORDER BY n.published_at DESC LIMIT ? OFFSET ?",
         [$paginator['per_page'], $paginator['offset']]
     );
-    $settings = $cms->getSiteSettings();
-    $news_bg = !empty($settings['news_hero_image']) ? uploadUrl('settings', $settings['news_hero_image']) : null;
+    $news_bg = !empty($settings['news_hero_image']) ? uploadUrl('settings', $settings['news_hero_image']) : uploadUrl('gallery', 'event_experts_live_india.jpg');
     ?>
 
     <!-- Page Hero Banner for News Grid -->
-    <div class="page-hero mb-5">
+    <div class="page-hero mb-5" style="<?php echo $news_bg ? "background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 58, 95, 0.88) 100%), url('{$news_bg}') center/cover no-repeat;" : ""; ?>">
         <div class="container position-relative z-1 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <h1 class="font-display fw-extrabold mb-2 text-white">Campus News &amp; Media Portal</h1>
@@ -166,14 +174,14 @@ if (!empty($slug)) {
                                 <div>
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="text-muted small"><i class="fa-regular fa-calendar me-1"></i><?php echo formatDate($news['published_at']); ?></span>
-                                        <span class="badge bg-warning bg-opacity-25 text-dark rounded-pill" style="font-size: 10px;">Official Press</span>
+                                        <span class="badge bg-warning text-dark rounded-pill px-2.5 py-1 font-bold" style="font-size: 14px;">Official Press</span>
                                     </div>
                                     <h5 class="fw-bold text-primary-color mb-2 font-display"><?php echo htmlspecialchars($news['title']); ?></h5>
                                     <p class="text-muted small mb-3" style="line-height: 1.6;"><?php echo truncate(htmlspecialchars($news['content']), 120); ?></p>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center border-top pt-3">
                                     <small class="text-muted font-semibold"><i class="fa-regular fa-clock me-1"></i><?php echo $readMinutes; ?> min read</small>
-                                    <a href="news.php?slug=<?php echo urlencode($news['slug']); ?>" class="btn btn-xs btn-outline-primary py-1 px-3 rounded-pill font-semibold" style="font-size: 11px;">Read Full <i class="fa-solid fa-arrow-right small ms-1"></i></a>
+                                    <a href="news.php?slug=<?php echo urlencode($news['slug']); ?>" class="btn btn-xs btn-outline-primary py-1 px-3 rounded-pill font-semibold" style="font-size: 14px;">Read Full <i class="fa-solid fa-arrow-right small ms-1"></i></a>
                                 </div>
                             </div>
                         </div>

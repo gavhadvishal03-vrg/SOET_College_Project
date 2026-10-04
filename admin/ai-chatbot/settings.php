@@ -1,4 +1,17 @@
 <?php
+/**
+ * AI Chatbot Engine Configuration & Settings (Admin Panel)
+ *
+ * Configures the core AI reasoning and RAG engine:
+ * 1. Optional OpenAI cloud API key, model selection (gpt-4o-mini, gpt-4o, gpt-3.5-turbo).
+ * 2. Generation hyperparameters: temperature and maximum output token ceilings.
+ * 3. Master system prompt instructions defining CampusAI's persona and rules.
+ * 4. Fallback messaging for unanswerable or ambiguous queries.
+ *
+ * @package SOET_College_Project
+ * @subpackage Admin_AI_Chatbot
+ */
+
 $page_title = "AI Chatbot Engine Settings";
 include_once __DIR__ . '/../../admin/includes/header.php';
 
@@ -6,7 +19,9 @@ Auth::requirePermission('manage_chatbot_kb');
 
 $db = Database::getInstance();
 
-// Handle Settings Update
+// -------------------------------------------------------------------------
+// POST: Save Chatbot & OpenAI Configuration Parameters
+// -------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
     $csrf = $_POST[CSRF_TOKEN_NAME] ?? '';
 
@@ -23,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
             'system_prompt'
         ];
 
+        // Upsert setting keys into the chatbot_settings database table
         foreach ($keys as $k) {
             if (isset($_POST[$k])) {
                 $val = trim($_POST[$k]);
@@ -40,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
     }
 }
 
-// Fetch all settings
+// Fetch all chatbot settings into key-value map
 $settingsRaw = $db->fetchAll("SELECT * FROM chatbot_settings");
 $settings = [];
 foreach ($settingsRaw as $s) {
@@ -51,7 +67,7 @@ foreach ($settingsRaw as $s) {
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">LLM &amp; Engine Core</span>
+            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">LLM &amp; Engine Core</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">AI Engine Configuration</h2>
         <p class="text-muted small mb-0">Configure language models, system hyperparameters, fallback routing, and server credentials</p>

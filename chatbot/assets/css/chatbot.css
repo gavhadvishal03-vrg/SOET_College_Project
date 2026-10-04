@@ -82,6 +82,7 @@
     opacity: 0;
     transform: translateY(20px) scale(0.95);
     pointer-events: none;
+    font-family: 'Times New Roman', Times, serif;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -141,9 +142,9 @@
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #ffffff;
-    padding: 2px 8px;
+    padding: 3px 10px;
     border-radius: 12px;
-    font-size: 11px;
+    font-size: 14px;
     cursor: pointer;
     font-weight: 600;
     transition: background 0.2s;
@@ -159,7 +160,7 @@
     background: transparent;
     border: none;
     color: rgba(255, 255, 255, 0.8);
-    font-size: 15px;
+    font-size: 16px;
     cursor: pointer;
     padding: 4px;
     transition: all 0.2s;
@@ -219,7 +220,7 @@
 .cb-msg-bubble {
     padding: 12px 16px;
     border-radius: 16px;
-    font-size: 13.5px;
+    font-size: 15px;
     line-height: 1.55;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
 }
@@ -241,7 +242,7 @@
 .cb-msg.bot .cb-msg-bubble h3,
 .cb-msg.bot .cb-msg-bubble h4,
 .cb-msg.bot .cb-msg-bubble h5 {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--cb-primary);
     margin-bottom: 6px;
@@ -259,18 +260,18 @@
 
 .cb-msg.bot .cb-msg-bubble li {
     margin-bottom: 3px;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .cb-msg.bot .cb-msg-bubble code {
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .cb-msg.bot .cb-msg-bubble table {
     width: 100%;
     margin: 8px 0;
     border-collapse: collapse;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .cb-msg.bot .cb-msg-bubble table th,
@@ -290,7 +291,7 @@
     align-items: center;
     gap: 10px;
     margin-top: 5px;
-    font-size: 11px;
+    font-size: 14px;
     color: var(--cb-text-muted);
 }
 
@@ -299,7 +300,7 @@
     border: none;
     color: var(--cb-text-muted);
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
     padding: 2px 5px;
     border-radius: 4px;
     transition: all 0.2s;
@@ -322,9 +323,9 @@
     background: #ffffff;
     color: #1e3a8a;
     border: 1px solid #bfdbfe;
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 14px;
-    font-size: 11.5px;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
@@ -360,7 +361,7 @@
     border: 1px solid #cbd5e1;
     padding: 5px 12px;
     border-radius: 16px;
-    font-size: 11.5px;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
@@ -387,7 +388,7 @@
     border: 1px solid #cbd5e1;
     border-radius: 24px;
     padding: 10px 16px;
-    font-size: 13.5px;
+    font-size: 14px;
     outline: none;
     transition: border-color 0.2s;
 }
@@ -475,16 +476,16 @@
 }
 
 .code-block-header {
-    font-size: 11px !important;
+    font-size: 14px !important;
 }
 
 /* Source Badge Styling */
 .source-badge {
-    font-size: 11px !important;
+    font-size: 14px !important;
 }
 
 .source-badge .badge {
-    font-size: 10.5px !important;
+    font-size: 14px !important;
     font-weight: 500;
 }
 
@@ -575,5 +576,72 @@
     background: #1e293b;
     color: #e2e8f0;
     border-color: #475569;
+}
+
+/* === CampusAI v2 Engine — Fallback & Action Styles === */
+.cb-fallback-msg {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 1.5px solid #f59e0b;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin: 4px 0;
+}
+.cb-fallback-icon {
+    font-size: 1.35rem;
+    color: #d97706;
+    margin-bottom: 6px;
+}
+.cb-fallback-text {
+    color: #1e293b;
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0 0 12px 0;
+}
+.cb-fallback-text em {
+    color: #b45309;
+    font-style: normal;
+    font-weight: 600;
+}
+.cb-fallback-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.cb-fallback-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.cb-fallback-btn-primary {
+    background: #1e3a8a;
+    color: #ffffff !important;
+    border: none;
+}
+.cb-fallback-btn-primary:hover {
+    background: #1e40af;
+    color: #ffffff !important;
+}
+.cb-fallback-btn-outline {
+    background: transparent;
+    color: #1e3a8a !important;
+    border: 1.5px solid #1e3a8a;
+}
+.cb-fallback-btn-outline:hover {
+    background: #1e3a8a;
+    color: #ffffff !important;
+}
+#soet-chatbot-window.dark-mode .cb-fallback-msg {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-color: #d97706;
+}
+#soet-chatbot-window.dark-mode .cb-fallback-text {
+    color: #f1f5f9;
 }
 

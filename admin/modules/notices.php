@@ -1,4 +1,15 @@
 <?php
+/**
+ * Notice Board & Campus Circulars Manager (Admin Panel)
+ *
+ * Manages institutional notices, administrative circulars, examination alerts,
+ * and pinned ticker announcements with optional PDF document attachments
+ * and automatic expiration dates. Includes CSV reporting.
+ *
+ * @package SOET_College_Project
+ * @subpackage Admin_Modules
+ */
+
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requirePermission('manage_notices');
 
@@ -6,7 +17,10 @@ $db = Database::getInstance();
 $action = isset($_GET['action']) ? $_GET['action'] : 'list';
 $edit_notice = null;
 
-// Handle CSV Export
+// -------------------------------------------------------------------------
+// CSV Data Export
+// -------------------------------------------------------------------------
+// Generates a downloaded spreadsheet listing all notices with pinned status and dates.
 if ($action === 'export_csv') {
     $rows = $db->fetchAll("SELECT title, content, is_pinned, expires_at, is_active, created_at FROM notices ORDER BY is_pinned DESC, created_at DESC");
     header('Content-Type: text/csv; charset=utf-8');
@@ -27,7 +41,9 @@ if ($action === 'export_csv') {
     exit;
 }
 
-// Handle 1-click Pin/Unpin Toggle
+// -------------------------------------------------------------------------
+// 1-Click Toggle Pin Status
+// -------------------------------------------------------------------------
 if ($action === 'toggle_pin' && isset($_GET['id'])) {
     $target_id = (int)$_GET['id'];
     $current = $db->fetchOne("SELECT is_pinned FROM notices WHERE id = ?", [$target_id]);
@@ -42,11 +58,14 @@ if ($action === 'toggle_pin' && isset($_GET['id'])) {
 $page_title = "Notice Board Manager";
 include_once __DIR__ . '/../includes/header.php';
 
+// Fetch notice record for edit mode
 if ($action === 'edit' && isset($_GET['id'])) {
     $edit_notice = $db->fetchOne("SELECT * FROM notices WHERE id = ?", [(int)$_GET['id']]);
 }
 
-// Handle Add/Edit Form submission
+// -------------------------------------------------------------------------
+// POST: Create or Update Notice
+// -------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_notice'])) {
     $csrf = $_POST[CSRF_TOKEN_NAME] ?? '';
     $notice_id = isset($_POST['notice_id']) ? (int)$_POST['notice_id'] : null;
@@ -64,6 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_notice'])) {
         $uploaded_doc = $edit_notice ? $edit_notice['attachment_path'] : null;
         $valid_upload = true;
 
+        // Process PDF or document upload attachment
         if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
             $errors = Security::validateUpload($_FILES['attachment'], ALLOWED_DOC_TYPES);
             if (!empty($errors)) {
@@ -80,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_notice'])) {
 
         if ($valid_upload) {
             if ($notice_id) {
-                // Edit
+                // Update existing notice
                 $db->update('notices', [
                     'title' => $title,
                     'content' => $content,
@@ -92,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_notice'])) {
                 setFlash('success', 'Announcement details modified successfully.');
                 redirect('notices.php');
             } else {
-                // Add
+                // Insert new notice
                 $db->insert('notices', [
                     'title' => $title,
                     'content' => $content,
@@ -109,7 +129,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_notice'])) {
     }
 }
 
-// Handle Delete
+// -------------------------------------------------------------------------
+// GET: Delete Notice
+// -------------------------------------------------------------------------
 if ($action === 'delete' && isset($_GET['id'])) {
     $target_id = (int)$_GET['id'];
     $db->delete('notices', 'id = ?', [$target_id]);
@@ -117,14 +139,14 @@ if ($action === 'delete' && isset($_GET['id'])) {
     redirect('notices.php');
 }
 
-// Fetch all notices
+// Fetch all notices ordered by pinned priority and publication date
 $notices = $db->fetchAll("SELECT * FROM notices ORDER BY is_pinned DESC, created_at DESC");
 ?>
 
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Announcements</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Announcements</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">Notice Board & Announcements</h2>
         <p class="text-muted small mb-0">Publish campus alerts, examination circulars, fee deadlines, and pinned announcements</p>

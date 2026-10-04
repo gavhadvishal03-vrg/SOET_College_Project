@@ -1,4 +1,10 @@
 <?php
+/**
+ * Public News Bulletin & Press Submission Controller & View
+ *
+ * Enables departmental coordinators, event organizers, and student reporters to submit
+ * news bulletins and press releases for administrator verification and publication.
+ */
 require_once __DIR__ . '/core/bootstrap.php';
 
 $cms = new ContentManager();

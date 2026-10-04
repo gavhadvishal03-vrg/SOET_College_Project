@@ -1,27 +1,54 @@
 <?php
 /**
- * Content Manager - Shared CMS operations
+ * Content Manager - Shared CMS Repository Operations
+ *
+ * Central data access and domain service layer for managing academic departments,
+ * courses, faculty hierarchies, blogs, news, events, notices, gallery items,
+ * site settings, official documents, seat quotas, and administrative stats.
  */
 class ContentManager
 {
+    /** @var Database Database connection instance */
     public Database $db;
 
+    /**
+     * Initializes the ContentManager with the singleton Database instance.
+     */
     public function __construct()
     {
         $this->db = Database::getInstance();
     }
 
+    /**
+     * Retrieves academic departments ordered by sort order and name.
+     *
+     * @param bool $activeOnly When true, returns only active departments (default: true)
+     * @return array List of department records
+     */
     public function getDepartments(bool $activeOnly = true): array
     {
         $where = $activeOnly ? 'WHERE is_active = 1' : '';
-        return $this->db->fetchAll("SELECT * FROM departments {$where} ORDER BY name");
+        return $this->db->fetchAll("SELECT * FROM departments {$where} ORDER BY sort_order ASC, name ASC");
     }
 
+    /**
+     * Fetches a single department record by its primary key ID.
+     *
+     * @param int $id Department ID
+     * @return array|null Department data or null if not found
+     */
     public function getDepartment(int $id): ?array
     {
         return $this->db->fetchOne("SELECT * FROM departments WHERE id = ?", [$id]);
     }
 
+    /**
+     * Retrieves academic programs/courses with joined department information.
+     *
+     * @param int|null $departmentId Filter by specific department ID if provided
+     * @param bool $activeOnly When true, returns only active courses
+     * @return array List of course records with department names
+     */
     public function getCourses(?int $departmentId = null, bool $activeOnly = true): array
     {
         $sql = "SELECT c.*, d.name as department_name FROM courses c JOIN departments d ON c.department_id = d.id";
@@ -37,21 +64,129 @@ class ContentManager
         if ($conditions) {
             $sql .= " WHERE " . implode(' AND ', $conditions);
         }
-        $sql .= " ORDER BY d.name, c.name";
+        $sql .= " ORDER BY c.sort_order ASC, d.name ASC, c.name ASC";
         return $this->db->fetchAll($sql, $params);
     }
 
+    /**
+     * Retrieves campus facilities filtered optionally by active state and category.
+     *
+     * @param bool $activeOnly When true, returns only active facilities
+     * @param string|null $category Filter by facility category (e.g. 'Lab', 'Sports', 'Hostel')
+     * @return array List of facility records
+     */
+    public function getFacilities(bool $activeOnly = true, ?string $category = null): array
+    {
+        $sql = "SELECT * FROM facilities";
+        $conditions = [];
+        $params = [];
+        if ($activeOnly) {
+            $conditions[] = "is_active = 1";
+        }
+        if ($category) {
+            $conditions[] = "category = ?";
+            $params[] = $category;
+        }
+        if ($conditions) {
+            $sql .= " WHERE " . implode(' AND ', $conditions);
+        }
+        $sql .= " ORDER BY sort_order ASC, id ASC";
+        return $this->db->fetchAll($sql, $params);
+    }
+
+    /**
+     * Fetches a single facility record by ID.
+     *
+     * @param int $id Facility ID
+     * @return array|null Facility data or null if not found
+     */
+    public function getFacility(int $id): ?array
+    {
+        return $this->db->fetchOne("SELECT * FROM facilities WHERE id = ?", [$id]);
+    }
+
+    /**
+     * Retrieves corporate placement recruiters / hiring partners.
+     *
+     * @param bool $activeOnly Filter active recruiters
+     * @param string|null $category Optional industry sector or tier category
+     * @return array List of recruiter records
+     */
+    public function getPlacementRecruiters(bool $activeOnly = true, ?string $category = null): array
+    {
+        $sql = "SELECT * FROM placement_recruiters";
+        $conditions = [];
+        $params = [];
+        if ($activeOnly) {
+            $conditions[] = "is_active = 1";
+        }
+        if ($category) {
+            $conditions[] = "category = ?";
+            $params[] = $category;
+        }
+        if ($conditions) {
+            $sql .= " WHERE " . implode(' AND ', $conditions);
+        }
+        $sql .= " ORDER BY sort_order ASC, name ASC";
+        return $this->db->fetchAll($sql, $params);
+    }
+
+    /**
+     * Fetches a single placement recruiter by ID.
+     *
+     * @param int $id Recruiter ID
+     * @return array|null Recruiter record or null
+     */
+    public function getPlacementRecruiter(int $id): ?array
+    {
+        return $this->db->fetchOne("SELECT * FROM placement_recruiters WHERE id = ?", [$id]);
+    }
+
+    /**
+     * Retrieves promotional homepage activities / highlights.
+     *
+     * @param bool $activeOnly Filter active items
+     * @return array List of homepage activity records
+     */
+    public function getHomepageActivities(bool $activeOnly = true): array
+    {
+        $where = $activeOnly ? 'WHERE is_active = 1' : '';
+        return $this->db->fetchAll("SELECT * FROM homepage_activities {$where} ORDER BY sort_order ASC, id ASC");
+    }
+
+    /**
+     * Fetches a single homepage activity record by ID.
+     *
+     * @param int $id Activity ID
+     * @return array|null Activity record or null
+     */
+    public function getHomepageActivity(int $id): ?array
+    {
+        return $this->db->fetchOne("SELECT * FROM homepage_activities WHERE id = ?", [$id]);
+    }
+
+    /**
+     * Retrieves active faculty members with joined department details.
+     * Applies a strategic academic leadership ordering: Directors/Deans first,
+     * followed by HODs, Professors, Associate Professors, and Assistant Professors.
+     *
+     * @param int|null $departmentId Filter by department ID or show all if null
+     * @return array Ordered list of faculty member records
+     */
     public function getFaculty(?int $departmentId = null): array
     {
-        $sql = "SELECT f.*, d.name as department_name FROM faculty f JOIN departments d ON f.department_id = d.id WHERE f.is_active = 1";
+        $sql = "SELECT f.*, COALESCE(d.name, 'ALL') as department_name, COALESCE(d.code, 'ALL') as department_code 
+                FROM faculty f 
+                LEFT JOIN departments d ON f.department_id = d.id 
+                WHERE f.is_active = 1";
         $params = [];
         if ($departmentId) {
-            $sql .= " AND f.department_id = ?";
+            $sql .= " AND (f.department_id = ? OR f.department_id IS NULL OR f.department_id = 0)";
             $params[] = $departmentId;
         }
         $sql .= " ORDER BY 
                   CASE 
-                      WHEN d.code = 'DIRECTOR' OR f.designation LIKE '%Director%' OR f.designation LIKE '%Dean%' THEN 1 
+                      WHEN f.department_id IS NULL OR f.department_id = 0 OR d.code = 'ALL' OR d.code = 'DIRECTOR' OR f.designation LIKE '%Director%' OR f.designation LIKE '%Dean%' THEN 1 
                       ELSE 2 
                   END ASC,
                   d.id ASC,
@@ -62,11 +197,19 @@ class ContentManager
                       WHEN f.designation LIKE '%Assistant%' THEN 4
                       ELSE 5 
                   END ASC,
+                  f.sort_order ASC,
                   f.experience_years DESC,
                   f.name ASC";
         return $this->db->fetchAll($sql, $params);
     }
 
+    /**
+     * Fetches paginated published blog posts along with author and department details.
+     *
+     * @param int $limit Number of blog records per page
+     * @param int $offset Pagination offset
+     * @return array List of published blog articles
+     */
     public function getPublishedBlogs(int $limit = 10, int $offset = 0): array
     {
         return $this->db->fetchAll(
@@ -78,6 +221,13 @@ class ContentManager
         );
     }
 
+    /**
+     * Fetches paginated published news and press announcements.
+     *
+     * @param int $limit Number of news items to retrieve
+     * @param int $offset Pagination offset
+     * @return array List of published news items
+     */
     public function getPublishedNews(int $limit = 10, int $offset = 0): array
     {
         return $this->db->fetchAll(
@@ -88,6 +238,12 @@ class ContentManager
         );
     }
 
+    /**
+     * Retrieves active, non-expired campus notices with pinned items shown first.
+     *
+     * @param int $limit Max number of notices to return
+     * @return array List of active notices
+     */
     public function getActiveNotices(int $limit = 10): array
     {
         return $this->db->fetchAll(
@@ -97,6 +253,12 @@ class ContentManager
         );
     }
 
+    /**
+     * Retrieves upcoming campus events along with nested sub-event agendas.
+     *
+     * @param int $limit Max events to return
+     * @return array List of events with attached 'sub_events' array
+     */
     public function getUpcomingEvents(int $limit = 10): array
     {
         $events = $this->db->fetchAll(
@@ -110,6 +272,12 @@ class ContentManager
         return $events;
     }
 
+    /**
+     * Fetches sub-events / schedule breakdown for a parent event.
+     *
+     * @param int $eventId Parent event ID
+     * @return array List of sub-events
+     */
     public function getSubEvents(int $eventId): array
     {
         return $this->db->fetchAll(
@@ -118,6 +286,12 @@ class ContentManager
         );
     }
 
+    /**
+     * Inserts or updates a sub-event schedule record.
+     *
+     * @param array $data Sub-event record fields
+     * @return int Sub-event ID
+     */
     public function saveSubEvent(array $data): int
     {
         if (isset($data['id']) && $data['id'] > 0) {
@@ -130,11 +304,23 @@ class ContentManager
         }
     }
 
+    /**
+     * Deletes a sub-event record by ID.
+     *
+     * @param int $id Sub-event ID
+     * @return bool True on success
+     */
     public function deleteSubEvent(int $id): bool
     {
         return $this->db->delete('sub_events', 'id = ?', [$id]) > 0;
     }
 
+    /**
+     * Retrieves active campus photo gallery images.
+     *
+     * @param int $limit Maximum images to fetch
+     * @return array List of gallery items
+     */
     public function getGallery(int $limit = 12): array
     {
         return $this->db->fetchAll(
@@ -143,13 +329,45 @@ class ContentManager
         );
     }
 
-    public function getPlacements(): array
+    /**
+     * Retrieves student placement records ordered by sort order, placement year, and package.
+     *
+     * @param bool $activeOnly Whether to return active records only
+     * @param int|null $deptId Optional department ID filter
+     * @param int|null $year Optional placement year filter
+     * @return array List of placement records with department and course metadata
+     */
+    public function getPlacements(bool $activeOnly = true, ?int $deptId = null, ?int $year = null): array
     {
-        return $this->db->fetchAll(
-            "SELECT * FROM placements WHERE is_active = 1 ORDER BY placement_year DESC, company_name"
-        );
+        $sql = "SELECT p.*, d.name AS department_name, d.code AS department_code, c.name AS course_name 
+                FROM placements p 
+                LEFT JOIN departments d ON p.department_id = d.id 
+                LEFT JOIN courses c ON p.course_id = c.id";
+        $conditions = [];
+        $params = [];
+        if ($activeOnly) {
+            $conditions[] = "p.is_active = 1";
+        }
+        if ($deptId) {
+            $conditions[] = "p.department_id = ?";
+            $params[] = $deptId;
+        }
+        if ($year) {
+            $conditions[] = "p.placement_year = ?";
+            $params[] = $year;
+        }
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(" AND ", $conditions);
+        }
+        $sql .= " ORDER BY p.sort_order ASC, p.package_lpa DESC, p.student_name ASC";
+        return $this->db->fetchAll($sql, $params);
     }
 
+    /**
+     * Retrieves all global website settings as an associative key => value map.
+     *
+     * @return array Key-value pairs of site settings
+     */
     public function getSiteSettings(): array
     {
         $rows = $this->db->fetchAll("SELECT setting_key, setting_value FROM site_settings");
@@ -160,14 +378,74 @@ class ContentManager
         return $settings;
     }
 
+    /**
+     * Retrieves a single site setting value by key, with fallback.
+     *
+     * @param string $key Setting key name
+     * @param string $default Fallback value if key is not configured
+     * @return string Setting value
+     */
     public function getSetting(string $key, string $default = ''): string
     {
         $row = $this->db->fetchOne("SELECT setting_value FROM site_settings WHERE setting_key = ?", [$key]);
-        return $row ? $row['setting_value'] : $default;
+        return ($row && isset($row['setting_value']) && $row['setting_value'] !== '') ? (string)$row['setting_value'] : $default;
     }
 
+    /**
+     * Inserts or updates a global website setting in the site_settings table.
+     *
+     * @param string $key Setting key name
+     * @param string $value Setting value to store
+     * @return bool True on success
+     */
+    public function saveSetting(string $key, string $value): bool
+    {
+        $exists = $this->db->fetchOne("SELECT id FROM site_settings WHERE setting_key = ?", [$key]);
+        if ($exists) {
+            return $this->db->update('site_settings', ['setting_value' => $value], 'setting_key = ?', [$key]) >= 0;
+        } else {
+            return $this->db->insert('site_settings', ['setting_key' => $key, 'setting_value' => $value]) > 0;
+        }
+    }
+
+    /**
+     * Retrieves downloadable official institutional documents, brochures, and syllabus files.
+     *
+     * @param string|null $category Filter by document category (e.g. 'Syllabus', 'Brochure')
+     * @param bool $activeOnly Filter active documents
+     * @return array List of document records
+     */
+    public function getOfficialDocuments(?string $category = null, bool $activeOnly = true): array
+    {
+        $sql = "SELECT * FROM documents";
+        $params = [];
+        $conds = [];
+        if ($activeOnly) {
+            $conds[] = "is_active = 1";
+        }
+        if ($category) {
+            $conds[] = "category = ?";
+            $params[] = $category;
+        }
+        if ($conds) {
+            $sql .= " WHERE " . implode(' AND ', $conds);
+        }
+        $sql .= " ORDER BY is_featured DESC, sort_order ASC, id ASC";
+        return $this->db->fetchAll($sql, $params);
+    }
+
+    /**
+     * Aggregates real-time counts across all modules for the administrative dashboard.
+     * Computes statistics for visitors, admissions, faculty, departments, courses,
+     * total intake capacity, recruiters, events, blogs, news, chatbot interactions, etc.
+     *
+     * @return array Associative array of metric names to integer counts
+     */
     public function getDashboardStats(): array
     {
+        $totalIntake = (int)($this->db->fetchOne("SELECT SUM(intake_capacity) as total FROM courses WHERE is_active = 1")['total'] ?? 0);
+        $placedCompanies = (int)($this->db->fetchOne("SELECT COUNT(DISTINCT company_name) as total FROM placements WHERE is_active = 1")['total'] ?? 0);
+
         return [
             'visitors' => $this->db->count('visitors'),
             'today_visitors' => $this->db->count('visitors', 'visit_date = ?', [date('Y-m-d')]),
@@ -176,19 +454,42 @@ class ContentManager
             'faculty' => $this->db->count('faculty', 'is_active = 1'),
             'departments' => $this->db->count('departments', 'is_active = 1'),
             'courses' => $this->db->count('courses', 'is_active = 1'),
+            'regular_courses' => $this->db->count('courses', "is_active = 1 AND LOWER(program_type) = 'regular'"),
+            'integrated_courses' => $this->db->count('courses', "is_active = 1 AND LOWER(program_type) = 'integrated'"),
+            'dse_courses' => $this->db->count('courses', "is_active = 1 AND (LOWER(program_type) LIKE '%direct%' OR LOWER(program_type) LIKE '%lateral%')"),
+            'diploma_courses' => $this->db->count('courses', "is_active = 1 AND LOWER(program_type) = 'diploma'"),
+            'total_intake' => $totalIntake,
+            'placements' => $this->db->count('placements', 'is_active = 1'),
+            'placement_companies' => $placedCompanies,
+            'recruiters' => $this->db->count('placement_recruiters', 'is_active = 1'),
+            'facilities' => $this->db->count('facilities', 'is_active = 1'),
             'events' => $this->db->count('events', 'is_active = 1'),
+            'gallery' => $this->db->count('gallery', 'is_active = 1'),
+            'documents' => $this->db->count('documents', 'is_active = 1'),
             'blogs' => $this->db->count('blogs', "status = 'published'"),
             'pending_blogs' => $this->db->count('blogs', "status IN ('submitted','under_review','returned')"),
             'news' => $this->db->count('news', "status = 'published'"),
             'pending_news' => $this->db->count('news', "status IN ('submitted','under_review','returned')"),
             'notices' => $this->db->count('notices', 'is_active = 1'),
-            'gallery' => $this->db->count('gallery', 'is_active = 1'),
             'contacts' => $this->db->count('contact_messages', "status = 'unread'"),
-            'chatbot_queries' => $this->db->count('chatbot_logs'),
+            'knowledge_base' => $this->db->count('knowledge_base', "status = 'active'"),
+            'faq' => $this->db->count('faq', "status = 'active'"),
+            'unanswered_questions' => $this->db->count('unanswered_questions', "status = 'pending'"),
+            'chatbot_queries' => $this->db->count('chat_messages', "sender = 'user'"),
             'users' => $this->db->count('users', 'is_active = 1'),
         ];
     }
 
+    /**
+     * Calculates database pagination metrics (total records, total pages, current offset).
+     *
+     * @param string $table Database table name
+     * @param string $where Optional SQL WHERE condition
+     * @param array $params Parameter values for the WHERE condition
+     * @param int $page Current 1-indexed page number
+     * @param int $perPage Items per page limit
+     * @return array Pagination data structure with total, page, per_page, total_pages, and offset
+     */
     public function paginate(string $table, string $where = '1=1', array $params = [], int $page = 1, int $perPage = ITEMS_PER_PAGE): array
     {
         $total = $this->db->count($table, $where, $params);
@@ -204,7 +505,10 @@ class ContentManager
     }
 
     /**
-     * Synchronize course filled_seats count with confirmed/approved admissions
+     * Synchronizes a course's filled_seats count with the current number of confirmed/approved admissions.
+     *
+     * @param int $courseId The target course primary key ID
+     * @return int The updated confirmed seats count
      */
     public function syncCourseSeats(int $courseId): int
     {
@@ -222,7 +526,11 @@ class ContentManager
     }
 
     /**
-     * Fetch real-time course seat metrics for all or single course
+     * Fetches real-time seat metrics, intake capacity, and vacant seat count for courses.
+     * If courseId is provided, returns single associative array; otherwise returns array of all courses.
+     *
+     * @param int|null $courseId Optional specific course ID filter
+     * @return array Course seat statistics including total_intake, filled_seats, vacant_seats, is_open
      */
     public function getCourseSeatMetrics(?int $courseId = null): array
     {
@@ -282,7 +590,13 @@ class ContentManager
     }
 
     /**
-     * Perform transactional admission status change with capacity check & seat sync
+     * Performs a transactional admission status change with capacity verification and seat synchronization.
+     * Prevents over-allocation by verifying available seats under a database row lock (FOR UPDATE).
+     *
+     * @param int $appId Admission application primary key ID
+     * @param string $status New status ('confirmed', 'approved', 'rejected', 'pending', 'cancelled')
+     * @param string|null $remarks Optional administrative notes/remarks
+     * @return array Status array with success flag, human-readable message, and application context
      */
     public function updateAdmissionStatusWithSeats(int $appId, string $status, ?string $remarks = null): array
     {
@@ -361,7 +675,13 @@ class ContentManager
     }
 
     /**
-     * Fetch paginated activity and security logs
+     * Retrieves paginated system activity and security audit logs with user/role details.
+     *
+     * @param int $limit Maximum number of log entries to retrieve
+     * @param int $offset Query offset
+     * @param string|null $action Optional filter by action type (e.g. 'login', 'create')
+     * @param string|null $search Optional search keyword for description, IP, username
+     * @return array List of log entries
      */
     public function getActivityLogs(int $limit = 50, int $offset = 0, ?string $action = null, ?string $search = null): array
     {
@@ -394,7 +714,10 @@ class ContentManager
     }
 
     /**
-     * Get aggregate analytics data for Admin Dashboard charts
+     * Compiles aggregate analytics dataset for interactive dashboard charts.
+     * Includes 14-day visitor traffic trends, course application metrics, and top chatbot intents.
+     *
+     * @return array Structure containing traffic_trend, admissions_by_course, and chatbot_intents
      */
     public function getAnalyticsSummary(): array
     {
@@ -439,16 +762,27 @@ class ContentManager
     }
 
     /**
-     * Get real-time system health metrics
+     * Diagnoses runtime server environment and upload directory permissions.
+     *
+     * @return array System health metrics including PHP version, disk usage, directory writable status
      */
     public function getSystemHealth(): array
     {
         $uploadDirs = [
-            'admissions' => UPLOAD_PATH . 'admissions',
-            'blogs' => UPLOAD_PATH . 'blogs',
-            'news' => UPLOAD_PATH . 'news',
-            'settings' => UPLOAD_PATH . 'settings',
-            'events' => UPLOAD_PATH . 'events'
+            'admissions'  => UPLOAD_PATH . 'admissions',
+            'blogs'       => UPLOAD_PATH . 'blogs',
+            'courses'     => UPLOAD_PATH . 'courses',
+            'departments' => UPLOAD_PATH . 'departments',
+            'documents'   => UPLOAD_PATH . 'documents',
+            'events'      => UPLOAD_PATH . 'events',
+            'facilities'  => UPLOAD_PATH . 'facilities',
+            'faculty'     => UPLOAD_PATH . 'faculty',
+            'gallery'     => UPLOAD_PATH . 'gallery',
+            'logos'       => UPLOAD_PATH . 'logos',
+            'news'        => UPLOAD_PATH . 'news',
+            'notices'     => UPLOAD_PATH . 'notices',
+            'placements'  => UPLOAD_PATH . 'placements',
+            'settings'    => UPLOAD_PATH . 'settings',
         ];
 
         $uploadStatus = [];
@@ -479,4 +813,116 @@ class ContentManager
             'session_lifetime' => (SESSION_LIFETIME === 0) ? 'Persistent (Explicit Logout)' : (SESSION_LIFETIME . 's')
         ];
     }
+
+    /**
+     * Retrieves all distinct academic years recorded in the fees table.
+     *
+     * @return array List of distinct academic year strings (e.g. ['2026-2027', '2025-2026'])
+     */
+    public function getAllDistinctAcademicYears(): array
+    {
+        $rows = $this->db->fetchAll("SELECT DISTINCT academic_year FROM fees WHERE academic_year IS NOT NULL AND academic_year != '' ORDER BY academic_year DESC");
+        $years = array_column($rows, 'academic_year');
+        if (empty($years)) {
+            $years = ['2026-2027', '2025-2026'];
+        }
+        return $years;
+    }
+
+    /**
+     * Determines the currently active academic year for public display.
+     * Reads from site settings or falls back to the latest recorded academic year.
+     *
+     * @return string Active academic year (e.g. '2026-2027')
+     */
+    public function getActiveAcademicYear(): string
+    {
+        $setting = $this->getSetting('active_academic_year');
+        if (!empty($setting)) {
+            return $setting;
+        }
+        $admYear = $this->getSetting('admission_year', '2026-27');
+        if (strpos($admYear, '2026') !== false) {
+            return '2026-2027';
+        }
+        $years = $this->getAllDistinctAcademicYears();
+        return $years[0] ?? '2026-2027';
+    }
+
+    /**
+     * Retrieves year-wise tuition and fee breakdown for a specific academic course and year.
+     *
+     * @param int $courseId Target course ID
+     * @param string|null $academicYear Academic year string or null to use active year
+     * @return array List of fee breakdown records ordered by study year
+     */
+    public function getCourseYearWiseFees(int $courseId, ?string $academicYear = null): array
+    {
+        $ay = $academicYear ?: $this->getActiveAcademicYear();
+        $fees = $this->db->fetchAll(
+            "SELECT f.*, c.name as course_name, c.code as course_code, c.program_type, c.duration_years 
+             FROM fees f 
+             JOIN courses c ON f.course_id = c.id 
+             WHERE f.course_id = ? AND f.academic_year = ? AND f.is_active = 1 
+             ORDER BY f.study_year ASC",
+            [$courseId, $ay]
+        );
+
+        if (empty($fees)) {
+            // Fallback to most recent available academic year
+            $fees = $this->db->fetchAll(
+                "SELECT f.*, c.name as course_name, c.code as course_code, c.program_type, c.duration_years 
+                 FROM fees f 
+                 JOIN courses c ON f.course_id = c.id 
+                 WHERE f.course_id = ? AND f.is_active = 1 
+                 ORDER BY f.academic_year DESC, f.study_year ASC",
+                [$courseId]
+            );
+        }
+
+        return $fees;
+    }
+
+    /**
+     * Fetches filtered fee structures with joined course and department details for the admin manager.
+     *
+     * @param int|null $courseId Optional course ID filter
+     * @param string|null $academicYear Optional academic year filter
+     * @param bool $activeOnly When true, returns only active fee structures
+     * @param string|null $programType Optional program type filter (e.g. 'Regular', 'Integrated')
+     * @return array Filtered list of fee structure records
+     */
+    public function getFeeStructures(?int $courseId = null, ?string $academicYear = null, bool $activeOnly = false, ?string $programType = null): array
+    {
+        $sql = "SELECT f.*, c.name as course_name, c.code as course_code, c.program_type, c.duration_years, d.name as department_name 
+                FROM fees f 
+                JOIN courses c ON f.course_id = c.id 
+                JOIN departments d ON c.department_id = d.id";
+        $conditions = [];
+        $params = [];
+
+        if ($courseId) {
+            $conditions[] = "f.course_id = ?";
+            $params[] = $courseId;
+        }
+        if ($academicYear && $academicYear !== 'all') {
+            $conditions[] = "f.academic_year = ?";
+            $params[] = $academicYear;
+        }
+        if ($programType && $programType !== 'all') {
+            $conditions[] = "c.program_type = ?";
+            $params[] = $programType;
+        }
+        if ($activeOnly) {
+            $conditions[] = "f.is_active = 1";
+        }
+
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $sql .= " ORDER BY f.academic_year DESC, c.sort_order ASC, c.name ASC, f.study_year ASC";
+        return $this->db->fetchAll($sql, $params);
+    }
 }
+

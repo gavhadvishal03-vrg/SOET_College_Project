@@ -1,4 +1,14 @@
 <?php
+/**
+ * Administrator Dashboard & Central Control Center Controller & View
+ *
+ * Provides a comprehensive real-time management dashboard for system administrators:
+ * - Live KPI metric cards (Visitors, Admissions, Courses, Intake, Placements, Chatbot queries)
+ * - Interactive Chart.js analytics (14-day traffic trend, course seat fill ratios, chatbot intents)
+ * - Pending editorial queues (Admissions review, Submitted blogs, Submitted news)
+ * - System runtime diagnostics (PHP version, disk space, upload folder write permissions)
+ * - Quick administrative action shortcuts
+ */
 $page_title = "Admin Dashboard & Control Center";
 include_once __DIR__ . '/includes/header.php';
 Auth::requireLogin();
@@ -62,7 +72,7 @@ foreach ($analytics['chatbot_intents'] as $intent) {
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-4 border-bottom">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Management Center</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Management Center</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">
             Executive Control Dashboard
@@ -133,69 +143,132 @@ foreach ($analytics['chatbot_intents'] as $intent) {
     </div>
 </div>
 
-<!-- Key Metric Counters Grid -->
+<!-- Primary Institutional Metric Counters Grid -->
 <div class="row g-3 mb-4">
-    <!-- Visitors -->
+    <!-- Total Approved Intake AY 2026-27 -->
     <div class="col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 hover-lift transition-all">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-3.5 h-100 hover-lift transition-all border-start border-primary border-4">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted small text-uppercase font-semibold" style="letter-spacing: 0.5px;">Total Visitors</span>
-                    <h2 class="font-display fw-extrabold text-dark mb-1 mt-1"><?php echo number_format($stats['visitors']); ?></h2>
-                    <small class="text-success font-semibold"><i class="fa-solid fa-arrow-trend-up me-1"></i>Today: <?php echo number_format($stats['today_visitors']); ?></small>
+                    <span class="text-muted small text-uppercase font-semibold" style="letter-spacing: 0.5px; font-size: 14px;">AY 2026-27 Intake</span>
+                    <h2 class="font-display fw-extrabold text-primary mb-1 mt-1"><?php echo number_format($stats['total_intake'] ?? 380); ?></h2>
+                    <small class="text-muted font-semibold">Approved 1st Yr Seats</small>
                 </div>
-                <div class="stat-icon-wrapper bg-primary-subtle text-primary rounded-4 p-3" style="width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center;">
-                    <i class="fa-solid fa-users-viewfinder fa-xl"></i>
+                <div class="stat-icon-wrapper bg-primary-subtle text-primary rounded-4 p-3" style="width: 52px; height: 52px; display: inline-flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-graduation-cap fa-xl"></i>
                 </div>
+            </div>
+            <div class="d-flex gap-1 mt-2 pt-2 border-top small text-muted flex-wrap" style="font-size: 14px;">
+                <span class="badge bg-primary-subtle text-primary">Reg: <?php echo $stats['regular_courses'] ?? 5; ?> (180)</span>
+                <span class="badge bg-success-subtle text-success">Int: <?php echo $stats['integrated_courses'] ?? 4; ?> (180)</span>
+                <span class="badge bg-purple-subtle text-purple">Dip: <?php echo $stats['diploma_courses'] ?? 2; ?> (20)</span>
             </div>
         </div>
     </div>
 
-    <!-- Admissions Portal -->
+    <!-- Admissions Portal & Applications -->
     <div class="col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 hover-lift transition-all">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-3.5 h-100 hover-lift transition-all border-start border-warning border-4">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted small text-uppercase font-semibold" style="letter-spacing: 0.5px;">Admissions Portal</span>
+                    <span class="text-muted small text-uppercase font-semibold" style="letter-spacing: 0.5px; font-size: 14px;">Admissions Portal</span>
                     <h2 class="font-display fw-extrabold text-dark mb-1 mt-1"><?php echo number_format($stats['admissions']); ?></h2>
                     <small class="text-warning font-semibold"><i class="fa-solid fa-clock-rotate-left me-1"></i>Pending: <?php echo number_format($stats['pending_admissions']); ?></small>
                 </div>
-                <div class="stat-icon-wrapper bg-warning-subtle text-warning-emphasis rounded-4 p-3" style="width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center;">
+                <div class="stat-icon-wrapper bg-warning-subtle text-warning-emphasis rounded-4 p-3" style="width: 52px; height: 52px; display: inline-flex; align-items: center; justify-content: center;">
                     <i class="fa-solid fa-id-card fa-xl"></i>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Active Faculty & Departments -->
-    <div class="col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 hover-lift transition-all">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <span class="text-muted small text-uppercase font-semibold" style="letter-spacing: 0.5px;">Academic Staff</span>
-                    <h2 class="font-display fw-extrabold text-dark mb-1 mt-1"><?php echo number_format($stats['faculty']); ?></h2>
-                    <small class="text-secondary font-semibold">Depts: <?php echo $stats['departments']; ?> | Courses: <?php echo $stats['courses']; ?></small>
-                </div>
-                <div class="stat-icon-wrapper bg-success-subtle text-success rounded-4 p-3" style="width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center;">
-                    <i class="fa-solid fa-user-tie fa-xl"></i>
-                </div>
+            <div class="mt-2 pt-2 border-top small text-muted d-flex justify-content-between align-items-center" style="font-size: 14px;">
+                <span>Programs: <strong><?php echo $stats['courses']; ?> Active</strong></span>
+                <a href="<?php echo APP_URL; ?>/admin/modules/admissions.php" class="text-primary font-semibold text-decoration-none">Review &rarr;</a>
             </div>
         </div>
     </div>
 
-    <!-- CampusAI Usage -->
+    <!-- Placements Registry -->
     <div class="col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100 hover-lift transition-all">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-3.5 h-100 hover-lift transition-all border-start border-success border-4">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted small text-uppercase font-semibold" style="letter-spacing: 0.5px;">CampusAI Usage</span>
-                    <h2 class="font-display fw-extrabold text-dark mb-1 mt-1"><?php echo number_format($stats['chatbot_queries']); ?></h2>
-                    <small class="text-info font-semibold"><i class="fa-solid fa-circle-check me-1"></i>Queries Processed</small>
+                    <span class="text-muted small text-uppercase font-semibold" style="letter-spacing: 0.5px; font-size: 14px;">Placements (2026 Batch)</span>
+                    <h2 class="font-display fw-extrabold text-success mb-1 mt-1"><?php echo number_format($stats['placements'] ?? 12); ?></h2>
+                    <small class="text-muted font-semibold">Top: ₹5.20 LPA</small>
                 </div>
-                <div class="stat-icon-wrapper bg-info-subtle text-info rounded-4 p-3" style="width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center;">
+                <div class="stat-icon-wrapper bg-success-subtle text-success rounded-4 p-3" style="width: 52px; height: 52px; display: inline-flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-briefcase fa-xl"></i>
+                </div>
+            </div>
+            <div class="mt-2 pt-2 border-top small text-muted d-flex justify-content-between align-items-center" style="font-size: 14px;">
+                <span>Recruiters: <strong><?php echo $stats['placement_companies'] ?? 7; ?> Companies</strong></span>
+                <a href="<?php echo APP_URL; ?>/admin/modules/placements.php" class="text-success font-semibold text-decoration-none">View &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chatbot Hub -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-3.5 h-100 hover-lift transition-all border-start border-info border-4">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small text-uppercase font-semibold" style="letter-spacing: 0.5px; font-size: 14px;">CampusAI Studio</span>
+                    <h2 class="font-display fw-extrabold text-info mb-1 mt-1"><?php echo number_format($stats['chatbot_queries']); ?></h2>
+                    <small class="text-muted font-semibold">AI Inquiries</small>
+                </div>
+                <div class="stat-icon-wrapper bg-info-subtle text-info rounded-4 p-3" style="width: 52px; height: 52px; display: inline-flex; align-items: center; justify-content: center;">
                     <i class="fa-solid fa-robot fa-xl"></i>
                 </div>
             </div>
+            <div class="mt-2 pt-2 border-top small text-muted d-flex justify-content-between align-items-center" style="font-size: 14px;">
+                <span>KB: <strong><?php echo ($stats['knowledge_base'] + $stats['faq']); ?> Q&amp;As</strong></span>
+                <a href="<?php echo APP_URL; ?>/admin/ai-chatbot/index.php" class="text-info font-semibold text-decoration-none">Hub &rarr;</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Secondary Operational Metric Badges Row -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="card border-0 shadow-xs rounded-4 p-3 bg-white text-center">
+            <span class="text-muted small text-uppercase font-semibold" style="font-size: 14px;">Departments</span>
+            <div class="font-display fw-extrabold text-dark fs-5 mt-1"><?php echo $stats['departments']; ?></div>
+            <small class="text-muted" style="font-size: 14px;">Academic Units</small>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="card border-0 shadow-xs rounded-4 p-3 bg-white text-center">
+            <span class="text-muted small text-uppercase font-semibold" style="font-size: 14px;">Faculty Directory</span>
+            <div class="font-display fw-extrabold text-dark fs-5 mt-1"><?php echo $stats['faculty']; ?></div>
+            <small class="text-muted" style="font-size: 14px;">Professors &amp; HODs</small>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="card border-0 shadow-xs rounded-4 p-3 bg-white text-center">
+            <span class="text-muted small text-uppercase font-semibold" style="font-size: 14px;">Official Booklets</span>
+            <div class="font-display fw-extrabold text-danger fs-5 mt-1"><?php echo $stats['documents'] ?? 7; ?></div>
+            <small class="text-muted" style="font-size: 14px;">PDFs &amp; Leaflets</small>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="card border-0 shadow-xs rounded-4 p-3 bg-white text-center">
+            <span class="text-muted small text-uppercase font-semibold" style="font-size: 14px;">Campus Gallery</span>
+            <div class="font-display fw-extrabold text-primary fs-5 mt-1"><?php echo $stats['gallery']; ?></div>
+            <small class="text-muted" style="font-size: 14px;">Official Photos</small>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="card border-0 shadow-xs rounded-4 p-3 bg-white text-center">
+            <span class="text-muted small text-uppercase font-semibold" style="font-size: 14px;">Contact Inquiries</span>
+            <div class="font-display fw-extrabold text-warning fs-5 mt-1"><?php echo $stats['contacts']; ?></div>
+            <small class="text-muted" style="font-size: 14px;">Unread Messages</small>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-2">
+        <div class="card border-0 shadow-xs rounded-4 p-3 bg-white text-center">
+            <span class="text-muted small text-uppercase font-semibold" style="font-size: 14px;">Total Visitors</span>
+            <div class="font-display fw-extrabold text-success fs-5 mt-1"><?php echo number_format($stats['visitors']); ?></div>
+            <small class="text-muted" style="font-size: 14px;">Unique IPs</small>
         </div>
     </div>
 </div>
@@ -264,7 +337,7 @@ foreach ($analytics['chatbot_intents'] as $intent) {
         <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white overflow-hidden">
             <div class="card-header bg-white py-3.5 px-4 d-flex justify-content-between align-items-center border-bottom">
                 <h5 class="mb-0 font-display fw-bold text-dark"><i class="fa-solid fa-user-clock text-warning me-2"></i>Pending Admissions Review</h5>
-                <a href="<?php echo APP_URL; ?>/admin/modules/admissions.php" class="btn btn-sm btn-outline-primary rounded-pill px-3 font-semibold" style="font-size: 11px;">View All</a>
+                <a href="<?php echo APP_URL; ?>/admin/modules/admissions.php" class="btn btn-sm btn-outline-primary rounded-pill px-3 font-semibold" style="font-size: 14px;">View All</a>
             </div>
             <div class="card-body p-0">
                 <?php if (empty($pending_admissions_list)): ?>
@@ -291,7 +364,7 @@ foreach ($analytics['chatbot_intents'] as $intent) {
                                         <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill"><?php echo htmlspecialchars($app['course_code']); ?></span></td>
                                         <td class="text-center font-semibold"><?php echo $app['percentage_12th']; ?>%</td>
                                         <td class="text-end pe-4">
-                                            <a href="<?php echo APP_URL; ?>/admin/modules/admissions.php?action=view&id=<?php echo $app['id']; ?>" class="btn btn-sm btn-primary rounded-pill py-1 px-3 font-semibold" style="font-size: 11px;">Review</a>
+                                            <a href="<?php echo APP_URL; ?>/admin/modules/admissions.php?action=view&id=<?php echo $app['id']; ?>" class="btn btn-sm btn-primary rounded-pill py-1 px-3 font-semibold" style="font-size: 14px;">Review</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -306,7 +379,7 @@ foreach ($analytics['chatbot_intents'] as $intent) {
         <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
             <div class="card-header bg-white py-3.5 px-4 border-bottom d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 font-display fw-bold text-dark"><i class="fa-solid fa-chart-bar text-warning me-2"></i>Live Visitor Pulse</h5>
-                <a href="<?php echo APP_URL; ?>/admin/modules/visitors.php" class="btn btn-sm btn-outline-secondary rounded-pill px-3 font-semibold" style="font-size: 11px;">Full Logs</a>
+                <a href="<?php echo APP_URL; ?>/admin/modules/visitors.php" class="btn btn-sm btn-outline-secondary rounded-pill px-3 font-semibold" style="font-size: 14px;">Full Logs</a>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -392,7 +465,7 @@ foreach ($analytics['chatbot_intents'] as $intent) {
                                     <?php echo statusBadge($blog['status']); ?>
                                 </div>
                                 <h6 class="font-display fw-bold mb-1 text-dark"><?php echo htmlspecialchars($blog['title']); ?></h6>
-                                <a href="<?php echo APP_URL; ?>/admin/modules/blogs.php?action=review&id=<?php echo $blog['id']; ?>" class="btn btn-sm btn-outline-warning rounded-pill py-0.5 px-2.5 mt-1 font-semibold" style="font-size: 11px;">Review Content</a>
+                                <a href="<?php echo APP_URL; ?>/admin/modules/blogs.php?action=review&id=<?php echo $blog['id']; ?>" class="btn btn-sm btn-outline-warning rounded-pill py-0.5 px-2.5 mt-1 font-semibold" style="font-size: 14px;">Review Content</a>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -420,7 +493,7 @@ foreach ($analytics['chatbot_intents'] as $intent) {
                                     <?php echo statusBadge($news['status']); ?>
                                 </div>
                                 <h6 class="font-display fw-bold mb-1 text-dark"><?php echo htmlspecialchars($news['title']); ?></h6>
-                                <a href="<?php echo APP_URL; ?>/admin/modules/news.php?action=review&id=<?php echo $news['id']; ?>" class="btn btn-sm btn-outline-warning rounded-pill py-0.5 px-2.5 mt-1 font-semibold" style="font-size: 11px;">Review Article</a>
+                                <a href="<?php echo APP_URL; ?>/admin/modules/news.php?action=review&id=<?php echo $news['id']; ?>" class="btn btn-sm btn-outline-warning rounded-pill py-0.5 px-2.5 mt-1 font-semibold" style="font-size: 14px;">Review Article</a>
                             </div>
                         <?php endforeach; ?>
                     </div>

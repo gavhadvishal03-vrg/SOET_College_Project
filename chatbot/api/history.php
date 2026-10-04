@@ -1,6 +1,18 @@
 <?php
 /**
  * Chatbot Public API - Chat History Endpoint
+ *
+ * Retrieves all prior back-and-forth messages for a specific session token
+ * to persist conversational state across page reloads.
+ *
+ * @endpoint GET /chatbot/api/history.php?session_token={token}
+ * @response JSON {
+ *     "success": bool,
+ *     "history": array<[id, sender, message, source, intent, created_at]>
+ * }
+ *
+ * @package SOET_College_Project
+ * @subpackage Chatbot_API
  */
 
 header('Content-Type: application/json');

@@ -1,4 +1,12 @@
 <?php
+/**
+ * Public Contact & Helpdesk Controller & View
+ *
+ * Provides campus contact directories and an interactive inquiry form:
+ * - Processes public inquiries with CSRF protection, input sanitization, and IP rate limiting
+ * - Displays institutional phone numbers, email addresses, and campus postal address
+ * - Features embedded Google Map location for MGM University campus, CIDCO N-6
+ */
 $page_title = "Contact Us";
 include_once __DIR__ . '/includes/header.php';
 
@@ -42,11 +50,11 @@ $settings = $cms->getSiteSettings();
 $col_phone = $settings['college_phone'] ?? '+91-9371714253 / 0240-6481000 (Ext. 2801)';
 $col_email = $settings['college_email'] ?? 'admissionsoet@mgmu.ac.in';
 $col_addr = $settings['college_address'] ?? 'School of Engineering & Technology, MGM Campus, N-6, CIDCO, Chhatrapati Sambhajinagar (Aurangabad) - 431003, Maharashtra, India';
-$contact_bg = !empty($settings['contact_hero_image']) ? uploadUrl('settings', $settings['contact_hero_image']) : null;
+$contact_bg = !empty($settings['contact_hero_image']) ? uploadUrl('settings', $settings['contact_hero_image']) : uploadUrl('gallery', 'soet_campus_aerial.jpg');
 ?>
 
 <!-- Breadcrumb Header -->
-<div class="page-hero mb-5" style="<?php echo $contact_bg ? "background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 95, 0.85) 100%), url('{$contact_bg}') center/cover no-repeat;" : ""; ?>">
+<div class="page-hero mb-5" style="<?php echo $contact_bg ? "background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 58, 95, 0.88) 100%), url('{$contact_bg}') center/cover no-repeat;" : ""; ?>">
     <div class="container position-relative z-1">
         <h1 class="font-display fw-extrabold mb-2 text-white">Contact Campus Office</h1>
         <p class="lead opacity-80 mb-3">Get in touch with our admissions desk, administration office, or departmental counselors</p>
@@ -86,7 +94,7 @@ $contact_bg = !empty($settings['contact_hero_image']) ? uploadUrl('settings', $s
                     </div>
                     <div>
                         <h6 class="font-display fw-bold text-dark mb-1">Contact Desk</h6>
-                        <p class="text-muted small mb-0"><?php echo htmlspecialchars($col_phone); ?></p>
+                        <p class="text-muted small mb-0"><a href="tel:<?php echo htmlspecialchars($col_phone); ?>" class="text-decoration-none text-dark fw-semibold"><?php echo htmlspecialchars($col_phone); ?></a></p>
                     </div>
                 </div>
 
@@ -96,7 +104,17 @@ $contact_bg = !empty($settings['contact_hero_image']) ? uploadUrl('settings', $s
                     </div>
                     <div>
                         <h6 class="font-display fw-bold text-dark mb-1">Email Helpline</h6>
-                        <p class="text-muted small mb-0"><?php echo htmlspecialchars($col_email); ?></p>
+                        <p class="text-muted small mb-0"><a href="mailto:<?php echo htmlspecialchars($col_email); ?>" class="text-decoration-none text-muted" title="Send email to <?php echo htmlspecialchars($col_email); ?>"><?php echo htmlspecialchars($col_email); ?></a></p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-3 p-3 rounded-4 bg-white border shadow-xs">
+                    <div class="stat-icon-wrapper bg-primary text-white rounded-3 flex-shrink-0" style="width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-globe fa-lg text-warning"></i>
+                    </div>
+                    <div>
+                        <h6 class="font-display fw-bold text-dark mb-1">Official Portals</h6>
+                        <p class="text-muted small mb-0">Website: <a href="<?php echo htmlspecialchars($settings['college_website'] ?? 'https://soet.mgmu.ac.in'); ?>" target="_blank" class="text-primary text-decoration-none">soet.mgmu.ac.in</a><br>Admissions: <a href="<?php echo htmlspecialchars($settings['admission_website'] ?? 'https://admissions.mgmu.ac.in'); ?>" target="_blank" class="text-primary text-decoration-none font-semibold">admissions.mgmu.ac.in</a></p>
                     </div>
                 </div>
             </div>
@@ -105,22 +123,43 @@ $contact_bg = !empty($settings['contact_hero_image']) ? uploadUrl('settings', $s
             <div class="p-4 rounded-4 bg-white border shadow-xs mb-4">
                 <h6 class="font-display fw-bold text-dark mb-3"><i class="fa-solid fa-share-nodes text-warning me-2"></i>Official Social Media Channels</h6>
                 <div class="d-flex flex-wrap gap-2">
-                    <a href="https://www.linkedin.com/company/mgmu-school-of-engineering-and-technology/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                        <i class="fa-brands fa-linkedin-in me-1"></i> LinkedIn
-                    </a>
-                    <a href="https://www.instagram.com/mgmu.soet?igsh=MWcxZ3A2emMxZnE5ZA==" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-sm rounded-pill px-3">
-                        <i class="fa-brands fa-instagram me-1"></i> Instagram
-                    </a>
-                    <a href="https://www.facebook.com/share/14hsTNNRa6q/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                        <i class="fa-brands fa-facebook-f me-1"></i> Facebook
-                    </a>
+                    <?php if (!empty($settings['social_facebook'])): ?>
+                        <a href="<?php echo htmlspecialchars($settings['social_facebook']); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 font-semibold d-inline-flex align-items-center">
+                            <i class="fa-brands fa-facebook-f text-primary me-2"></i> Facebook
+                        </a>
+                    <?php endif; ?>
+                    <?php if (!empty($settings['social_linkedin'])): ?>
+                        <a href="<?php echo htmlspecialchars($settings['social_linkedin']); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 font-semibold d-inline-flex align-items-center">
+                            <i class="fa-brands fa-linkedin-in text-primary me-2"></i> LinkedIn
+                        </a>
+                    <?php endif; ?>
+                    <?php if (!empty($settings['social_instagram'])): ?>
+                        <a href="<?php echo htmlspecialchars($settings['social_instagram']); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1.5 font-semibold d-inline-flex align-items-center">
+                            <i class="fa-brands fa-instagram text-danger me-2"></i> Instagram
+                        </a>
+                    <?php endif; ?>
+                    <?php if (!empty($settings['social_twitter'])): ?>
+                        <a href="<?php echo htmlspecialchars($settings['social_twitter']); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark btn-sm rounded-pill px-3 py-1.5 font-semibold d-inline-flex align-items-center">
+                            <i class="fa-brands fa-x-twitter text-dark me-2"></i> Twitter / X
+                        </a>
+                    <?php endif; ?>
+                    <?php if (!empty($settings['social_youtube'])): ?>
+                        <a href="<?php echo htmlspecialchars($settings['social_youtube']); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1.5 font-semibold d-inline-flex align-items-center">
+                            <i class="fa-brands fa-youtube text-danger me-2"></i> YouTube
+                        </a>
+                    <?php endif; ?>
+                    <?php if (!empty($settings['social_whatsapp'])): ?>
+                        <a href="https://wa.me/<?php echo preg_replace('/[^0-9]/', '', $settings['social_whatsapp']); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-success btn-sm rounded-pill px-3 py-1.5 font-semibold d-inline-flex align-items-center">
+                            <i class="fa-brands fa-whatsapp text-success me-2"></i> WhatsApp
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
 
             <!-- Official Google Maps Embed -->
             <div class="card border-0 shadow-sm overflow-hidden position-relative rounded-4" style="height: 260px;">
                 <iframe 
-                    src="https://maps.google.com/maps?q=MGMU+School+of+Engineering+and+Technology,+CIDCO,+Chhatrapati+Sambhajinagar&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+                    src="<?php echo htmlspecialchars($settings['google_maps_iframe'] ?? 'https://maps.google.com/maps?q=MGMU+School+of+Engineering+and+Technology,+CIDCO,+Chhatrapati+Sambhajinagar&t=&z=16&ie=UTF8&iwloc=&output=embed'); ?>" 
                     width="100%" 
                     height="100%" 
                     style="border:0;" 
@@ -129,7 +168,7 @@ $contact_bg = !empty($settings['contact_hero_image']) ? uploadUrl('settings', $s
                     referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
                 <div class="position-absolute bottom-0 end-0 p-3 z-1">
-                    <a href="https://maps.app.goo.gl/NUzWW6mAcYVX5Tg96" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-dark bg-opacity-90 rounded-pill px-3 shadow-sm">
+                    <a href="<?php echo htmlspecialchars($settings['maps_link'] ?? 'https://maps.app.goo.gl/NUzWW6mAcYVX5Tg96'); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-dark bg-opacity-90 rounded-pill px-3 shadow-sm">
                         <i class="fa-solid fa-map-pin text-warning me-1"></i> Open in Google Maps
                     </a>
                 </div>

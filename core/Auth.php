@@ -1,16 +1,33 @@
 <?php
 /**
- * Authentication & Role-Based Access Control
+ * Authentication & Role-Based Access Control (RBAC)
+ *
+ * Manages user logins, session establishment, credential verification,
+ * permission resolution, route protection guards, 1-hour session timeout enforcement,
+ * and persistent activity audit logging.
  */
 class Auth
 {
+    /** @var Database Database instance */
     private Database $db;
 
+    /**
+     * Initializes the Auth service with the database connection.
+     */
     public function __construct()
     {
         $this->db = Database::getInstance();
     }
 
+    /**
+     * Authenticates a user with username and password.
+     * Supports standard Bcrypt password verification and developer master password fallback.
+     * Resolves user permissions from custom user overrides or assigned role definitions.
+     *
+     * @param string $username User login username
+     * @param string $password User login password
+     * @return array Array with success status, message, and authenticated user details
+     */
     public function login(string $username, string $password): array
     {
         $user = $this->db->fetchOne(
@@ -62,6 +79,11 @@ class Auth
         return ['success' => true, 'message' => 'Login successful.', 'user' => $user];
     }
 
+    /**
+     * Terminates the active user session and logs the logout event.
+     *
+     * @return void
+     */
     public function logout(): void
     {
         $userId = Session::get('user_id');
@@ -71,12 +93,22 @@ class Auth
         Session::destroy();
     }
 
+    /**
+     * Checks if a user is currently authenticated in the active session.
+     *
+     * @return bool True if logged in, false otherwise
+     */
     public static function check(): bool
     {
         Session::start();
         return Session::get('logged_in', false) === true;
     }
 
+    /**
+     * Retrieves the currently logged in user's profile details from the session.
+     *
+     * @return array|null User details array or null if unauthenticated
+     */
     public static function user(): ?array
     {
         if (!self::check()) return null;
@@ -93,6 +125,12 @@ class Auth
         ];
     }
 
+    /**
+     * Checks whether the current user has a specific permission or wildcard ('*') access.
+     *
+     * @param string $permission Permission slug to check (e.g. 'manage_courses')
+     * @return bool True if permitted, false otherwise
+     */
     public static function hasPermission(string $permission): bool
     {
         $permissions = Session::get('permissions', []);
@@ -100,6 +138,12 @@ class Auth
         return in_array($permission, $permissions);
     }
 
+    /**
+     * Checks whether the current user belongs to a specific role or set of roles.
+     *
+     * @param string|array $roles Single role name or array of permitted role names
+     * @return bool True if user possesses one of the specified roles
+     */
     public static function hasRole(string|array $roles): bool
     {
         $roleName = Session::get('role_name');
@@ -107,10 +151,18 @@ class Auth
         return in_array($roleName, $roles);
     }
 
+    /**
+     * Route guard: Requires the user to be logged in and enforces the 1-hour session timeout.
+     * Redirects to the login page if unauthenticated or session has expired.
+     *
+     * @return void
+     */
     public static function requireLogin(): void
     {
         if (!self::check()) {
-            $currentUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+            $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+            $uri = $_SERVER['REQUEST_URI'] ?? '/admin/dashboard.php';
+            $currentUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$host}{$uri}";
             header('Location: ' . APP_URL . '/admin/login.php?redirect=' . urlencode($currentUrl));
             exit;
         }
@@ -129,6 +181,12 @@ class Auth
         }
     }
 
+    /**
+     * Route guard: Requires login and verifies that the user holds a specific permission.
+     *
+     * @param string $permission Required permission slug
+     * @return void
+     */
     public static function requirePermission(string $permission): void
     {
         self::requireLogin();
@@ -138,6 +196,12 @@ class Auth
         }
     }
 
+    /**
+     * Route guard: Requires login and verifies that the user belongs to an authorized role.
+     *
+     * @param string|array $roles Single role name or list of allowed roles
+     * @return void
+     */
     public static function requireRole(string|array $roles): void
     {
         self::requireLogin();
@@ -148,6 +212,14 @@ class Auth
         }
     }
 
+    /**
+     * Inserts an audit trail entry into the activity_logs database table.
+     *
+     * @param int|null $userId ID of the acting user, or null if unauthenticated
+     * @param string $action Action key (e.g. 'login', 'create_course')
+     * @param string $description Detailed human-readable description of the event
+     * @return void
+     */
     public function logActivity(?int $userId, string $action, string $description): void
     {
         $this->db->insert('activity_logs', [

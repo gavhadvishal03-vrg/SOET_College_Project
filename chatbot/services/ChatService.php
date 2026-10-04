@@ -1,6 +1,17 @@
 <?php
 /**
  * Master Hybrid Chatbot Orchestrator Service
+ *
+ * Coordinates multi-tier retrieval augmented generation (RAG):
+ * 1. Intent Classification: Categorizes queries into GREETING, DATABASE, WEBSITE, TECHNICAL, GENERAL, or HYBRID.
+ * 2. Live Database Search: Directly queries seat availability, courses, faculty, fees, placements, events.
+ * 3. Knowledge Base & FAQ Search: Scans verified training articles and canonical Q&A pairs.
+ * 4. General Knowledge Engine & OpenAI LLM: Resolves conceptual, technical, or programming questions.
+ * 5. Formatting & Presentation: Renders clean HTML with markdown tables, source citation badges, and contextual follow-up chips.
+ * 6. Audit Logging: Stores transcripts, feedback ratings, and logs unanswered queries.
+ *
+ * @package SOET_College_Project
+ * @subpackage Chatbot_Services
  */
 
 require_once __DIR__ . '/QueryClassifier.php';
@@ -16,6 +27,9 @@ class ChatService
     private DatabaseSearch $dbSearch;
     private OpenAIService $openAI;
 
+    /**
+     * Initializes core database and AI service dependencies.
+     */
     public function __construct()
     {
         $this->db = Database::getInstance();
@@ -24,6 +38,14 @@ class ChatService
         $this->openAI = new OpenAIService();
     }
 
+    /**
+     * Processes a user message and returns the appropriate multi-tier RAG response.
+     *
+     * @param string $message User query text.
+     * @param string $sessionToken Session UUID token for conversation memory.
+     * @param string $language ISO language code ('en', 'hi', 'mr').
+     * @return array Complete response structure with HTML, source badges, and follow-up chips.
+     */
     public function processMessage(string $message, string $sessionToken = '', string $language = 'en'): array
     {
         $cleanMessage = trim($message);
@@ -95,7 +117,11 @@ class ChatService
                 $sourceUrl = $top['source_url'] ?? '';
                 $finalSource = 'DATABASE';
             } else {
-                $finalAnswer = "Currently, 508 engineering seats remain vacant across all programs out of a total intake capacity of 510 seats (2 seats filled). Admissions are currently open.";
+                $cms = new ContentManager();
+                $metrics = $cms->getCourseSeatMetrics();
+                $totalVacant = array_sum(array_column($metrics, 'vacant_seats'));
+                $totalIntake = array_sum(array_column($metrics, 'total_intake'));
+                $finalAnswer = "Currently, {$totalVacant} engineering seats remain vacant across all programs out of a total intake capacity of {$totalIntake} seats. Admissions are officially open.";
                 $finalSource = 'DATABASE';
             }
         } elseif ($category === 'WEBSITE') {
@@ -105,20 +131,40 @@ class ChatService
                 $top = $dbResult['top_result'];
                 $finalAnswer = $top['content'];
                 $sourceUrl = $top['source_url'] ?? '';
-                
+
                 $srcType = $top['source_type'] ?? '';
-                if (in_array($srcType, ['seat', 'course', 'department', 'faculty', 'fee', 'admission', 'event', 'notice', 'placement', 'scholarship'])) {
+                if (in_array($srcType, ['seat', 'course', 'department', 'faculty', 'fee', 'admission', 'event', 'notice', 'placement', 'scholarship', 'seats_database', 'fee_database', 'syllabus_database', 'document', 'facility'])) {
                     $finalSource = 'DATABASE';
-                } elseif (in_array($srcType, ['website', 'about', 'contact', 'page', 'facility'])) {
+                } elseif (in_array($srcType, ['website', 'about', 'contact', 'page'])) {
                     $finalSource = 'WEBSITE';
                 } else {
                     $finalSource = 'TRAINING_KNOWLEDGE';
                 }
             } else {
-                // NO-HALLUCINATION FALLBACK RULE 15: Never fabricate website information
-                $finalAnswer = "That information is not currently available in the website database, content, or knowledge base.";
-                $finalSource = 'WEBSITE';
-                $this->logUnanswered($sessionId, $cleanMessage, $intent, $confidence);
+                // NO-HALLUCINATION FALLBACK: log unanswered + return fallback flag
+                $this->logUnanswered($sessionId, $cleanMessage, $intent, $confidence, $session['session_token'], 'WEBSITE');
+                $formattedHtml = $this->buildFallbackHtml($cleanMessage);
+                $botMsgId = $this->logMessage($sessionId, 'bot', $formattedHtml, 'FALLBACK', $intent, $confidence);
+                $chips = [
+                    ['label' => '📞 Contact Admissions', 'query' => 'What is the SOET admissions office contact?'],
+                    ['label' => '💬 WhatsApp Support', 'query' => 'What is the SOET WhatsApp number?'],
+                    ['label' => '🎓 B.Tech Programs', 'query' => 'What programs are offered at SOET?'],
+                ];
+                return [
+                    'success'         => true,
+                    'status'          => 'fallback',
+                    'is_fallback'     => true,
+                    'session_token'   => $session['session_token'],
+                    'message_id'      => $botMsgId,
+                    'raw_text'        => "Sorry, I couldn't find a reliable answer to your question. Please contact our support team.",
+                    'formatted_html'  => $formattedHtml,
+                    'category'        => $category,
+                    'intent'          => $intent,
+                    'source'          => 'FALLBACK',
+                    'confidence'      => $confidence,
+                    'source_url'      => '',
+                    'suggested_chips' => $chips,
+                ];
             }
         } elseif ($category === 'TECHNICAL') {
             // PRIORITY 4: TECHNICAL QUESTIONS (General AI Knowledge, ChatGPT style, max 2-3 lines, minimal code)
@@ -127,6 +173,10 @@ class ChatService
                 $finalAnswer = $aiRes['response'];
             } else {
                 $finalAnswer = GeneralKnowledgeEngine::resolve($cleanMessage, 'TECHNICAL');
+                // If GKE also fails to find anything meaningful, log as unanswered
+                if (empty(trim(strip_tags($finalAnswer)))) {
+                    $this->logUnanswered($sessionId, $cleanMessage, $intent, $confidence, $session['session_token'], 'TECHNICAL');
+                }
             }
             $finalSource = 'GENERAL_AI';
         } elseif ($category === 'GENERAL') {
@@ -136,6 +186,9 @@ class ChatService
                 $finalAnswer = $aiRes['response'];
             } else {
                 $finalAnswer = GeneralKnowledgeEngine::resolve($cleanMessage, 'GENERAL');
+                if (empty(trim(strip_tags($finalAnswer)))) {
+                    $this->logUnanswered($sessionId, $cleanMessage, $intent, $confidence, $session['session_token'], 'GENERAL');
+                }
             }
             $finalSource = 'GENERAL_AI';
         } elseif ($category === 'HYBRID' || $category === 'MIXED') {
@@ -161,6 +214,57 @@ class ChatService
             }
         }
 
+        // If finalAnswer is empty across any path, trigger fallback
+        if (empty(trim(strip_tags($finalAnswer)))) {
+            $this->logUnanswered($sessionId, $cleanMessage, $intent, $confidence, $session['session_token'], $category);
+            $formattedHtml = $this->buildFallbackHtml($cleanMessage);
+            $botMsgId = $this->logMessage($sessionId, 'bot', $formattedHtml, 'FALLBACK', $intent, $confidence);
+            return [
+                'success'         => true,
+                'status'          => 'fallback',
+                'is_fallback'     => true,
+                'session_token'   => $session['session_token'],
+                'message_id'      => $botMsgId,
+                'raw_text'        => "Sorry, I couldn't find a reliable answer. Please contact our support team.",
+                'formatted_html'  => $formattedHtml,
+                'category'        => $category,
+                'intent'          => $intent,
+                'source'          => 'FALLBACK',
+                'confidence'      => $confidence,
+                'source_url'      => '',
+                'suggested_chips' => [
+                    ['label' => '📞 Contact Admissions', 'query' => 'What is the SOET admissions office contact?'],
+                    ['label' => '💬 WhatsApp Support',    'query' => 'What is the SOET WhatsApp number?'],
+                    ['label' => '🎓 B.Tech Programs',     'query' => 'What programs are offered at SOET?'],
+                ],
+            ];
+        }
+
+        // Universal confidence-based fallback safety net (below 0.15 threshold = unreliable)
+        if ($confidence < 0.15 && $category === 'WEBSITE') {
+            $this->logUnanswered($sessionId, $cleanMessage, $intent, $confidence, $session['session_token'], $category);
+            $formattedHtml = $this->buildFallbackHtml($cleanMessage);
+            $botMsgId = $this->logMessage($sessionId, 'bot', $formattedHtml, 'FALLBACK', $intent, $confidence);
+            return [
+                'success'         => true,
+                'status'          => 'fallback',
+                'is_fallback'     => true,
+                'session_token'   => $session['session_token'],
+                'message_id'      => $botMsgId,
+                'raw_text'        => "Sorry, I couldn't find a reliable answer. Please contact our support team.",
+                'formatted_html'  => $formattedHtml,
+                'category'        => $category,
+                'intent'          => $intent,
+                'source'          => 'FALLBACK',
+                'confidence'      => $confidence,
+                'source_url'      => '',
+                'suggested_chips' => [
+                    ['label' => '📞 Contact Admissions', 'query' => 'What is the SOET admissions office contact?'],
+                    ['label' => '🎓 B.Tech Programs',    'query' => 'What programs are offered at SOET?'],
+                ],
+            ];
+        }
+
         // Format final HTML response (clean, zero internal database queries or model names mentioned)
         $formattedHtml = ResponseFormatter::format($finalAnswer, $finalSource, $sourceUrl);
 
@@ -171,21 +275,50 @@ class ChatService
         $chips = $this->generateFollowUpChips($intent, $cleanMessage, $finalSource);
 
         return [
-            'success' => true,
-            'status' => 'success',
-            'session_token' => $session['session_token'],
-            'message_id' => $botMsgId,
-            'raw_text' => $finalAnswer,
-            'formatted_html' => $formattedHtml,
-            'category' => $category,
-            'intent' => $intent,
-            'source' => $finalSource,
-            'confidence' => $confidence,
-            'source_url' => $sourceUrl,
-            'suggested_chips' => $chips
+            'success'         => true,
+            'status'          => 'success',
+            'is_fallback'     => false,
+            'session_token'   => $session['session_token'],
+            'message_id'      => $botMsgId,
+            'raw_text'        => $finalAnswer,
+            'formatted_html'  => $formattedHtml,
+            'category'        => $category,
+            'intent'          => $intent,
+            'source'          => $finalSource,
+            'confidence'      => $confidence,
+            'source_url'      => $sourceUrl,
+            'suggested_chips' => $chips,
         ];
     }
 
+    /**
+     * Build the standardised fallback HTML shown to the user
+     */
+    private function buildFallbackHtml(string $question): string
+    {
+        return <<<HTML
+<div class="cb-fallback-msg">
+  <div class="cb-fallback-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+  <p class="cb-fallback-text mb-3">
+    Sorry, I couldn't find a reliable answer. Please contact our support team.
+  </p>
+  <div class="cb-fallback-actions">
+    <a href="contact.php" class="cb-fallback-btn cb-fallback-btn-primary" target="_blank">
+      <i class="fa-solid fa-headset me-1"></i> Contact Support
+    </a>
+  </div>
+</div>
+HTML;
+    }
+
+    /**
+     * Generates dynamic contextual follow-up query suggestion chips based on intent.
+     *
+     * @param string $intent Detected user query intent.
+     * @param string $message Original user message.
+     * @param string $source Selected response source.
+     * @return array List of suggestions with label and query strings.
+     */
     public function generateFollowUpChips(string $intent, string $message, string $source): array
     {
         $chips = [];
@@ -269,6 +402,14 @@ class ChatService
         return $chips;
     }
 
+    /**
+     * Stores user feedback rating (positive/negative) and optional comments.
+     *
+     * @param int $messageId Database ID of evaluated bot message.
+     * @param string $rating 'positive' or 'negative'.
+     * @param string $comment Optional feedback remark text.
+     * @return bool Success status.
+     */
     public function recordFeedback(int $messageId, string $rating, string $comment = ''): bool
     {
         $msg = $this->db->fetchOne("SELECT session_id FROM chat_messages WHERE id = ?", [$messageId]);
@@ -284,6 +425,13 @@ class ChatService
         return true;
     }
 
+    /**
+     * Retrieves an existing chat session or creates a new one with a unique token.
+     *
+     * @param string $token Session token.
+     * @param string $language Preferred language.
+     * @return array Session record array.
+     */
     private function getOrCreateSession(string $token, string $language): array
     {
         $userId = Session::get('user_id');
@@ -311,6 +459,17 @@ class ChatService
         return $this->db->fetchOne("SELECT * FROM chat_sessions WHERE session_token = ?", [$newToken]);
     }
 
+    /**
+     * Logs an individual chat message entry into chat_messages table.
+     *
+     * @param int $sessionId Database session ID.
+     * @param string $sender 'user' or 'bot'.
+     * @param string $msg Message content text/HTML.
+     * @param string $source Source tag ('system', 'database', 'openai', etc.).
+     * @param string $intent Classified intent.
+     * @param float $conf Confidence score.
+     * @return int Inserted message row ID.
+     */
     private function logMessage(int $sessionId, string $sender, string $msg, string $source, string $intent, float $conf): int
     {
         return $this->db->insert('chat_messages', [
@@ -323,17 +482,53 @@ class ChatService
         ]);
     }
 
-    private function logUnanswered(int $sessionId, string $question, string $intent, float $conf): void
+    /**
+     * Logs a low-confidence or unanswerable query to unanswered_questions table for administrative review.
+     *
+     * @param int $sessionId Chat session ID.
+     * @param string $question Unresolved user question.
+     * @param string $intent Classified intent.
+     * @param float $conf Confidence score.
+     * @param string $sessionToken Session UUID token.
+     * @param string $sourceCategory Source category classification.
+     * @return void
+     */
+    private function logUnanswered(int $sessionId, string $question, string $intent, float $conf, string $sessionToken = '', string $sourceCategory = 'WEBSITE'): void
     {
+        // Capture full request context
+        $ip       = Security::getClientIP();
+        $ua       = substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 500);
+        $pageUrl  = substr($_SERVER['HTTP_REFERER'] ?? ($_SERVER['HTTP_ORIGIN'] ?? ''), 0, 500);
+
+        // Avoid duplicate pending entries for same question in last 10 mins
+        $existing = $this->db->fetchOne(
+            "SELECT id FROM unanswered_questions WHERE question = ? AND status = 'pending' AND created_at >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)",
+            [$question]
+        );
+        if ($existing) {
+            return; // Skip duplicate
+        }
+
         $this->db->insert('unanswered_questions', [
-            'session_id' => $sessionId,
-            'question' => $question,
-            'category' => strtolower($intent),
-            'confidence' => $conf,
-            'status' => 'pending'
+            'session_id'         => $sessionId,
+            'ip_address'         => $ip,
+            'user_agent'         => $ua,
+            'page_url'           => $pageUrl,
+            'conversation_token' => $sessionToken,
+            'question'           => $question,
+            'category'           => strtolower($intent),
+            'source_category'    => $sourceCategory,
+            'confidence'         => $conf,
+            'status'             => 'pending',
         ]);
     }
 
+    /**
+     * Retrieves all recorded back-and-forth messages in a session for conversational memory.
+     *
+     * @param int $sessionId Database session ID.
+     * @return array List of message associative arrays ordered chronologically.
+     */
     public function getHistory(int $sessionId): array
     {
         return $this->db->fetchAll(

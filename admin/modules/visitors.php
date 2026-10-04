@@ -1,11 +1,23 @@
 <?php
+/**
+ * Visitor Tracking & Traffic Analytics Module (Admin Panel)
+ *
+ * Provides real-time public portal telemetry, IP logging, device breakdown,
+ * page-view counter aggregation, 7-day historical trends, and CSV log exports.
+ *
+ * @package SOET_College_Project
+ * @subpackage Admin_Modules
+ */
+
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requirePermission('view_visitors');
 
 $db = Database::getInstance();
 $visitor_tracker = new Visitor();
 
-// Handle CSV Export
+// -------------------------------------------------------------------------
+// CSV Data Export: Visitor Traffic Logs
+// -------------------------------------------------------------------------
 if (isset($_GET['action']) && $_GET['action'] === 'export_csv') {
     $rows = $db->fetchAll("SELECT ip_address, page_views, last_page, user_agent, visit_date, updated_at FROM visitors ORDER BY updated_at DESC LIMIT 500");
     header('Content-Type: text/csv; charset=utf-8');
@@ -29,7 +41,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'export_csv') {
 $page_title = "Visitor Analytics";
 include_once __DIR__ . '/../includes/header.php';
 
-// Get summary metrics
+// -------------------------------------------------------------------------
+// Retrieve Aggregate Visitor Metrics & Trends
+// -------------------------------------------------------------------------
 $total_visits = $visitor_tracker->getTotalVisitors();
 $today_visits = $visitor_tracker->getTodayVisitors();
 
@@ -39,14 +53,14 @@ $today_page_views = (int)$db->fetchOne("SELECT SUM(page_views) as today_views FR
 // Get weekly history stats
 $weekly_stats = $visitor_tracker->getWeeklyStats();
 
-// Fetch all captured visitor logs
+// Fetch all captured visitor logs (most recent 100 entries)
 $visitor_logs = $db->fetchAll("SELECT * FROM visitors ORDER BY updated_at DESC LIMIT 100");
 ?>
 
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Telemetry &amp; Audit</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Telemetry &amp; Audit</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">Visitor Tracking &amp; Analytics</h2>
         <p class="text-muted small mb-0">Real-time public portal telemetry, IP logging, and traffic breakdown</p>
@@ -66,49 +80,49 @@ $visitor_logs = $db->fetchAll("SELECT * FROM visitors ORDER BY updated_at DESC L
     <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm rounded-4 p-3.5 bg-white h-100">
             <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Unique Visitors</span>
+                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 14px; letter-spacing: 0.5px;">Unique Visitors</span>
                 <div class="stat-icon-sm bg-primary-subtle text-primary rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
                     <i class="fa-solid fa-users"></i>
                 </div>
             </div>
             <h3 class="font-display fw-extrabold text-dark mb-0"><?php echo number_format($total_visits); ?></h3>
-            <div class="text-muted small mt-1" style="font-size: 11px;">All-time tracked visitors</div>
+            <div class="text-muted small mt-1" style="font-size: 14px;">All-time tracked visitors</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm rounded-4 p-3.5 bg-white h-100">
             <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Today Unique</span>
+                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 14px; letter-spacing: 0.5px;">Today Unique</span>
                 <div class="stat-icon-sm bg-success-subtle text-success rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
                     <i class="fa-solid fa-user-clock"></i>
                 </div>
             </div>
             <h3 class="font-display fw-extrabold text-dark mb-0"><?php echo number_format($today_visits); ?></h3>
-            <div class="text-success small mt-1 fw-medium" style="font-size: 11px;"><i class="fa-solid fa-arrow-trend-up me-1"></i>Active today</div>
+            <div class="text-success small mt-1 fw-medium" style="font-size: 14px;"><i class="fa-solid fa-arrow-trend-up me-1"></i>Active today</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm rounded-4 p-3.5 bg-white h-100">
             <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Total Page Views</span>
+                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 14px; letter-spacing: 0.5px;">Total Page Views</span>
                 <div class="stat-icon-sm bg-info-subtle text-info-emphasis rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
                     <i class="fa-solid fa-eye"></i>
                 </div>
             </div>
             <h3 class="font-display fw-extrabold text-dark mb-0"><?php echo number_format($total_page_views); ?></h3>
-            <div class="text-muted small mt-1" style="font-size: 11px;">Aggregated impressions</div>
+            <div class="text-muted small mt-1" style="font-size: 14px;">Aggregated impressions</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="card border-0 shadow-sm rounded-4 p-3.5 bg-white h-100">
             <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 11px; letter-spacing: 0.5px;">Today Impressions</span>
+                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 14px; letter-spacing: 0.5px;">Today Impressions</span>
                 <div class="stat-icon-sm bg-warning-subtle text-warning-emphasis rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
                     <i class="fa-solid fa-chart-simple"></i>
                 </div>
             </div>
             <h3 class="font-display fw-extrabold text-dark mb-0"><?php echo number_format($today_page_views); ?></h3>
-            <div class="text-muted small mt-1" style="font-size: 11px;">Views since midnight</div>
+            <div class="text-muted small mt-1" style="font-size: 14px;">Views since midnight</div>
         </div>
     </div>
 </div>
@@ -144,7 +158,7 @@ $visitor_logs = $db->fetchAll("SELECT * FROM visitors ORDER BY updated_at DESC L
     <div class="col-lg-8">
         <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden h-100">
             <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom">
-                <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-list-check text-primary me-2"></i>Visitor Activity Log <span class="badge bg-light text-muted border rounded-pill ms-1" style="font-size: 11px;">Recent 100</span></h5>
+                <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-list-check text-primary me-2"></i>Visitor Activity Log <span class="badge bg-light text-muted border rounded-pill ms-1" style="font-size: 14px;">Recent 100</span></h5>
                 <div class="input-group input-group-sm" style="max-width: 240px;">
                     <span class="input-group-text bg-light border-end-0 rounded-start-pill text-muted ps-3"><i class="fa-solid fa-magnifying-glass"></i></span>
                     <input type="text" id="visitorSearchInput" class="form-control bg-light border-start-0 rounded-end-pill pe-3" placeholder="Search IP, page...">

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" width="240" height="60">
+  <rect width="240" height="60" fill="transparent"/>
+  <circle cx="25" cy="30" r="16" fill="#d97706"/>
+  <path d="M17 30 Q25 20 33 30 Q25 40 17 30 Z" fill="#ffffff"/>
+  <text x="48" y="38" font-family="'Times New Roman', serif" font-weight="900" font-size="19" fill="#b45309" letter-spacing="1.2">LearnFlu</text>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" width="240" height="60">
+  <rect width="240" height="60" fill="transparent"/>
+  <polygon points="26,14 38,22 38,38 26,46 14,38 14,22" fill="#2563eb"/>
+  <text x="26" y="36" font-family="'Times New Roman', serif" font-weight="900" font-size="18" fill="#ffffff" text-anchor="middle">P</text>
+  <text x="48" y="38" font-family="'Times New Roman', serif" font-weight="900" font-size="19" fill="#1e40af" letter-spacing="1.5">PERSEVEX</text>
+</svg>

@@ -1,4 +1,18 @@
 <?php
+/**
+ * User Allocations & Role-Based Access Control (RBAC) Module (Admin Panel)
+ *
+ * Exclusively restricted to Super Admins. Manages:
+ * 1. Administrator and staff user accounts.
+ * 2. Role assignment (Super Admin, Admin, Editor, Faculty, Contributor).
+ * 3. Granular module permission allocation overrides (stored as JSON arrays in DB).
+ * 4. Department affiliations for faculty and department heads.
+ * 5. Secure Bcrypt password management and CSV user audit exports.
+ *
+ * @package SOET_College_Project
+ * @subpackage Admin_Modules
+ */
+
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requireLogin();
 
@@ -12,7 +26,9 @@ $db = Database::getInstance();
 $roles = $db->fetchAll("SELECT * FROM roles ORDER BY id");
 $depts = $db->fetchAll("SELECT * FROM departments ORDER BY name");
 
-// Master Admin Module Map for RBAC Allocation
+// -------------------------------------------------------------------------
+// Master Admin Module Permission Mapping for Granular RBAC
+// -------------------------------------------------------------------------
 $masterModuleMap = [
     'manage_news' => ['name' => 'News Portal & Review', 'icon' => 'fa-solid fa-newspaper', 'desc' => 'Review, publish, return or delete news articles'],
     'manage_blogs' => ['name' => 'Blog Posts & Review', 'icon' => 'fa-solid fa-pen-nib', 'desc' => 'Review, publish, return or delete blog posts'],
@@ -34,7 +50,9 @@ $masterModuleMap = [
 $action = isset($_GET['action']) ? $_GET['action'] : 'list';
 $edit_user = null;
 
-// Handle CSV Export
+// -------------------------------------------------------------------------
+// CSV Data Export: System Users Audit
+// -------------------------------------------------------------------------
 if ($action === 'export_csv') {
     $rows = $db->fetchAll(
         "SELECT u.full_name, u.username, u.email, r.name as role_name, d.name as department_name, u.is_active, u.last_login, u.created_at 
@@ -66,11 +84,14 @@ if ($action === 'export_csv') {
 $page_title = "User Allocations & RBAC Manager";
 include_once __DIR__ . '/../includes/header.php';
 
+// Fetch user for edit form
 if ($action === 'edit' && isset($_GET['id'])) {
     $edit_user = $db->fetchOne("SELECT * FROM users WHERE id = ?", [(int)$_GET['id']]);
 }
 
-// Handle Add/Edit Form submission
+// -------------------------------------------------------------------------
+// POST: Create or Update System User Account & Permissions
+// -------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_user'])) {
     $csrf = $_POST[CSRF_TOKEN_NAME] ?? '';
     $user_id = isset($_POST['user_id']) ? (int)$_POST['user_id'] : null;
@@ -140,7 +161,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_user'])) {
     }
 }
 
-// Handle Delete User
+// -------------------------------------------------------------------------
+// GET: Delete User Account (Self-Deletion Guarded)
+// -------------------------------------------------------------------------
 if ($action === 'delete' && isset($_GET['id'])) {
     $target_id = (int)$_GET['id'];
     if ($target_id === (int)Session::get('user_id')) {
@@ -152,7 +175,9 @@ if ($action === 'delete' && isset($_GET['id'])) {
     redirect('users.php');
 }
 
-// Fetch all users
+// -------------------------------------------------------------------------
+// Fetch All Users with Roles and Departments
+// -------------------------------------------------------------------------
 $users = $db->fetchAll(
     "SELECT u.*, u.permissions as user_permissions, r.name as role_name, r.permissions as role_permissions, d.name as department_name 
      FROM users u 
@@ -165,7 +190,7 @@ $users = $db->fetchAll(
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Access Governance</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Access Governance</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">User Allocations &amp; RBAC</h2>
         <p class="text-muted small mb-0">Manage staff accounts, department assignments, and fine-grained module access controls</p>
@@ -191,7 +216,7 @@ $users = $db->fetchAll(
                 <div class="stat-icon-sm bg-primary-subtle text-primary rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
-                <h5 class="fw-bold mb-0 text-dark">System Accounts <span class="badge bg-secondary-subtle text-secondary rounded-pill ms-1" style="font-size: 12px;"><?php echo count($users); ?></span></h5>
+                <h5 class="fw-bold mb-0 text-dark">System Accounts <span class="badge bg-secondary-subtle text-secondary rounded-pill ms-1" style="font-size: 14px;"><?php echo count($users); ?></span></h5>
             </div>
             <div class="input-group input-group-sm" style="max-width: 280px;">
                 <span class="input-group-text bg-light border-end-0 rounded-start-pill text-muted ps-3"><i class="fa-solid fa-magnifying-glass"></i></span>
@@ -361,7 +386,7 @@ $users = $db->fetchAll(
                                                         <i class="<?php echo $modInfo['icon']; ?> text-primary me-1"></i> <?php echo $modInfo['name']; ?>
                                                     </label>
                                                 </div>
-                                                <small class="text-muted d-block mt-1 ps-4" style="font-size: 11px; line-height: 1.4;"><?php echo $modInfo['desc']; ?></small>
+                                                <small class="text-muted d-block mt-1 ps-4" style="font-size: 14px; line-height: 1.4;"><?php echo $modInfo['desc']; ?></small>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>

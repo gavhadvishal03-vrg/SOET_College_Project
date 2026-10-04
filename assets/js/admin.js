@@ -1,4 +1,13 @@
-// SOET Admin Portal — Core Interactions JS
+/**
+ * SOET Admin Portal — Core Interactions Script
+ *
+ * Manages administrative dashboard UI behaviors:
+ * - Persistent sidebar collapse/expand toggle via localStorage
+ * - Automatic auto-dismiss timer for flash alert banners (5s)
+ * - Safe confirmation prompts on destructive delete operations (.btn-delete-confirm)
+ * - Real-time broken image detection and context-aware fallback placeholder assignment
+ */
+
 document.addEventListener('DOMContentLoaded', function () {
     // Sidebar collapse toggle handler
     const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
@@ -33,5 +42,33 @@ document.addEventListener('DOMContentLoaded', function () {
                 e.preventDefault();
             }
         });
+    });
+
+    // Admin Image Auto-Fallback & Error Handling
+    function handleAdminImgError(img) {
+        if (img.dataset.fallbackApplied) return;
+        img.dataset.fallbackApplied = "true";
+        const src = (img.getAttribute('src') || '').toLowerCase();
+        const alt = (img.getAttribute('alt') || '').toLowerCase();
+        const className = (img.className || '').toLowerCase();
+
+        const appUrl = (typeof window.APP_URL !== 'undefined') ? window.APP_URL : (window.location.origin + '/project');
+
+        if (src.includes('faculty') || alt.includes('faculty') || alt.includes('director') || alt.includes('student') || className.includes('rounded-circle')) {
+            img.src = appUrl + '/assets/images/default_avatar.svg';
+        } else if (src.includes('dept') || alt.includes('department') || alt.includes('building')) {
+            img.src = appUrl + '/assets/images/default_building.svg';
+        } else {
+            img.src = appUrl + '/assets/images/default_banner.svg';
+        }
+    }
+
+    document.querySelectorAll('img').forEach(function(img) {
+        img.addEventListener('error', function() {
+            handleAdminImgError(this);
+        });
+        if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) {
+            handleAdminImgError(img);
+        }
     });
 });

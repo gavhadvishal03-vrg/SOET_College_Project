@@ -1,4 +1,15 @@
 <?php
+/**
+ * System Activity & Security Audit Logs Viewer Module
+ *
+ * Provides a read-only searchable audit trail for administrators:
+ * - Records logins, logouts, administrative CRUD actions, and IP addresses
+ * - Filter by action category (e.g. login, create_course, update_status)
+ * - Keyword search across description, IP address, username, and full name
+ * - Paginated tabular log stream
+ *
+ * Required Permission: 'manage_users'
+ */
 $page_title = "Activity & Security Audit Logs";
 include_once __DIR__ . '/../includes/header.php';
 
@@ -42,7 +53,7 @@ $logs = $cms->getActivityLogs($perPage, $offset, $actionFilter ?: null, $searchQ
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Security &amp; Compliance</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Security &amp; Compliance</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">Security &amp; Audit Trail</h2>
         <p class="text-muted small mb-0">Monitor authentication attempts, administrative operations, and user activity in real-time.</p>

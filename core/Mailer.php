@@ -1,12 +1,23 @@
 <?php
 /**
  * Simple Email Notification Service
+ *
+ * Provides transactional HTML email delivery for editorial decisions
+ * (approvals, rejections, reviews) on submitted blogs, news, and contact forms.
  */
-
 class Mailer
 {
     /**
-     * Send review notification email for News, Blogs, or Contact Submissions
+     * Dispatches a formatted HTML review notification email to a contributor or student.
+     * Generates a branded template with color-coded status badges and editorial remarks.
+     *
+     * @param string $toEmail Recipient email address
+     * @param string $recipientName Recipient full name
+     * @param string $itemType Type of submission (e.g. 'news', 'blog', 'admission')
+     * @param string $itemTitle Title or subject of the submitted item
+     * @param string $decision Review status/decision (e.g. 'published', 'rejected', 'under_review')
+     * @param string $remarks Optional editorial comments or explanation from the reviewer
+     * @return bool True if email was successfully accepted for delivery, false otherwise
      */
     public static function sendReviewNotification(string $toEmail, string $recipientName, string $itemType, string $itemTitle, string $decision, string $remarks = ''): bool
     {
@@ -36,12 +47,12 @@ class Mailer
                 .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
                 .header { background-color: #0d233a; padding: 25px; text-align: center; color: #ffffff; }
                 .header h2 { margin: 0; font-size: 22px; font-weight: 700; color: #ffc107; }
-                .header p { margin: 5px 0 0 0; opacity: 0.8; font-size: 13px; }
+                .header p { margin: 5px 0 0 0; opacity: 0.8; font-size: 14px; }
                 .content { padding: 30px; }
                 .status-badge { display: inline-block; padding: 8px 16px; background-color: {$statusColor}; color: #ffffff; font-weight: bold; border-radius: 20px; font-size: 14px; text-transform: uppercase; margin-bottom: 20px; }
                 .details-box { background-color: #f8f9fa; border-left: 4px solid {$statusColor}; padding: 15px; border-radius: 4px; margin: 20px 0; }
                 .remarks-box { background-color: #fff3cd; border: 1px solid #ffe69c; padding: 15px; border-radius: 6px; margin: 15px 0; color: #664d03; }
-                .footer { background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; }
+                .footer { background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 14px; color: #64748b; border-top: 1px solid #e2e8f0; }
                 .footer a { color: #0d6efd; text-decoration: none; }
             </style>
         </head>
@@ -90,7 +101,12 @@ class Mailer
     }
 
     /**
-     * Native Mail Dispatcher
+     * Sends an email using PHP's native mail() function with proper MIME headers.
+     *
+     * @param string $toEmail Target recipient email
+     * @param string $subject Email subject line
+     * @param string $htmlBody Full HTML message body
+     * @return bool True if mail was accepted for delivery
      */
     public static function dispatchEmail(string $toEmail, string $subject, string $htmlBody): bool
     {

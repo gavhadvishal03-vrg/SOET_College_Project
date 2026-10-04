@@ -1,4 +1,12 @@
 <?php
+/**
+ * Public Blog Article Submission Controller & View
+ *
+ * Allows students, faculty, and research scholars to submit blog articles for editorial review:
+ * - Validates author contact information, article body, and cover image upload (MIME verified)
+ * - Assigns status 'submitted' to initiate the editorial review pipeline (Submitted -> Under Review -> Published)
+ * - Generates unique URL slugs and applies rate limiting to prevent spam submissions
+ */
 require_once __DIR__ . '/core/bootstrap.php';
 
 $cms = new ContentManager();
@@ -113,15 +121,15 @@ include_once __DIR__ . '/includes/header.php';
                 <div class="d-flex flex-column gap-3 text-start small">
                     <div class="p-2.5 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10">
                         <strong class="text-warning d-block mb-0.5">1. Write & Upload</strong>
-                        <span class="text-white opacity-75" style="font-size: 11px;">Author writes article and uploads cover media.</span>
+                        <span class="text-white opacity-75" style="font-size: 14px;">Author writes article and uploads cover media.</span>
                     </div>
                     <div class="p-2.5 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10">
                         <strong class="text-warning d-block mb-0.5">2. Editorial Review</strong>
-                        <span class="text-white opacity-75" style="font-size: 11px;">Department coordinators verify technical accuracy.</span>
+                        <span class="text-white opacity-75" style="font-size: 14px;">Department coordinators verify technical accuracy.</span>
                     </div>
                     <div class="p-2.5 rounded-3 bg-white bg-opacity-10 border border-white border-opacity-10">
                         <strong class="text-warning d-block mb-0.5">3. Live Publication</strong>
-                        <span class="text-white opacity-75" style="font-size: 11px;">Approved article appears on the portal with author credit.</span>
+                        <span class="text-white opacity-75" style="font-size: 14px;">Approved article appears on the portal with author credit.</span>
                     </div>
                 </div>
             </div>

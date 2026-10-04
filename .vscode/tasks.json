@@ -4,7 +4,7 @@
     {
       "label": "Start SOET College Web Server & CampusAI",
       "type": "shell",
-      "command": "${workspaceFolder}/serve.bat",
+      "command": "${workspaceFolder}/run_server.bat",
       "isBackground": true,
       "problemMatcher": [],
       "group": {

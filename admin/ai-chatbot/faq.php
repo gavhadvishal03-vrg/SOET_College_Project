@@ -1,4 +1,15 @@
 <?php
+/**
+ * Chatbot Frequently Asked Questions (FAQ) Manager (Admin Panel)
+ *
+ * Manages verified, canonical Q&A pairs queried directly by CampusAI's
+ * database retriever engine and displayed on public portal FAQ widgets.
+ * Supports categorization, search keywords, status toggling, and CSV exports.
+ *
+ * @package SOET_College_Project
+ * @subpackage Admin_AI_Chatbot
+ */
+
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requirePermission('manage_chatbot_kb');
 
@@ -6,7 +17,9 @@ $db = Database::getInstance();
 $action = $_GET['action'] ?? 'list';
 $editItem = null;
 
-// Handle CSV Export
+// -------------------------------------------------------------------------
+// CSV Data Export: FAQs
+// -------------------------------------------------------------------------
 if ($action === 'export_csv') {
     $rows = $db->fetchAll("SELECT question, answer, category, keywords, status, created_at FROM faq ORDER BY id DESC");
     header('Content-Type: text/csv; charset=utf-8');
@@ -30,11 +43,14 @@ if ($action === 'export_csv') {
 $page_title = "Chatbot FAQ Manager";
 include_once __DIR__ . '/../../admin/includes/header.php';
 
+// Fetch single FAQ item for editing
 if ($action === 'edit' && isset($_GET['id'])) {
     $editItem = $db->fetchOne("SELECT * FROM faq WHERE id = ?", [(int)$_GET['id']]);
 }
 
-// Handle Save FAQ
+// -------------------------------------------------------------------------
+// POST: Create or Update FAQ Item
+// -------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_faq'])) {
     $csrf = $_POST[CSRF_TOKEN_NAME] ?? '';
     $id = isset($_POST['id']) ? (int)$_POST['id'] : null;
@@ -50,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_faq'])) {
         setFlash('danger', 'Question and answer are required.');
     } else {
         if ($id) {
+            // Update existing FAQ
             $db->update('faq', [
                 'question' => $question,
                 'answer' => $answer,
@@ -59,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_faq'])) {
             ], 'id = ?', [$id]);
             setFlash('success', 'FAQ entry updated.');
         } else {
+            // Insert new FAQ
             $db->insert('faq', [
                 'question' => $question,
                 'answer' => $answer,
@@ -72,7 +90,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_faq'])) {
     }
 }
 
-// Handle Delete
+// -------------------------------------------------------------------------
+// GET: Delete FAQ Item
+// -------------------------------------------------------------------------
 if ($action === 'delete' && isset($_GET['id'])) {
     $db->delete('faq', 'id = ?', [(int)$_GET['id']]);
     setFlash('success', 'FAQ entry deleted.');
@@ -86,7 +106,7 @@ $faqs = $db->fetchAll("SELECT * FROM faq ORDER BY id DESC");
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Instant FAQ Engine</span>
+            <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Instant FAQ Engine</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">Frequently Asked Questions (FAQ)</h2>
         <p class="text-muted small mb-0">Manage question-and-answer pairs returned by 🤖 CampusAI and displayed on the public portal</p>

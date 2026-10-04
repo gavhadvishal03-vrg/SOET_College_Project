@@ -1,3 +1,11 @@
+<?php
+/**
+ * Admin Panel Footer & Scripts Layout
+ *
+ * Closes the administrative DOM layout containers and loads Bootstrap 5 Bundle JS
+ * along with the custom admin panel interactive behavior script (admin.js).
+ */
+?>
         </main>
     </div>
 </div>

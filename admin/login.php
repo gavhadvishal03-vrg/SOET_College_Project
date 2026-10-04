@@ -1,7 +1,16 @@
 <?php
+/**
+ * Administrator & Faculty Portal Login Controller & View
+ *
+ * Provides secure access control to the Admin Panel:
+ * - CSRF token verification on POST requests
+ * - Credential authentication through Auth service (Bcrypt verification + RBAC permission loading)
+ * - Role-sensitive post-login redirection (Students -> Submission Portal, Staff -> Admin Dashboard)
+ * - Login attempt audit logging and error messaging
+ */
 require_once __DIR__ . '/../core/bootstrap.php';
 
-// Redirect if already logged in
+// Redirect if already authenticated
 if (Auth::check()) {
     redirect(APP_URL . '/admin/dashboard.php');
 }
@@ -48,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <!-- Custom style overrides -->
     <link href="<?php echo APP_URL; ?>/assets/css/style.css" rel="stylesheet">
     <style>
@@ -59,7 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             align-items: center;
             justify-content: center;
             padding: 2rem 1rem;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Times New Roman', Times, 'Liberation Serif', Georgia, serif !important;
+            font-size: 16px;
         }
         .login-card {
             max-width: 440px;
@@ -84,11 +94,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container d-flex justify-content-center">
     <div class="login-card shadow-2xl">
         <div class="login-header-band text-white">
-            <div class="d-inline-flex align-items-center justify-content-center bg-white rounded-4 border border-warning shadow-md mb-3 p-2" style="width: 76px; height: 76px;">
-                <img src="<?php echo APP_URL; ?>/assets/images/logo.svg" alt="MGMU" class="img-fluid">
+            <div class="d-inline-flex align-items-center justify-content-center brand-logo-frame mb-3 p-2" style="width: 80px; height: 80px;">
+                <img src="<?php echo APP_URL; ?>/assets/images/logo.svg" alt="MGMU Logo" class="img-fluid" style="max-height: 64px;">
             </div>
-            <h3 class="font-display fw-extrabold mb-1 text-white"><span class="text-warning">SOET</span> Admin Workspace</h3>
-            <p class="small text-white opacity-75 mb-0">Enter your administrative credentials to continue</p>
+            <h3 class="font-display fw-extrabold mb-1 text-white"><span class="brand-acronym" style="font-size: 28px;">SOET</span> Admin Workspace</h3>
+            <p class="small text-white opacity-75 mb-0">MGM University • Academic Administration Portal</p>
         </div>
 
         <div class="p-4 p-sm-5 pt-4">

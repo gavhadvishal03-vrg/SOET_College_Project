@@ -1,4 +1,15 @@
 <?php
+/**
+ * Chatbot Knowledge Base Manager (Admin Panel)
+ *
+ * Manages verified institutional articles, program summaries, fee details,
+ * and campus policies indexed by CampusAI's full-text and semantic search engines.
+ * Supports categories, search keyword tags, source links, and CSV data exports.
+ *
+ * @package SOET_College_Project
+ * @subpackage Admin_AI_Chatbot
+ */
+
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requirePermission('manage_chatbot_kb');
 
@@ -6,7 +17,9 @@ $db = Database::getInstance();
 $action = $_GET['action'] ?? 'list';
 $editItem = null;
 
-// Handle CSV Export
+// -------------------------------------------------------------------------
+// CSV Data Export: Knowledge Base Articles
+// -------------------------------------------------------------------------
 if ($action === 'export_csv') {
     $rows = $db->fetchAll("SELECT title, category, keywords, content, source_url, status, created_at FROM knowledge_base ORDER BY id DESC");
     header('Content-Type: text/csv; charset=utf-8');
@@ -31,11 +44,14 @@ if ($action === 'export_csv') {
 $page_title = "Chatbot Knowledge Base Manager";
 include_once __DIR__ . '/../../admin/includes/header.php';
 
+// Fetch single article for editing
 if ($action === 'edit' && isset($_GET['id'])) {
     $editItem = $db->fetchOne("SELECT * FROM knowledge_base WHERE id = ?", [(int)$_GET['id']]);
 }
 
-// Handle Save KB Article
+// -------------------------------------------------------------------------
+// POST: Create or Update Knowledge Base Article
+// -------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_kb'])) {
     $csrf = $_POST[CSRF_TOKEN_NAME] ?? '';
     $id = isset($_POST['id']) ? (int)$_POST['id'] : null;
@@ -52,6 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_kb'])) {
         setFlash('danger', 'Title and content are required.');
     } else {
         if ($id) {
+            // Update existing article
             $db->update('knowledge_base', [
                 'title' => $title,
                 'category' => $category,
@@ -62,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_kb'])) {
             ], 'id = ?', [$id]);
             setFlash('success', 'Knowledge Base article updated.');
         } else {
+            // Insert new article
             $db->insert('knowledge_base', [
                 'title' => $title,
                 'category' => $category,
@@ -76,7 +94,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_kb'])) {
     }
 }
 
-// Handle Delete
+// -------------------------------------------------------------------------
+// GET: Delete Knowledge Base Article
+// -------------------------------------------------------------------------
 if ($action === 'delete' && isset($_GET['id'])) {
     $db->delete('knowledge_base', 'id = ?', [(int)$_GET['id']]);
     setFlash('success', 'Knowledge Base article deleted.');
@@ -90,7 +110,7 @@ $articles = $db->fetchAll("SELECT * FROM knowledge_base ORDER BY id DESC");
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">RAG Knowledge Engine</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">RAG Knowledge Engine</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">Knowledge Base Manager</h2>
         <p class="text-muted small mb-0">Manage verified institutional facts, syllabus overviews, and policy answers indexed by CampusAI</p>
@@ -176,7 +196,7 @@ $articles = $db->fetchAll("SELECT * FROM knowledge_base ORDER BY id DESC");
             <div class="stat-icon-sm bg-primary-subtle text-primary rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
                 <i class="fa-solid fa-layer-group"></i>
             </div>
-            <h5 class="fw-bold mb-0 text-dark">Indexed Knowledge Entries <span class="badge bg-secondary-subtle text-secondary rounded-pill ms-1" style="font-size: 11px;"><?php echo count($articles); ?></span></h5>
+            <h5 class="fw-bold mb-0 text-dark">Indexed Knowledge Entries <span class="badge bg-secondary-subtle text-secondary rounded-pill ms-1" style="font-size: 14px;"><?php echo count($articles); ?></span></h5>
         </div>
         <div class="input-group input-group-sm" style="max-width: 260px;">
             <span class="input-group-text bg-light border-end-0 rounded-start-pill text-muted ps-3"><i class="fa-solid fa-magnifying-glass"></i></span>
@@ -209,14 +229,14 @@ $articles = $db->fetchAll("SELECT * FROM knowledge_base ORDER BY id DESC");
                                 <td class="ps-4">
                                     <div class="fw-bold text-dark"><?php echo htmlspecialchars($art['title']); ?></div>
                                     <?php if (!empty($art['keywords'])): ?>
-                                        <div class="text-muted small mt-0.5" style="font-size: 11px;"><i class="fa-solid fa-tags me-1 text-primary"></i><?php echo htmlspecialchars($art['keywords']); ?></div>
+                                        <div class="text-muted small mt-0.5" style="font-size: 14px;"><i class="fa-solid fa-tags me-1 text-primary"></i><?php echo htmlspecialchars($art['keywords']); ?></div>
                                     <?php endif; ?>
                                 </td>
-                                <td><span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-uppercase" style="font-size: 10px; font-weight: 600;"><?php echo htmlspecialchars($art['category']); ?></span></td>
+                                <td><span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 text-uppercase" style="font-size: 14px; font-weight: 600;"><?php echo htmlspecialchars($art['category']); ?></span></td>
                                 <td>
                                     <div class="text-muted small" style="line-height: 1.5;"><?php echo truncate(htmlspecialchars($art['content']), 110); ?></div>
                                     <?php if (!empty($art['source_url'])): ?>
-                                        <div class="mt-0.5"><span class="badge bg-light text-primary border font-monospace" style="font-size: 10px;"><i class="fa-solid fa-link me-1"></i><?php echo htmlspecialchars($art['source_url']); ?></span></div>
+                                        <div class="mt-0.5"><span class="badge bg-light text-primary border font-monospace" style="font-size: 14px;"><i class="fa-solid fa-link me-1"></i><?php echo htmlspecialchars($art['source_url']); ?></span></div>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-center"><?php echo statusBadge($art['status']); ?></td>

@@ -1,4 +1,15 @@
-<!-- 🤖 CampusAI — SOET Intelligent Chatbot UI Component -->
+<!-- 
+  CampusAI — SOET Intelligent Chatbot Frontend Widget
+  
+  Provides the floating interactive AI drawer interface for prospective students and visitors.
+  Features:
+  - Multilingual language selection (English, Hindi, Marathi)
+  - Dark / Light theme switching
+  - Chat history persistence and transcript export
+  - Window maximization / minimization toggle
+  - Speech-to-Text voice recognition input
+  - Dynamic smart autocomplete suggestions
+-->
 <link rel="stylesheet" href="<?php echo APP_URL; ?>/chatbot/assets/css/chatbot.css">
 
 <!-- Floating Trigger Button -->
@@ -17,7 +28,7 @@
             </div>
             <div>
                 <span class="d-block font-bold lh-1 text-white" style="font-size: 15px;">CampusAI</span>
-                <span class="d-block text-white-50" style="font-size: 11px;"><i class="fa-solid fa-circle text-success me-1" style="font-size: 8px;"></i> NextGen AI Assistant</span>
+                <span class="d-block text-white-50" style="font-size: 14px;"><i class="fa-solid fa-circle text-success me-1" style="font-size: 14px;"></i> NextGen AI Assistant</span>
             </div>
         </div>
         <div class="soet-cb-controls">

@@ -1,6 +1,16 @@
 <?php
+/**
+ * Public Portal Navigation Header Component
+ *
+ * Renders the global responsive navigation bar, dynamic multi-level dropdowns
+ * from the navigation_menu table, OpenGraph and Schema.org metadata, and triggers
+ * per-page visitor tracking.
+ *
+ * @var string|null $page_title Custom title passed from parent page
+ */
 require_once __DIR__ . '/../core/bootstrap.php';
-// Track visitor on this page
+
+// Record unique page impression in analytics
 $visitor = new Visitor();
 $current_page = basename($_SERVER['PHP_SELF'] ?? '');
 $visitor->track($current_page);
@@ -62,7 +72,7 @@ $logo_src = !empty($header_settings['site_logo'])
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="<?php echo APP_URL; ?>/assets/css/style.css" rel="stylesheet">
     <script>
@@ -89,11 +99,13 @@ try {
 <!-- Header Navigation -->
 <nav class="navbar navbar-expand-xl navbar-dark sticky-top py-2" style="border-bottom: 2px solid var(--accent); box-shadow: 0 4px 25px rgba(0,0,0,0.2); background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
     <div class="container-fluid px-2 px-md-3 px-xl-4">
-        <a class="navbar-brand d-flex align-items-center me-2 me-xl-3" href="<?php echo APP_URL; ?>/index.php">
-            <img src="<?php echo $logo_src; ?>" alt="SOET Logo" class="me-2" style="height: 44px; object-fit: contain;">
-            <div>
-                <span class="d-block lh-1 text-uppercase" style="font-size: 20px; font-weight: 800; color: var(--accent); letter-spacing: 0.5px; font-family: 'Outfit', sans-serif;">SOET</span>
-                <span class="d-block text-white font-semibold" style="font-size: 10px; font-weight: 700; letter-spacing: 0.5px; opacity: 0.95; font-family: 'Inter', sans-serif; margin-top: 2px;">MGM University</span>
+        <a class="navbar-brand d-flex align-items-center me-2 me-xl-3 brand-highlight-link" href="<?php echo APP_URL; ?>/index.php" title="<?php echo htmlspecialchars($header_settings['college_name'] ?? 'School of Engineering & Technology, MGM University'); ?>">
+            <div class="brand-logo-frame me-2">
+                <img src="<?php echo $logo_src; ?>" alt="MGM University SOET Logo" class="brand-logo-img">
+            </div>
+            <div class="brand-text-block">
+                <span class="d-block lh-1 text-uppercase brand-acronym">SOET</span>
+                <span class="d-block text-white brand-college-name">MGM University</span>
             </div>
         </a>
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -129,9 +141,9 @@ try {
                                                 : APP_URL . '/' . ltrim($subItem['url'], '/');
                                         ?>
                                         <li>
-                                            <a class="dropdown-item py-2 <?php echo ($current_page === $subItem['url']) ? 'active text-warning' : ''; ?>" href="<?php echo $subUrl; ?>" target="<?php echo $subTarget; ?>">
-                                                <?php if (!empty($subItem['icon'])): ?><i class="fa-solid <?php echo htmlspecialchars($subItem['icon']); ?> me-2 text-warning"></i><?php endif; ?>
-                                                <?php echo htmlspecialchars($subItem['title']); ?>
+                                            <a class="dropdown-item py-2 d-flex align-items-center <?php echo ($current_page === $subItem['url']) ? 'active text-warning' : ''; ?>" href="<?php echo $subUrl; ?>" target="<?php echo $subTarget; ?>">
+                                                <i class="fa-solid <?php echo htmlspecialchars(!empty($subItem['icon']) ? $subItem['icon'] : 'fa-circle-chevron-right'); ?> me-2 text-warning flex-shrink-0" style="width: 18px; text-align: center;"></i>
+                                                <span><?php echo htmlspecialchars($subItem['title']); ?></span>
                                             </a>
                                         </li>
                                     <?php endforeach; ?>
@@ -149,7 +161,7 @@ try {
                     <li class="nav-item"><a class="nav-link <?php echo $current_page === 'index.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/index.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo $current_page === 'about.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/about.php">About</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo $current_page === 'departments.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/departments.php">Departments</a></li>
-                    <li class="nav-item"><a class="nav-link <?php echo $current_page === 'courses.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/courses.php">Courses</a></li>
+                    <li class="nav-item"><a class="nav-link <?php echo $current_page === 'courses.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/courses.php">Programs</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo $current_page === 'faculty.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/faculty.php">Faculty</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo $current_page === 'placements.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/placements.php">Placements</a></li>
                     <li class="nav-item"><a class="nav-link <?php echo $current_page === 'gallery.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/gallery.php">Gallery</a></li>

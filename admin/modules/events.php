@@ -1,4 +1,15 @@
 <?php
+/**
+ * Campus Events, Sub-Events & Participant Registration Manager Module
+ *
+ * Full management suite for institutional events and symposiums:
+ * - Event creation, editing, venue, date/time, and banner image handling
+ * - Nested sub-event track scheduler (agenda, venue, sub-event coordinator)
+ * - Participant registration roster management with check-in status
+ * - Registration passes & participant export to CSV
+ *
+ * Required Permission: 'manage_events'
+ */
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requirePermission('manage_events');
 
@@ -45,6 +56,7 @@ $action = isset($_GET['action']) ? $_GET['action'] : 'list';
 $edit_event = null;
 $edit_sub_events = [];
 $view_registrations = null;
+$depts = $db->fetchAll("SELECT * FROM departments WHERE is_active = 1 ORDER BY name");
 
 // Handle sub-event delete action
 if ($action === 'delete_sub_event' && isset($_GET['sub_id'])) {
@@ -84,6 +96,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_event'])) {
     $event_time = $_POST['event_time'];
     $venue = trim($_POST['venue']);
     $organizer = trim($_POST['organizer']);
+    $category = trim($_POST['category'] ?? 'Technical');
+    $rawDept = $_POST['department_id'] ?? '';
+    $department_id = ($rawDept !== '' && $rawDept !== '0') ? (int)$rawDept : null;
+    $is_featured = isset($_POST['is_featured']) ? 1 : 0;
+    $sort_order = (int)($_POST['sort_order'] ?? 0);
     $reg_required = isset($_POST['registration_required']) ? 1 : 0;
     $is_active = isset($_POST['is_active']) ? 1 : 0;
 
@@ -110,35 +127,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_event'])) {
         }
 
         if ($valid_upload) {
+            $eventData = [
+                'title' => $title,
+                'description' => $description,
+                'event_date' => $event_date,
+                'event_time' => $event_time,
+                'venue' => $venue,
+                'organizer' => $organizer,
+                'category' => $category,
+                'department_id' => $department_id,
+                'is_featured' => $is_featured,
+                'sort_order' => $sort_order,
+                'image_path' => $uploaded_image,
+                'registration_required' => $reg_required,
+                'is_active' => $is_active
+            ];
+
             $targetEventId = $event_id;
             if ($event_id) {
                 // Update Main Event
-                $db->update('events', [
-                    'title' => $title,
-                    'description' => $description,
-                    'event_date' => $event_date,
-                    'event_time' => $event_time,
-                    'venue' => $venue,
-                    'organizer' => $organizer,
-                    'image_path' => $uploaded_image,
-                    'registration_required' => $reg_required,
-                    'is_active' => $is_active
-                ], 'id = ?', [$event_id]);
+                $db->update('events', $eventData, 'id = ?', [$event_id]);
                 setFlash('success', 'Event schedule and sub-events updated successfully.');
             } else {
                 // Insert Main Event
-                $targetEventId = $db->insert('events', [
-                    'title' => $title,
-                    'description' => $description,
-                    'event_date' => $event_date,
-                    'event_time' => $event_time,
-                    'venue' => $venue,
-                    'organizer' => $organizer,
-                    'image_path' => $uploaded_image,
-                    'registration_required' => $reg_required,
-                    'is_active' => $is_active,
-                    'created_at' => date('Y-m-d H:i:s')
-                ]);
+                $eventData['created_at'] = date('Y-m-d H:i:s');
+                $targetEventId = $db->insert('events', $eventData);
                 setFlash('success', 'Event schedule created successfully with sub-events.');
             }
 
@@ -204,7 +217,7 @@ $events = $db->fetchAll(
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Campus Activities</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Campus Activities</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">Events & Sub-Events Management</h2>
         <p class="text-muted small mb-0">Manage college conferences, hackathons, cultural festivals, and track competitions</p>
@@ -425,6 +438,36 @@ $events = $db->fetchAll(
                             <input type="file" name="image" class="form-control" accept="image/*">
                         </div>
 
+                        <div class="col-md-4">
+                            <label class="form-label font-semibold">Event Category</label>
+                            <select name="category" class="form-select">
+                                <?php
+                                $categories = ['Technical', 'Cultural', 'Sports', 'Workshop', 'Seminar', 'Hackathon', 'Conference', 'Conclave', 'Guest Lecture'];
+                                $currCat = $edit_event['category'] ?? 'Technical';
+                                foreach ($categories as $cat):
+                                ?>
+                                    <option value="<?php echo $cat; ?>" <?php echo ($currCat === $cat) ? 'selected' : ''; ?>><?php echo $cat; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label font-semibold">Associated Department</label>
+                            <select name="department_id" class="form-select">
+                                <option value="">All SOET (Campus-Wide)</option>
+                                <?php foreach ($depts as $dept): ?>
+                                    <option value="<?php echo $dept['id']; ?>" <?php echo ($edit_event && $edit_event['department_id'] == $dept['id']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($dept['name']); ?> (<?php echo htmlspecialchars($dept['code']); ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label font-semibold">Display Sort Order</label>
+                            <input type="number" name="sort_order" class="form-control" value="<?php echo $edit_event ? (int)($edit_event['sort_order'] ?? 0) : 0; ?>">
+                        </div>
+
                         <div class="col-12">
                             <label class="form-label font-semibold">Event Description *</label>
                             <textarea name="description" class="form-control" rows="4" required placeholder="Write main details about event schedules, overall fest theme, guest speakers..."><?php echo $edit_event ? htmlspecialchars($edit_event['description']) : ''; ?></textarea>
@@ -485,13 +528,19 @@ $events = $db->fetchAll(
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-check form-switch mt-2">
-                                <input class="form-check-input" type="checkbox" name="registration_required" id="isRegCheck" <?php echo (!$edit_event || $edit_event['registration_required']) ? 'checked' : ''; ?>>
-                                <label class="form-check-label font-semibold" for="isRegCheck">Registration Required (Displays register button on website)</label>
+                                <input class="form-check-input" type="checkbox" name="is_featured" id="isFeaturedCheck" <?php echo ($edit_event && $edit_event['is_featured']) ? 'checked' : ''; ?>>
+                                <label class="form-check-label font-semibold" for="isFeaturedCheck">Featured Event (Highlight on Homepage)</label>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" name="registration_required" id="isRegCheck" <?php echo (!$edit_event || $edit_event['registration_required']) ? 'checked' : ''; ?>>
+                                <label class="form-check-label font-semibold" for="isRegCheck">Registration Required</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="form-check form-switch mt-2">
                                 <input class="form-check-input" type="checkbox" name="is_active" id="isActiveCheck" <?php echo (!$edit_event || $edit_event['is_active']) ? 'checked' : ''; ?>>
                                 <label class="form-check-label font-semibold" for="isActiveCheck">Mark as Active (Visible on website)</label>

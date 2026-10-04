@@ -1,5 +1,14 @@
 <?php
-// Sidebar Navigation - dynamically shows links based on RBAC permissions
+/**
+ * Admin Panel Dynamic Sidebar Navigation Component
+ *
+ * Renders the administrative module menu dynamically based on the authenticated user's
+ * assigned Role-Based Access Control (RBAC) permissions:
+ * - Academics & Admissions (Admissions, Departments, Courses, Fees, Faculty, Facilities, Documents)
+ * - Public Content Management (Blogs, News, Notices, Events, Gallery, Placements, Homepage Activities)
+ * - Inquiries & Communications (Contact Messages, AI-Chatbot Knowledge Base, FAQs, Unanswered Questions)
+ * - System Administration (User Allocation, Website Settings, Navigation Menu, Activity Logs, Database Backups)
+ */
 $current_sidebar_page = basename($_SERVER['PHP_SELF']);
 ?>
 <div class="col-md-3 col-lg-2 d-md-block admin-sidebar collapse px-0" id="sidebarMenu">
@@ -43,11 +52,11 @@ $current_sidebar_page = basename($_SERVER['PHP_SELF']);
                 </li>
             <?php endif; ?>
 
-            <!-- Courses CRUD -->
+            <!-- Courses / Programs CRUD -->
             <?php if (Auth::hasPermission('manage_courses')): ?>
                 <li class="nav-item">
                     <a class="nav-link <?php echo $current_sidebar_page === 'courses.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/admin/modules/courses.php">
-                        <i class="fa-solid fa-book-open"></i> <span>Courses</span>
+                        <i class="fa-solid fa-book-open"></i> <span>Programs</span>
                     </a>
                 </li>
             <?php endif; ?>
@@ -96,6 +105,29 @@ $current_sidebar_page = basename($_SERVER['PHP_SELF']);
                 <li class="nav-item">
                     <a class="nav-link <?php echo $current_sidebar_page === 'gallery.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/admin/modules/gallery.php">
                         <i class="fa-solid fa-images"></i> <span>Campus Gallery</span>
+                    </a>
+                </li>
+            <?php endif; ?>
+
+            <!-- Facilities & Laboratories CRUD -->
+            <?php if (Auth::hasPermission('manage_departments') || Auth::hasPermission('manage_gallery') || Auth::hasPermission('backup_restore') || Auth::hasRole('Super Admin')): ?>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo $current_sidebar_page === 'facilities.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/admin/modules/facilities.php">
+                        <i class="fa-solid fa-microchip"></i> <span>Campus Facilities</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo $current_sidebar_page === 'homepage_activities.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/admin/modules/homepage_activities.php">
+                        <i class="fa-solid fa-trophy"></i> <span>Homepage Activities</span>
+                    </a>
+                </li>
+            <?php endif; ?>
+
+            <!-- Documents & Brochures -->
+            <?php if (Auth::hasPermission('manage_courses')): ?>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo $current_sidebar_page === 'documents.php' ? 'active' : ''; ?>" href="<?php echo APP_URL; ?>/admin/modules/documents.php">
+                        <i class="fa-solid fa-file-pdf"></i> <span>Official Booklets</span>
                     </a>
                 </li>
             <?php endif; ?>

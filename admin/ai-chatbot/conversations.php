@@ -1,11 +1,24 @@
 <?php
+/**
+ * Chatbot Conversation Transcripts Manager (Admin Panel)
+ *
+ * Enables administrators to audit live visitor chat sessions, view complete
+ * back-and-forth message dialogues, review detected query intents and RAG sources,
+ * export chat archives to CSV, and delete single sessions or purge all history.
+ *
+ * @package SOET_College_Project
+ * @subpackage Admin_AI_Chatbot
+ */
+
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requirePermission('manage_chatbot_kb');
 
 $db = Database::getInstance();
 $sessionId = isset($_GET['session_id']) ? (int)$_GET['session_id'] : null;
 
-// Handle Export CSV
+// -------------------------------------------------------------------------
+// CSV Data Export: Chat Transcripts
+// -------------------------------------------------------------------------
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="CampusAI_Chat_Transcripts_' . date('Y-m-d') . '.csv"');
@@ -28,7 +41,9 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     exit;
 }
 
-// Handle Single Session Deletion
+// -------------------------------------------------------------------------
+// POST: Delete Single Chat Session
+// -------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_session'])) {
     $csrf = $_POST[CSRF_TOKEN_NAME] ?? '';
     $sid = (int)$_POST['session_id'];
@@ -42,7 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_session'])) {
     }
 }
 
-// Handle Clear All Chat Logs
+// -------------------------------------------------------------------------
+// POST: Clear All Chat History & Sessions
+// -------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_all_chats'])) {
     $csrf = $_POST[CSRF_TOKEN_NAME] ?? '';
     if (!Security::validateCSRF($csrf)) {
@@ -76,7 +93,7 @@ if ($sessionId) {
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Chatbot Transcripts</span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Chatbot Transcripts</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">Conversation Transcripts</h2>
         <p class="text-muted small mb-0">Inspect live visitor interactions, AI response accuracy, and query intents</p>
@@ -119,7 +136,7 @@ if ($sessionId) {
                     <div class="stat-icon-sm bg-primary-subtle text-primary rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
                         <i class="fa-solid fa-comments"></i>
                     </div>
-                    <h5 class="fw-bold mb-0 text-dark">Recorded Sessions <span class="badge bg-secondary-subtle text-secondary rounded-pill ms-1" style="font-size: 11px;"><?php echo count($sessions); ?></span></h5>
+                    <h5 class="fw-bold mb-0 text-dark">Recorded Sessions <span class="badge bg-secondary-subtle text-secondary rounded-pill ms-1" style="font-size: 14px;"><?php echo count($sessions); ?></span></h5>
                 </div>
                 <div class="input-group input-group-sm" style="max-width: 220px;">
                     <span class="input-group-text bg-light border-end-0 rounded-start-pill text-muted ps-3"><i class="fa-solid fa-magnifying-glass"></i></span>
@@ -153,7 +170,7 @@ if ($sessionId) {
                                         <td class="ps-4"><span class="badge bg-light text-dark border font-monospace">#<?php echo $s['id']; ?></span></td>
                                         <td>
                                             <span class="fw-bold text-dark"><?php echo htmlspecialchars($s['user_name'] ?: 'Public Visitor'); ?></span>
-                                            <span class="badge bg-light text-muted border ms-1 text-uppercase" style="font-size: 9px;"><?php echo htmlspecialchars($s['language'] ?? 'en'); ?></span>
+                                            <span class="badge bg-light text-muted border ms-1 text-uppercase" style="font-size: 14px;"><?php echo htmlspecialchars($s['language'] ?? 'en'); ?></span>
                                         </td>
                                         <td><code class="text-muted"><?php echo htmlspecialchars($s['visitor_id']); ?></code></td>
                                         <td class="text-center"><span class="badge bg-info-subtle text-info-emphasis border border-info-subtle rounded-pill px-2 py-0.5"><?php echo $s['msg_count']; ?> msgs</span></td>
@@ -197,12 +214,12 @@ if ($sessionId) {
                             <div class="mb-3 d-flex flex-column <?php echo $m['sender'] === 'user' ? 'align-items-end' : 'align-items-start'; ?>">
                                 <div class="small text-muted mb-1 px-1">
                                     <strong><?php echo $m['sender'] === 'user' ? '👤 Visitor' : '🤖 CampusAI'; ?></strong>
-                                    <span class="ms-1" style="font-size: 10px;"><?php echo formatDateTime($m['created_at']); ?></span>
+                                    <span class="ms-1" style="font-size: 14px;"><?php echo formatDateTime($m['created_at']); ?></span>
                                     <?php if (!empty($m['intent'])): ?>
-                                        <span class="badge bg-secondary-subtle text-secondary border rounded-pill ms-1" style="font-size: 9px;"><?php echo htmlspecialchars($m['intent']); ?></span>
+                                        <span class="badge bg-secondary-subtle text-secondary border rounded-pill ms-1" style="font-size: 14px;"><?php echo htmlspecialchars($m['intent']); ?></span>
                                     <?php endif; ?>
                                 </div>
-                                <div class="p-3.5 rounded-4 shadow-xs <?php echo $m['sender'] === 'user' ? 'bg-primary text-white' : 'bg-white border border-light-subtle text-dark'; ?>" style="max-width: 88%; font-size: 13.5px; line-height: 1.6;">
+                                <div class="p-3.5 rounded-4 shadow-xs <?php echo $m['sender'] === 'user' ? 'bg-primary text-white' : 'bg-white border border-light-subtle text-dark'; ?>" style="max-width: 88%; font-size: 14px; line-height: 1.6;">
                                     <?php echo $m['sender'] === 'user' ? nl2br(htmlspecialchars($m['message'])) : $m['message']; ?>
                                 </div>
                             </div>

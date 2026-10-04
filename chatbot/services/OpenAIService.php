@@ -1,7 +1,15 @@
 <?php
 /**
  * OpenAI API Integration Service via PHP cURL
- * Secure server-side cURL communication with OpenAI Chat Completions API
+ *
+ * Secure server-side cURL communication with OpenAI Chat Completions API:
+ * 1. Database-backed configuration (API key, model, temperature, max tokens).
+ * 2. Multi-turn dialogue history context injection.
+ * 3. Multilingual instruction modifiers for Hindi and Marathi outputs.
+ * 4. Automatic zero-cost fallback to built-in GeneralKnowledgeEngine when no API key is set.
+ *
+ * @package SOET_College_Project
+ * @subpackage Chatbot_Services
  */
 
 class OpenAIService

@@ -1,24 +1,44 @@
 <?php
+/**
+ * Unanswered Questions Queue & Feedback Loop (Admin Panel)
+ *
+ * Implements continuous learning for CampusAI:
+ * 1. Automatically records visitor questions that triggered fallback responses or low-confidence matches.
+ * 2. Displays session context, IP addresses, caller pages, and confidence levels.
+ * 3. Allows administrators to draft verified answers and simultaneously publish them to both FAQ and KB tables.
+ * 4. Provides resolution status filters (pending, answered, resolved, dismissed) and CSV exports.
+ *
+ * @package SOET_College_Project
+ * @subpackage Admin_AI_Chatbot
+ */
+
 require_once __DIR__ . '/../../core/bootstrap.php';
 Auth::requirePermission('manage_chatbot_kb');
 
 $db = Database::getInstance();
 
-// Handle CSV Export
+// -------------------------------------------------------------------------
+// CSV Data Export: Unanswered Questions
+// -------------------------------------------------------------------------
 if (isset($_GET['action']) && $_GET['action'] === 'export_csv') {
-    $rows = $db->fetchAll("SELECT question, category, status, confidence, admin_response, created_at FROM unanswered_questions ORDER BY created_at DESC");
+    $rows = $db->fetchAll("SELECT question, category, source_category, status, confidence, ip_address, conversation_token, page_url, admin_response, created_at, resolved_at FROM unanswered_questions ORDER BY created_at DESC");
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename=CampusAI_Unanswered_Questions_' . date('Y-m-d') . '.csv');
     $output = fopen('php://output', 'w');
-    fputcsv($output, ['User Question', 'Category', 'Status', 'Confidence', 'Admin Published Response', 'Logged Date']);
+    fputcsv($output, ['User Question', 'Category', 'Source', 'Status', 'Confidence', 'User IP', 'Conversation Token', 'Page URL', 'Admin Published Response', 'Logged Date', 'Resolved Date']);
     foreach ($rows as $r) {
         fputcsv($output, [
             $r['question'],
             $r['category'],
+            $r['source_category'] ?: 'WEBSITE',
             ucfirst($r['status']),
             $r['confidence'],
+            $r['ip_address'] ?: 'N/A',
+            $r['conversation_token'] ?: 'N/A',
+            $r['page_url'] ?: 'N/A',
             $r['admin_response'] ?: 'Pending Review',
-            $r['created_at']
+            $r['created_at'],
+            $r['resolved_at'] ?: 'N/A'
         ]);
     }
     fclose($output);
@@ -28,62 +48,92 @@ if (isset($_GET['action']) && $_GET['action'] === 'export_csv') {
 $page_title = "Unanswered Questions Queue";
 include_once __DIR__ . '/../../admin/includes/header.php';
 
-// Handle Add Manual Question to Queue
+// -------------------------------------------------------------------------
+// POST: Add Manual Question to Review Queue
+// -------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_unanswered_question'])) {
     $question = trim($_POST['question']);
     $category = trim($_POST['category']);
 
     if (!empty($question)) {
         $db->insert('unanswered_questions', [
-            'question' => $question,
-            'category' => $category,
-            'confidence' => 0.50,
-            'status' => 'pending',
-            'created_at' => date('Y-m-d H:i:s')
+            'question'           => $question,
+            'category'           => $category,
+            'source_category'    => 'MANUAL_ENTRY',
+            'confidence'         => 0.50,
+            'status'             => 'pending',
+            'created_at'         => date('Y-m-d H:i:s')
         ]);
         setFlash('success', 'Question added to Unanswered Queue for review.');
         redirect('unanswered.php');
     }
 }
 
-// Handle Publish Answer to KB & FAQ
+// -------------------------------------------------------------------------
+// POST: Publish Verified Answer to Knowledge Base & FAQ
+// -------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish_answer'])) {
     $qId = (int)$_POST['question_id'];
     $question = trim($_POST['question']);
     $answer = trim($_POST['answer']);
     $category = trim($_POST['category']);
+    $syncKb = isset($_POST['sync_to_kb']) && $_POST['sync_to_kb'] === '1';
+    $syncFaq = isset($_POST['sync_to_faq']) && $_POST['sync_to_faq'] === '1';
 
     if (!empty($question) && !empty($answer)) {
-        // Insert into FAQ
-        $db->insert('faq', [
-            'question' => $question,
-            'answer' => $answer,
-            'category' => $category,
-            'status' => 'active',
-            'created_at' => date('Y-m-d H:i:s')
-        ]);
+        // Optional Insert into FAQ
+        if ($syncFaq) {
+            $db->insert('faq', [
+                'question'   => $question,
+                'answer'     => $answer,
+                'category'   => $category,
+                'status'     => 'active',
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+        }
 
-        // Insert into Knowledge Base as well for full indexing
-        $db->insert('knowledge_base', [
-            'title' => $question,
-            'content' => $answer,
-            'keywords' => strtolower($question . ' ' . $category),
-            'status' => 'active',
-            'created_at' => date('Y-m-d H:i:s')
-        ]);
+        // Optional Insert into Knowledge Base
+        if ($syncKb) {
+            $db->insert('knowledge_base', [
+                'title'      => $question,
+                'content'    => $answer,
+                'keywords'   => strtolower($question . ' ' . $category),
+                'status'     => 'active',
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+        }
 
-        // Mark unanswered item as answered
+        // Mark item as answered
         $db->update('unanswered_questions', [
-            'status' => 'answered',
-            'admin_response' => $answer
+            'status'         => 'answered',
+            'admin_response' => $answer,
+            'resolved_at'    => date('Y-m-d H:i:s'),
+            'resolved_by'    => Session::get('user_id')
         ], 'id = ?', [$qId]);
 
-        setFlash('success', 'Question answered and published to SOET Knowledge Base & FAQs!');
+        $syncMsg = ($syncKb && $syncFaq) ? 'published to Knowledge Base & FAQs' : ($syncKb ? 'published to Knowledge Base' : ($syncFaq ? 'published to FAQs' : 'saved'));
+        setFlash('success', "Question answered and {$syncMsg} successfully!");
         redirect('unanswered.php');
     }
 }
 
-// Handle Dismiss / Delete
+// -------------------------------------------------------------------------
+// Action: 1-Click Mark as Resolved
+// -------------------------------------------------------------------------
+if (isset($_GET['action']) && $_GET['action'] === 'resolve' && isset($_GET['id'])) {
+    $qId = (int)$_GET['id'];
+    $db->update('unanswered_questions', [
+        'status'      => 'resolved',
+        'resolved_at' => date('Y-m-d H:i:s'),
+        'resolved_by' => Session::get('user_id')
+    ], 'id = ?', [$qId]);
+    setFlash('success', 'Question marked as Resolved.');
+    redirect('unanswered.php');
+}
+
+// -------------------------------------------------------------------------
+// Action: Dismiss or Delete Question
+// -------------------------------------------------------------------------
 if (isset($_GET['action']) && $_GET['action'] === 'dismiss' && isset($_GET['id'])) {
     $qId = (int)$_GET['id'];
     $db->update('unanswered_questions', ['status' => 'dismissed'], 'id = ?', [$qId]);
@@ -104,23 +154,29 @@ $questionsList = $db->fetchAll("SELECT * FROM unanswered_questions WHERE status 
 
 // Counts
 $pendingCount = $db->count('unanswered_questions', "status = 'pending'");
+$answeredCount = $db->count('unanswered_questions', "status = 'answered'");
+$resolvedCount = $db->count('unanswered_questions', "status = 'resolved'");
+$dismissedCount = $db->count('unanswered_questions', "status = 'dismissed'");
+
 $categories = [
     ['name' => 'General / Campus', 'slug' => 'general'],
     ['name' => 'Admissions & Quotas', 'slug' => 'admission'],
     ['name' => 'Fee Structure & Scholarships', 'slug' => 'fee'],
     ['name' => 'Hostel & Facilities', 'slug' => 'facilities'],
     ['name' => 'Placements & Packages', 'slug' => 'placement'],
-    ['name' => 'Courses & Curricula', 'slug' => 'courses']
+    ['name' => 'Courses & Curricula', 'slug' => 'courses'],
+    ['name' => 'Faculty & HOD', 'slug' => 'faculty'],
+    ['name' => 'Contact & Office', 'slug' => 'contact'],
 ];
 ?>
 
 <div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">Learning Feedback Loop</span>
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1" style="font-size: 14px;">Learning Feedback Loop</span>
         </div>
         <h2 class="font-display fw-extrabold text-dark mb-1">Unanswered Questions Queue</h2>
-        <p class="text-muted small mb-0">Review visitor queries that lack verified institutional answers and publish canonical responses</p>
+        <p class="text-muted small mb-0">Review visitor queries that triggered fallback, view context details, and publish canonical answers to the knowledge base</p>
     </div>
     <div class="d-flex gap-2 align-items-center flex-wrap">
         <a href="unanswered.php?action=export_csv" class="btn btn-outline-success btn-sm rounded-pill px-3 shadow-xs font-semibold">
@@ -192,18 +248,21 @@ $categories = [
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div class="btn-group p-1 bg-white rounded-pill shadow-xs border">
         <a href="unanswered.php?status=pending" class="btn btn-sm rounded-pill font-semibold px-3 <?php echo $statusFilter === 'pending' ? 'btn-primary' : 'btn-ghost text-secondary'; ?>">
-            <i class="fa-solid fa-clock me-1.5"></i> Pending (<?php echo $pendingCount; ?>)
+            <i class="fa-solid fa-clock me-1.5 text-warning"></i> Pending (<?php echo $pendingCount; ?>)
         </a>
         <a href="unanswered.php?status=answered" class="btn btn-sm rounded-pill font-semibold px-3 <?php echo $statusFilter === 'answered' ? 'btn-primary' : 'btn-ghost text-secondary'; ?>">
-            <i class="fa-solid fa-circle-check me-1.5"></i> Answered &amp; Published
+            <i class="fa-solid fa-circle-check me-1.5 text-success"></i> Answered &amp; Published (<?php echo $answeredCount; ?>)
+        </a>
+        <a href="unanswered.php?status=resolved" class="btn btn-sm rounded-pill font-semibold px-3 <?php echo $statusFilter === 'resolved' ? 'btn-primary' : 'btn-ghost text-secondary'; ?>">
+            <i class="fa-solid fa-check-double me-1.5 text-info"></i> Resolved (<?php echo $resolvedCount; ?>)
         </a>
         <a href="unanswered.php?status=dismissed" class="btn btn-sm rounded-pill font-semibold px-3 <?php echo $statusFilter === 'dismissed' ? 'btn-primary' : 'btn-ghost text-secondary'; ?>">
-            <i class="fa-solid fa-eye-slash me-1.5"></i> Dismissed
+            <i class="fa-solid fa-eye-slash me-1.5"></i> Dismissed (<?php echo $dismissedCount; ?>)
         </a>
     </div>
-    <div class="input-group input-group-sm" style="max-width: 240px;">
+    <div class="input-group input-group-sm" style="max-width: 280px;">
         <span class="input-group-text bg-white border-end-0 rounded-start-pill"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-        <input type="text" id="qSearchInput" class="form-control bg-white border-start-0 rounded-end-pill" placeholder="Filter questions...">
+        <input type="text" id="qSearchInput" class="form-control bg-white border-start-0 rounded-end-pill" placeholder="Search by question, IP, token...">
     </div>
 </div>
 
@@ -212,8 +271,8 @@ $categories = [
         <div class="w-16 h-16 rounded-circle bg-success-subtle text-success d-inline-flex align-items-center justify-content-center mx-auto mb-3" style="width: 64px; height: 64px;">
             <i class="fa-solid fa-circle-check fa-2x"></i>
         </div>
-        <h4 class="font-display fw-bold text-dark mb-1">All Questions Resolved!</h4>
-        <p class="text-muted small mb-3">There are currently no <?php echo $statusFilter; ?> visitor questions requiring administrative review.</p>
+        <h4 class="font-display fw-bold text-dark mb-1">Queue is Clear!</h4>
+        <p class="text-muted small mb-3">There are currently no <strong><?php echo $statusFilter; ?></strong> visitor questions in this view.</p>
         <div>
             <button type="button" class="btn btn-outline-primary btn-sm rounded-pill font-semibold px-3.5" data-bs-toggle="modal" data-bs-target="#modalAddUnanswered">
                 <i class="fa-solid fa-plus me-1.5"></i> Add Test Question
@@ -222,22 +281,51 @@ $categories = [
     </div>
 <?php else: ?>
     <div class="row g-4" id="questionsGrid">
-        <?php foreach ($questionsList as $q): ?>
-            <div class="col-md-6 question-card-col" data-text="<?php echo strtolower(htmlspecialchars($q['question'] . ' ' . $q['category'])); ?>">
-                <div class="card border-0 shadow-sm rounded-4 p-4 h-100 border-top border-4 <?php echo $q['status'] === 'pending' ? 'border-warning' : ($q['status'] === 'answered' ? 'border-success' : 'border-secondary'); ?>">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1 text-xs text-uppercase font-semibold">
-                            <?php echo htmlspecialchars($q['category']); ?>
-                        </span>
+        <?php foreach ($questionsList as $q):
+            $cardBorder = 'border-warning';
+            if ($q['status'] === 'answered') $cardBorder = 'border-success';
+            elseif ($q['status'] === 'resolved') $cardBorder = 'border-info';
+            elseif ($q['status'] === 'dismissed') $cardBorder = 'border-secondary';
+        ?>
+            <div class="col-md-6 question-card-col" data-text="<?php echo strtolower(htmlspecialchars($q['question'] . ' ' . $q['category'] . ' ' . ($q['ip_address'] ?? '') . ' ' . ($q['conversation_token'] ?? '') . ' ' . ($q['admin_response'] ?? ''))); ?>">
+                <div class="card border-0 shadow-sm rounded-4 p-4 h-100 border-top border-4 <?php echo $cardBorder; ?>">
+                    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-1">
+                        <div class="d-flex align-items-center gap-1.5">
+                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1 text-xs text-uppercase font-semibold">
+                                <?php echo htmlspecialchars($q['category']); ?>
+                            </span>
+                            <?php if (!empty($q['source_category'])): ?>
+                                <span class="badge bg-light text-muted border rounded-pill px-2 py-0.5 text-xs">
+                                    <?php echo htmlspecialchars($q['source_category']); ?>
+                                </span>
+                            <?php endif; ?>
+                        </div>
                         <small class="text-muted text-xs"><i class="fa-regular fa-clock me-1"></i><?php echo formatDate($q['created_at']); ?></small>
                     </div>
 
-                    <h5 class="font-display fw-bold text-dark mb-3">"<?php echo htmlspecialchars($q['question']); ?>"</h5>
+                    <h5 class="font-display fw-bold text-dark mb-2">"<?php echo htmlspecialchars($q['question']); ?>"</h5>
 
-                    <?php if ($q['status'] === 'answered'): ?>
+                    <!-- User / Session Context Meta Bar -->
+                    <div class="bg-light p-2.5 rounded-3 mb-3 border text-xs text-muted">
+                        <div class="row g-1">
+                            <div class="col-6">
+                                <i class="fa-solid fa-network-wired me-1 text-secondary"></i> IP: <strong><?php echo htmlspecialchars($q['ip_address'] ?: 'Unknown'); ?></strong>
+                            </div>
+                            <div class="col-6 text-truncate" title="<?php echo htmlspecialchars($q['conversation_token'] ?? ''); ?>">
+                                <i class="fa-solid fa-comments me-1 text-secondary"></i> Chat: <strong><?php echo htmlspecialchars(substr($q['conversation_token'] ?? 'N/A', 0, 16)); ?><?php echo strlen($q['conversation_token'] ?? '') > 16 ? '...' : ''; ?></strong>
+                            </div>
+                            <?php if (!empty($q['page_url'])): ?>
+                                <div class="col-12 text-truncate" title="<?php echo htmlspecialchars($q['page_url']); ?>">
+                                    <i class="fa-solid fa-link me-1 text-secondary"></i> Page: <span><?php echo htmlspecialchars($q['page_url']); ?></span>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <?php if ($q['status'] === 'answered' && !empty($q['admin_response'])): ?>
                         <div class="bg-success-subtle border border-success-subtle p-3 rounded-3 mb-3">
                             <strong class="text-success small d-flex align-items-center gap-1.5 mb-1">
-                                <i class="fa-solid fa-circle-check"></i> Verified Admin Response:
+                                <i class="fa-solid fa-circle-check"></i> Published Knowledge Base Response:
                             </strong>
                             <p class="small text-dark text-opacity-80 mb-0"><?php echo nl2br(htmlspecialchars($q['admin_response'])); ?></p>
                         </div>
@@ -245,15 +333,19 @@ $categories = [
 
                     <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <button type="button" class="btn btn-primary btn-sm rounded-pill font-semibold px-3 shadow-sm hover-lift" data-bs-toggle="modal" data-bs-target="#modalAnswer<?php echo $q['id']; ?>">
-                            <i class="fa-solid fa-pen-to-square me-1.5"></i> <?php echo $q['status'] === 'answered' ? 'Update Answer' : 'Answer &amp; Publish'; ?>
+                            <i class="fa-solid fa-pen-to-square me-1.5"></i> <?php echo $q['status'] === 'answered' ? 'Edit &amp; Re-Sync' : 'Answer &amp; Publish'; ?>
                         </button>
-                        <div class="d-flex gap-1">
+
+                        <div class="d-flex gap-1.5">
                             <?php if ($q['status'] === 'pending'): ?>
+                                <a href="unanswered.php?action=resolve&id=<?php echo $q['id']; ?>" class="btn btn-xs btn-outline-info rounded-pill px-2.5 py-1" title="Mark as Resolved">
+                                    <i class="fa-solid fa-check me-1"></i> Resolve
+                                </a>
                                 <a href="unanswered.php?action=dismiss&id=<?php echo $q['id']; ?>" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5 py-1" title="Dismiss">
                                     <i class="fa-solid fa-eye-slash"></i>
                                 </a>
                             <?php endif; ?>
-                            <a href="unanswered.php?action=delete&id=<?php echo $q['id']; ?>" class="btn btn-xs btn-outline-danger rounded-pill px-2.5 py-1" onclick="return confirm('Delete this question from queue?');" title="Delete">
+                            <a href="unanswered.php?action=delete&id=<?php echo $q['id']; ?>" class="btn btn-xs btn-outline-danger rounded-pill px-2.5 py-1" onclick="return confirm('Delete this question permanently?');" title="Delete">
                                 <i class="fa-solid fa-trash"></i>
                             </a>
                         </div>
@@ -285,13 +377,30 @@ $categories = [
                                 <div class="mb-3">
                                     <label class="form-label font-semibold small text-secondary">Official Verified Answer <span class="text-danger">*</span></label>
                                     <textarea name="answer" class="form-control rounded-3" rows="5" placeholder="Write comprehensive, official response here..." required><?php echo htmlspecialchars($q['admin_response'] ?? ''); ?></textarea>
-                                    <div class="form-text text-xs">This will automatically sync with the 🤖 CampusAI Knowledge Base and public FAQ list.</div>
+                                </div>
+                                <div class="row g-2 p-3 bg-light rounded-3 border">
+                                    <div class="col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="sync_to_kb" value="1" id="syncKb<?php echo $q['id']; ?>" checked>
+                                            <label class="form-check-label small fw-semibold" for="syncKb<?php echo $q['id']; ?>">
+                                                <i class="fa-solid fa-book text-primary me-1"></i> Sync to Knowledge Base
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="sync_to_faq" value="1" id="syncFaq<?php echo $q['id']; ?>" checked>
+                                            <label class="form-check-label small fw-semibold" for="syncFaq<?php echo $q['id']; ?>">
+                                                <i class="fa-solid fa-circle-question text-info me-1"></i> Sync to Public FAQs
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="modal-footer bg-light px-4 py-3 border-top">
                                 <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
                                 <button type="submit" name="publish_answer" class="btn btn-primary btn-sm rounded-pill font-semibold px-4 shadow-sm hover-lift">
-                                    <i class="fa-solid fa-upload me-1.5"></i> Publish to Knowledge Base
+                                    <i class="fa-solid fa-upload me-1.5"></i> Publish &amp; Update Knowledge Base
                                 </button>
                             </div>
                         </form>

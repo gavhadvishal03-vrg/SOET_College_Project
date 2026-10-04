@@ -1,7 +1,17 @@
 <?php
 /**
  * Real-Time Admission & Seat Availability API Endpoint
- * SOET MGM University Portal
+ *
+ * Exposes live academic program seat availability metrics, total intake capacity,
+ * filled seats count, vacant seats count, and open/closed admissions status.
+ *
+ * HTTP Method: GET
+ * Query Parameters:
+ *   - course_id (int, optional): Filter by course primary key ID
+ *   - code (string, optional): Filter by course code (e.g. 'CSE', 'AIML')
+ * Response:
+ *   - JSON object with 'success' (bool), 'timestamp', 'total_courses' (int),
+ *     and 'data' containing seat metric payload(s).
  */
 
 header('Content-Type: application/json');

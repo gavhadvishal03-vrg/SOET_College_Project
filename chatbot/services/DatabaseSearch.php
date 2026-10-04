@@ -1,6 +1,19 @@
 <?php
 /**
  * SOET Institutional Knowledge Base & Website Database Search Engine
+ *
+ * Implements high-precision semantic and keyword fulltext searches across
+ * institutional database repositories:
+ * 1. Real-Time Seat Matrix: Approved intake, filled seats, and vacancies per branch.
+ * 2. Academic Programs & Syllabi: 4-Year B.Tech, 6-Year Integrated B.Tech, DSE Lateral Entry, syllabus PDFs.
+ * 3. Fee Schedules & Scholarships: Tuition breakdown, merit concessions, TFWS waivers.
+ * 4. Faculty & Leadership Profiles: Dean/Director credentials, HODs, research specializations.
+ * 5. Placement & Recruiter Intelligence: Highest/average LPA packages, visiting corporate partners.
+ * 6. Campus Facilities & Hostels: Labs, libraries, mess, Wi-Fi, sports amenities.
+ * 7. Verified Knowledge Base & FAQ Entries: Canonical Q&A articles and parsed training docs.
+ *
+ * @package SOET_College_Project
+ * @subpackage Chatbot_Services
  */
 
 class DatabaseSearch
@@ -12,6 +25,13 @@ class DatabaseSearch
         $this->db = Database::getInstance();
     }
 
+    /**
+     * Executes domain-specific search cascading through database entities and knowledge articles.
+     *
+     * @param string $query Normalized user query text.
+     * @param string $intent Classified query intent.
+     * @return array Result set containing 'found', 'top_result', and 'all_results'.
+     */
     public function search(string $query, string $intent = 'GENERAL'): array
     {
         $cleanQuery = trim($query);
@@ -27,6 +47,16 @@ class DatabaseSearch
         }
 
         // 2. Direct Category Handlers for College-Specific Intents
+        if (preg_match('/\b(brochures?|leaflets?|booklets?|prospectus|curriculum booklet|admission booklet|download brochure|download pdf|download document)\b/i', $cleanQuery)) {
+            $docs = $this->searchDocuments($cleanQuery);
+            if (!empty($docs)) return ['found' => true, 'top_result' => $docs[0], 'all_results' => $docs];
+        }
+
+        if (preg_match('/\b(facilities|facility|infrastructure|laborator(y|ies)|labs|hostels?|canteen|mess|sports|gym|library|wi-fi)\b/i', $cleanQuery) || preg_match('/\b(campus\s*(facilities|life|amenities|infrastructure|hostel|mess))\b/i', $cleanQuery)) {
+            $facilities = $this->searchFacilities($cleanQuery);
+            if (!empty($facilities)) return ['found' => true, 'top_result' => $facilities[0], 'all_results' => $facilities];
+        }
+
         if ($intent === 'NOTICE' || preg_match('/\b(notices?|announcements?|circulars?)\b/i', $cleanQuery)) {
             $notices = $this->searchNotices($cleanQuery);
             if (!empty($notices)) return ['found' => true, 'top_result' => $notices[0], 'all_results' => $notices];
@@ -37,7 +67,7 @@ class DatabaseSearch
             if (!empty($events)) return ['found' => true, 'top_result' => $events[0], 'all_results' => $events];
         }
 
-        if ($intent === 'PLACEMENT' || preg_match('/\b(placements?|jobs?|recruitment|career|hiring)\b/i', $cleanQuery)) {
+        if ($intent === 'PLACEMENT' || preg_match('/\b(placements?|jobs?|recruitment|career|hiring|companies|recruiter)\b/i', $cleanQuery)) {
             $placements = $this->searchPlacements($cleanQuery);
             if (!empty($placements)) return ['found' => true, 'top_result' => $placements[0], 'all_results' => $placements];
         }
@@ -62,7 +92,12 @@ class DatabaseSearch
             if (!empty($depts)) return ['found' => true, 'top_result' => $depts[0], 'all_results' => $depts];
         }
 
-        if ($intent === 'PROGRAM' || $intent === 'DEPARTMENT' || $intent === 'HYBRID' || preg_match('/\b(courses?|programs?|degrees?|branches?|streams?)\b/i', $cleanQuery)) {
+        if (preg_match('/\b(syllabus|curriculum|subject list|course structure|download syllabus|syllabus pdf)\b/i', $cleanQuery)) {
+            $syllabus = $this->searchSyllabus($cleanQuery);
+            if (!empty($syllabus)) return ['found' => true, 'top_result' => $syllabus[0], 'all_results' => $syllabus];
+        }
+
+        if ($intent === 'PROGRAM' || $intent === 'DEPARTMENT' || $intent === 'HYBRID' || preg_match('/\b(courses?|programs?|degrees?|branches?|streams?|engineering|b\.?tech|diploma)\b/i', $cleanQuery)) {
             $courses = $this->searchCourses($cleanQuery);
             if (!empty($courses)) return ['found' => true, 'top_result' => $courses[0], 'all_results' => $courses];
         }
@@ -144,26 +179,25 @@ class DatabaseSearch
         $matches = [];
 
         foreach ($rows as $row) {
-            $score = $this->calculateScore($query, $keywords, $row['original_name'] . ' ' . $row['extracted_text']);
-            if ($score > 0) {
-                // Extract highest-scoring 2-3 sentence paragraph from document
-                $paragraphs = preg_split('/\n{2,}|\r\n\r\n/', $row['extracted_text']);
-                $bestPara = '';
-                $bestParaScore = 0;
-                foreach ($paragraphs as $para) {
-                    $pScore = $this->calculateScore($query, $keywords, $para);
-                    if ($pScore > $bestParaScore) {
-                        $bestParaScore = $pScore;
-                        $bestPara = trim($para);
-                    }
+            // Extract highest-scoring 2-3 sentence paragraph from document
+            $paragraphs = preg_split('/\n{2,}|\r\n\r\n/', $row['extracted_text']);
+            $bestPara = '';
+            $bestParaScore = 0;
+            foreach ($paragraphs as $para) {
+                $pScore = $this->calculateScore($query, $keywords, $para);
+                if ($pScore > $bestParaScore) {
+                    $bestParaScore = $pScore;
+                    $bestPara = trim($para);
                 }
-                $content = $bestPara ?: mb_substr($row['extracted_text'], 0, 300);
+            }
+
+            if ($bestParaScore >= 4 && !empty($bestPara)) {
                 $matches[] = [
                     'source_type' => 'training_knowledge',
                     'title' => 'Training Document: ' . $row['original_name'],
-                    'content' => $content,
+                    'content' => $bestPara,
                     'source_url' => '/chatbot/train/' . $row['filename'],
-                    'score' => $score + 1
+                    'score' => $bestParaScore + 1
                 ];
             }
         }
@@ -173,20 +207,121 @@ class DatabaseSearch
     private function searchCourses(string $query): array
     {
         $courses = $this->db->fetchAll(
-            "SELECT c.*, d.name as dept_name FROM courses c JOIN departments d ON c.department_id = d.id WHERE c.is_active = 1 ORDER BY c.name"
+            "SELECT c.*, d.name as dept_name FROM courses c JOIN departments d ON c.department_id = d.id WHERE c.is_active = 1 ORDER BY c.program_type ASC, c.name ASC"
         );
         
         $cleanQuery = mb_strtolower(trim($query));
         
-        // General course/program/branch list query check
-        if (preg_match('/(what|which|list|available|offer)\b.*\b(courses?|programs?|degrees?|branches?|streams?)/i', $cleanQuery) || preg_match('/(courses?|programs?|degrees?|branches?)\b.*\b(do you have|are available|we offer|offered)/i', $cleanQuery) || in_array($cleanQuery, ['courses', 'programs', 'branches', 'degrees'])) {
+        // 1. Integrated Programs specific query
+        if (preg_match('/\b(integrated|6\s*years?|after\s*10th|after\s*ssc|post\s*10th|school\s*pass)\b/i', $cleanQuery) && !preg_match('/\b(regular|4\s*year|lateral|direct)\b/i', $cleanQuery)) {
+            $intCourses = array_filter($courses, fn($c) => strtolower($c['program_type']) === 'integrated');
             $list = [];
             $idx = 1;
-            foreach ($courses as $c) {
-                $list[] = "{$idx}. **{$c['name']} ({$c['code']})** — Duration: {$c['duration_years']} Years ({$c['semester_count']} Semesters), Intake: {$c['intake_capacity']} seats";
+            foreach ($intCourses as $c) {
+                $list[] = "{$idx}. **{$c['name']} ({$c['code']})** — Duration: {$c['duration_years']} Yrs, Intake: {$c['intake_capacity']} seats, Fee: ₹" . number_format($c['fee_year_1']) . "/yr";
                 $idx++;
             }
-            $content = "We offer the following official degree programs and academic branches:\n\n" . implode("\n", $list);
+            $content = "### 🚀 SOET B.Tech (Integrated) 6-Year Programs (After 10th SSC)\n\n"
+                     . "Designed for 10th passed students to complete Diploma + B.Tech seamlessly in 6 years (Eligibility: SSC Passed with min 50% Open, 45% Reserved + MGMU-CET):\n\n"
+                     . implode("\n", $list) . "\n\n"
+                     . "🔗 [Apply for Integrated Admission](/admissions.php) | [View Program Details](/courses.php)";
+
+            return [[
+                'source_type' => 'course',
+                'title' => "SOET Integrated 6-Year B.Tech Programs",
+                'content' => $content,
+                'source_url' => '/courses.php',
+                'score' => 100
+            ]];
+        }
+
+        // 2. Direct Second Year / Lateral Entry specific query
+        if (preg_match('/\b(direct\s*2nd|direct\s*second|lateral|dse|after\s*diploma|diploma\s*students?|diploma\s*entry|second\s*year)\b/i', $cleanQuery)) {
+            $dseCourses = array_filter($courses, fn($c) => strtolower($c['program_type']) === 'lateral_entry');
+            $list = [];
+            $idx = 1;
+            foreach ($dseCourses as $c) {
+                $list[] = "{$idx}. **{$c['name']} ({$c['code']})** — Duration: {$c['duration_years']} Yrs, Intake: {$c['intake_capacity']} seats, Fee: ₹" . number_format($c['fee_year_1']) . "/yr";
+                $idx++;
+            }
+            $content = "### ⚡ SOET Direct 2nd Year (Lateral Entry) Programs (After Diploma / B.Sc)\n\n"
+                     . "Allows Engineering Diploma and B.Sc. graduates direct admission to 3rd Semester (Eligibility: Min 45% Open, 40% Reserved):\n\n"
+                     . implode("\n", $list) . "\n\n"
+                     . "🔗 [Apply for Lateral Entry](/admissions.php) | [Fee Details](/courses.php)";
+
+            return [[
+                'source_type' => 'course',
+                'title' => "SOET Direct Second Year Lateral Entry Programs",
+                'content' => $content,
+                'source_url' => '/courses.php',
+                'score' => 100
+            ]];
+        }
+
+        // 2.5 Non-existent courses check
+        $nonExistentCourses = ['aeronautical', 'aerospace', 'chemical', 'biotech', 'biotechnology', 'textile', 'marine', 'automobile', 'mining', 'petroleum', 'agriculture', 'pharmacy'];
+        foreach ($nonExistentCourses as $nec) {
+            if (mb_strpos($cleanQuery, $nec) !== false) {
+                $requestedNonExistent = ucfirst($nec) . " Engineering";
+                $content = "SOET MGM University does not currently offer a degree in **'{$requestedNonExistent}'**.\n\n"
+                         . "We offer approved programs in **CSE (IoT & Cyber / Blockchain)**, **Robotics & Automation**, **CSE (Cyber Security)**, **Electronics Engineering (VLSI Design)**, **Electrical Engineering**, plus **Integrated 6-Year B.Tech** and **Direct 2nd Year Lateral Entry** programs.\n\n"
+                         . "🔗 [Explore All Available Programs](/courses.php)";
+
+                return [[
+                    'source_type' => 'course',
+                    'title' => "Program Not Offered - Available Programs",
+                    'content' => $content,
+                    'source_url' => '/courses.php',
+                    'score' => 95
+                ]];
+            }
+        }
+
+        // 3. Regular 4-Year B.Tech specific query
+        if (preg_match('/\b(regular|4\s*years?|after\s*12th|after\s*hsc|post\s*12th)\b/i', $cleanQuery) && !preg_match('/\b(integrated|6\s*year|lateral|direct)\b/i', $cleanQuery)) {
+            $regCourses = array_filter($courses, fn($c) => strtolower($c['program_type']) === 'regular');
+            $list = [];
+            $idx = 1;
+            foreach ($regCourses as $c) {
+                $list[] = "{$idx}. **{$c['name']} ({$c['code']})** — Duration: {$c['duration_years']} Yrs, Intake: {$c['intake_capacity']} seats, Fee: ₹" . number_format($c['fee_year_1']) . "/yr";
+                $idx++;
+            }
+            $content = "### 🌟 SOET Regular 4-Year B.Tech Degree Programs (After 12th HSC)\n\n"
+                     . "Approved by MGM University (Eligibility: HSC Passed with min 45% Open, 40% Reserved + JEE/MHT-CET/PERA-CET):\n\n"
+                     . implode("\n", $list) . "\n\n"
+                     . "🔗 [Apply for B.Tech Admission](/admissions.php) | [View Syllabi](/departments.php)";
+
+            return [[
+                'source_type' => 'course',
+                'title' => "SOET Regular 4-Year B.Tech Programs",
+                'content' => $content,
+                'source_url' => '/courses.php',
+                'score' => 100
+            ]];
+        }
+
+        // 4. General course/program/branch list query check
+        if (preg_match('/(what|which|list|available|offer)\b.*\b(courses?|programs?|degrees?|branches?|streams?)/i', $cleanQuery) || preg_match('/(courses?|programs?|degrees?|branches?)\b.*\b(do you have|are available|we offer|offered)/i', $cleanQuery) || in_array($cleanQuery, ['courses', 'programs', 'branches', 'degrees'])) {
+            $regList = [];
+            $intList = [];
+            $dseList = [];
+            $dipList = [];
+
+            foreach ($courses as $c) {
+                $pType = strtolower($c['program_type']);
+                $item = "• **{$c['name']} ({$c['code']})** — {$c['duration_years']} Yrs | Intake: {$c['intake_capacity']} | Fee: ₹" . number_format($c['fee_year_1']) . "/yr";
+                if ($pType === 'regular') $regList[] = $item;
+                elseif ($pType === 'integrated') $intList[] = $item;
+                elseif ($pType === 'lateral_entry') $dseList[] = $item;
+                else $dipList[] = $item;
+            }
+
+            $content = "### 🎓 Official SOET Degree Programs & Academic Branches (AY 2026-27)\n\n"
+                     . "**1. Regular B.Tech Programs (4 Years - After 12th HSC | 180 Seats):**\n" . implode("\n", $regList) . "\n\n"
+                     . "**2. Integrated B.Tech Programs (6 Years - After 10th SSC | 180 Seats):**\n" . implode("\n", $intList) . "\n\n"
+                     . "**3. Direct Second Year Lateral Entry (3 Years - After Diploma | 40 Seats):**\n" . implode("\n", $dseList) . "\n\n"
+                     . "**4. Diploma & Advanced Diploma (20 Seats):**\n" . implode("\n", $dipList) . "\n\n"
+                     . "> ℹ️ *Approved First-Year Intake: 380 Seats across 11 programs. Total Institutional Capacity: 420 Seats.*";
             
             return [[
                 'source_type' => 'course',
@@ -203,7 +338,7 @@ class DatabaseSearch
         $distinctiveQueryWords = array_values(array_diff($queryWords, $genericWords));
 
         foreach ($courses as $c) {
-            $text = mb_strtolower($c['name'] . ' ' . $c['code'] . ' ' . $c['description'] . ' ' . $c['dept_name']);
+            $text = mb_strtolower($c['name'] . ' ' . $c['code'] . ' ' . $c['description'] . ' ' . $c['dept_name'] . ' ' . $c['program_type']);
             
             // Require at least one distinctive query keyword to match with word boundaries
             if (!empty($distinctiveQueryWords)) {
@@ -215,13 +350,21 @@ class DatabaseSearch
                     }
                 }
                 if (!$matchedDistinctive) {
-                    continue; // Skip course if no distinctive keyword matched (e.g. aerospace asked)
+                    continue;
                 }
             }
 
             $score = $this->calculateScore($query, $distinctiveQueryWords ?: $queryWords, $text);
             if ($score > 0) {
-                $content = "SOET offers {$c['name']} ({$c['code']}) under {$c['dept_name']}. Duration: {$c['duration_years']} Years ({$c['semester_count']} Semesters). Intake Capacity: {$c['intake_capacity']} seats. Description: {$c['description']}.";
+                $content = "### {$c['name']} ({$c['code']})\n\n"
+                         . "• **Department**: {$c['dept_name']}\n"
+                         . "• **Program Type**: " . ucfirst(str_replace('_', ' ', $c['program_type'])) . "\n"
+                         . "• **Duration**: {$c['duration_years']} Years ({$c['semester_count']} Semesters)\n"
+                         . "• **Approved Intake**: {$c['intake_capacity']} Seats\n"
+                         . "• **Annual Tuition Fee**: ₹" . number_format($c['fee_year_1']) . "/year\n"
+                         . "• **Eligibility**: {$c['eligibility']}\n\n"
+                         . "{$c['description']}";
+
                 $matches[] = [
                     'source_type' => 'course',
                     'title' => $c['name'],
@@ -236,10 +379,26 @@ class DatabaseSearch
 
     public function searchAdmissions(string $query): array
     {
+        $cms = new ContentManager();
+        $courses = $cms->getCourses(null, true);
+        $totalIntake = array_sum(array_column($courses, 'intake_capacity'));
+
+        $content = "### 🎓 SOET MGM University Admissions & Eligibility (AY 2026-27)\n\n"
+                 . "**1. Regular B.Tech (4 Years - 180 Seats):**\n"
+                 . "Passed 10+2 / HSC with min 45% aggregate in Physics, Mathematics & Chemistry/CS (40% for SC/ST/OBC) + Non-zero score in JEE(Main) / MHT-CET / PERA-CET / MGMU-CET.\n\n"
+                 . "**2. Integrated B.Tech (6 Years - 180 Seats):**\n"
+                 . "Passed 10th / SSC with min 50% aggregate (45% for SC/ST/OBC) + MGMU-CET.\n\n"
+                 . "**3. Direct Second Year Lateral Entry (3 Years - 40 Seats):**\n"
+                 . "Passed Diploma in Engineering / B.Sc. / D.Voc. with min 45% aggregate (40% for reserved categories).\n\n"
+                 . "**4. Diploma & Advanced Diploma (20 Seats):**\n"
+                 . "Fire Service Engg: 10th/12th Passed | ADIS: Diploma/Degree in Engg with min 50%.\n\n"
+                 . "💡 *Approved First-Year Intake: 380 seats. You can submit and track admission applications online at [Admissions Portal](/admissions.php).*\n\n"
+                 . "📞 **Admission Helpline**: 0240-6674999 | +91 93566 21102";
+
         return [[
             'source_type' => 'admission',
             'title' => 'SOET Engineering Admissions & Eligibility',
-            'content' => "Admissions to B.Tech programs at SOET MGM University are open for candidates passing 10+2 with 45% aggregate in Physics, Mathematics, and Chemistry/Computer Science (40% for SC/ST/OBC). Valid MHT-CET or JEE Main scores are accepted, and direct institute-level quota admissions are available. You can apply and track applications online at /admissions.php.",
+            'content' => $content,
             'source_url' => '/admissions.php',
             'score' => 100
         ]];
@@ -332,7 +491,8 @@ class DatabaseSearch
             $text = $f['name'] . ' ' . $f['designation'] . ' ' . $f['dept_name'] . ' ' . $f['specialization'];
             $score = $this->calculateScore($query, explode(' ', $query), $text);
             if ($score > 0) {
-                $content = "Faculty Profile: {$f['name']} is {$f['designation']} in {$f['dept_name']}. Qualification: {$f['qualification']}. Specialization: {$f['specialization']}. Experience: {$f['experience_years']} Years. Email: {$f['email']}.";
+                $exp = getFacultyExperience($f);
+                $content = "Faculty Profile: {$f['name']} is {$f['designation']} in {$f['dept_name']}. Qualification: {$f['qualification']}. Specialization: {$f['specialization']}. Experience: {$exp} Years. Email: {$f['email']}.";
                 $matches[] = [
                     'source_type' => 'faculty',
                     'title' => $f['name'] . ' - ' . $f['designation'],
@@ -347,27 +507,83 @@ class DatabaseSearch
 
     private function searchPlacements(string $query): array
     {
-        $placements = $this->db->fetchAll("SELECT * FROM placements ORDER BY package_lpa DESC LIMIT 10");
+        $placements = $this->db->fetchAll("SELECT * FROM placements WHERE is_active = 1 ORDER BY package_lpa DESC");
         if (empty($placements)) {
             return [[
                 'source_type' => 'placement',
                 'title' => 'SOET Training & Placements',
-                'content' => 'SOET Training & Placement Cell works with top MNC recruiters including TCS, Wipro, Infosys, and Capgemini.',
+                'content' => 'SOET Training & Placement Cell works with leading MNC recruiters including Capgemini, TCS, Infosys, and Cognizant.',
                 'source_url' => '/placements.php',
                 'score' => 100
             ]];
         }
 
         $cleanQuery = mb_strtolower(trim($query));
+        $maxPackage = max(array_column($placements, 'package_lpa'));
+        $avgPackage = round(array_sum(array_column($placements, 'package_lpa')) / count($placements), 2);
+        $totalPlaced = count($placements);
+        $companies = array_unique(array_column($placements, 'company_name'));
+        $companiesStr = implode(', ', array_slice($companies, 0, 6));
 
-        // Category query check
-        if (in_array($cleanQuery, ['placements', 'placement', 'jobs', 'job', 'career', 'recruitment', 'hiring', 'companies']) || preg_match('/(show|get|list|tell|top)\b.*\b(placements?|jobs?|recruitment|companies)/i', $cleanQuery)) {
+        // Check for specific company match in database
+        foreach ($companies as $comp) {
+            if (stripos($cleanQuery, mb_strtolower($comp)) !== false || (stripos($comp, 'toyota') !== false && stripos($cleanQuery, 'toyota') !== false) || (stripos($comp, 'persevex') !== false && stripos($cleanQuery, 'persevex') !== false)) {
+                $compPlaced = array_filter($placements, fn($p) => stripos($p['company_name'], $comp) !== false || (stripos($comp, 'toyota') !== false && stripos($p['company_name'], 'toyota') !== false));
+                $list = [];
+                foreach ($compPlaced as $p) {
+                    $desig = $p['designation'] ?? 'Engineering Associate';
+                    $list[] = "• **{$p['student_name']}** — **{$p['company_name']}** with package of **{$p['package_lpa']} LPA** ({$desig}, Batch: {$p['placement_year']})";
+                }
+                $content = "### 🏢 Placements at {$comp} (Batch 2026)\n\n"
+                         . "Verified students recruited by **{$comp}**:\n\n"
+                         . implode("\n", $list) . "\n\n"
+                         . "🔗 [View All Placements](/placements.php)";
+
+                return [[
+                    'source_type' => 'placement',
+                    'title' => "Placements at {$comp}",
+                    'content' => $content,
+                    'source_url' => '/placements.php',
+                    'score' => 100
+                ]];
+            }
+        }
+
+        // Check for specific external company query not in our current verified records
+        $commonCompanies = ['capgemini', 'tcs', 'tata consultancy', 'infosys', 'wipro', 'cognizant', 'accenture', 'amazon', 'google', 'microsoft', 'tech mahindra', 'ibm', 'l&t', 'larsen'];
+        foreach ($commonCompanies as $cc) {
+            if (stripos($cleanQuery, $cc) !== false) {
+                $compName = ucwords($cc);
+                $content = "Currently, our verified Batch 2026 records do not list student placements specifically for **{$compName}**.\n\n"
+                         . "Our active verified hiring partners for Batch 2026 include **Toyota Tsusho Pvt Ltd** (Highest: ₹5.20 LPA), **Persevex** (₹4.50 LPA), **Unlox**, **LearnFlu**, **Green Rad Ventures**, and **Expert Global Solutions**.\n\n"
+                         . "🔗 [View Full Placement Report](/placements.php)";
+
+                return [[
+                    'source_type' => 'placement',
+                    'title' => "Recruiter Verification: {$compName}",
+                    'content' => $content,
+                    'source_url' => '/placements.php',
+                    'score' => 100
+                ]];
+            }
+        }
+
+        // General Placement highlights query
+        if (in_array($cleanQuery, ['placements', 'placement', 'jobs', 'job', 'career', 'recruitment', 'hiring', 'companies', 'placed students']) || preg_match('/(show|get|list|tell|top|which students|which companies|highest package|average package|campus placement)\b.*\b(placements?|jobs?|recruitment|companies|placed|package|salary|record)/i', $cleanQuery) || preg_match('/\b(placement|placements|highest package|avg package|package)\b/i', $cleanQuery)) {
             $list = [];
             foreach ($placements as $p) {
-                $desig = $p['designation'] ?? 'Software Engineer';
-                $list[] = "• **{$p['student_name']}** — Placed at **{$p['company_name']}** with package of **{$p['package_lpa']} LPA** ({$desig})";
+                $desig = $p['designation'] ?? 'Engineering Associate';
+                $list[] = "• **{$p['student_name']}** — **{$p['company_name']}** with package of **{$p['package_lpa']} LPA** ({$desig}, Batch: {$p['placement_year']})";
             }
-            $content = "Here are recent SOET campus recruitment highlights:\n\n" . implode("\n", $list) . "\n\nHighest Package: 18.5 LPA | Average Package: 5.2 LPA | Placement Rate: 92%.";
+            $content = "### 🏆 SOET Campus Recruitment & Placements (Batch 2026)\n\n"
+                     . "SOET Training & Placement Cell actively connects engineering students with leading global recruiters.\n\n"
+                     . "**Key Placement Statistics:**\n"
+                     . "• **Highest Package**: ₹{$maxPackage} LPA\n"
+                     . "• **Average Package**: ₹{$avgPackage} LPA\n"
+                     . "• **Key Hiring Partners**: {$companiesStr}\n"
+                     . "• **Total Verified Placements (Batch 2026)**: {$totalPlaced} students\n\n"
+                     . "**Recent Placed Students:**\n" . implode("\n", $list) . "\n\n"
+                     . "🔗 [View Full Placement Report](/placements.php)";
 
             return [[
                 'source_type' => 'placement',
@@ -381,11 +597,11 @@ class DatabaseSearch
         $matches = [];
         foreach ($placements as $p) {
             $desig = $p['designation'] ?? 'Engineering Recruit';
-            $yr = $p['placement_year'] ?? ($p['passout_year'] ?? date('Y'));
+            $yr = $p['placement_year'] ?? date('Y');
             $text = $p['student_name'] . ' ' . $p['company_name'] . ' ' . $p['package_lpa'] . ' LPA ' . $desig;
             $score = $this->calculateScore($query, explode(' ', $query), $text);
             if ($score > 0) {
-                $content = "Placement Record: **{$p['student_name']}** was placed at **{$p['company_name']}** with a package of **{$p['package_lpa']} LPA** (Role: {$desig}, Year: {$yr}).";
+                $content = "Placement Record: **{$p['student_name']}** was placed at **{$p['company_name']}** with a salary package of **{$p['package_lpa']} LPA** (Designation: {$desig}, Batch: {$yr}).";
                 $matches[] = [
                     'source_type' => 'placement',
                     'title' => "Placement: " . $p['company_name'],
@@ -401,7 +617,7 @@ class DatabaseSearch
             foreach ($placements as $p) {
                 $list[] = "• **{$p['student_name']}** — **{$p['company_name']}** ({$p['package_lpa']} LPA)";
             }
-            $content = "Here are recent SOET placement records:\n\n" . implode("\n", $list);
+            $content = "Here are recent SOET placement records (Batch 2026):\n\n" . implode("\n", $list);
 
             return [[
                 'source_type' => 'placement',
@@ -622,10 +838,10 @@ class DatabaseSearch
         }
 
         $genericCollegeWords = [
-            'soet', 'mgm', 'mgmu', 'college', 'engineering', 'technology', 'university',
-            'syllabus', 'department', 'details', 'information', 'about', 'tell', 'offered',
-            'course', 'courses', 'program', 'programs', 'branch', 'branches', 'number',
-            'give', 'show', 'need', 'want', 'please', 'know', 'find', 'get'
+            'soet', 'mgm', 'mgmu', 'college', 'engineering', 'technology', 'university', 'campus', 'institute',
+            'syllabus', 'department', 'details', 'information', 'about', 'tell', 'offered', 'available', 'facility',
+            'facilities', 'student', 'students', 'course', 'courses', 'program', 'programs', 'branch', 'branches', 'number',
+            'give', 'show', 'need', 'want', 'please', 'know', 'find', 'get', 'what', 'which', 'where', 'when', 'how'
         ];
 
         // Identify distinctive keywords in user query
@@ -674,22 +890,42 @@ class DatabaseSearch
         $metrics = $cms->getCourseSeatMetrics();
         $cleanQuery = mb_strtolower(trim($query));
 
-        // Course code & alias mappings
+        // Course code & alias mappings aligned with official 15 programs
         $aliases = [
-            'cse' => ['BTECH-CSE', 'B.Tech in Computer Science & Engineering'],
-            'computer science' => ['BTECH-CSE', 'B.Tech in Computer Science & Engineering'],
-            'cyber security' => ['BTECH-CS', 'B.Tech in CSE (Cyber Security & Digital Forensics)'],
-            'cs' => ['BTECH-CS', 'B.Tech in CSE (Cyber Security & Digital Forensics)'],
-            'ai' => ['BTECH-AIML', 'B.Tech in CSE (Artificial Intelligence & Machine Learning)'],
-            'aiml' => ['BTECH-AIML', 'B.Tech in CSE (Artificial Intelligence & Machine Learning)'],
-            'machine learning' => ['BTECH-AIML', 'B.Tech in CSE (Artificial Intelligence & Machine Learning)'],
-            'ece' => ['BTECH-ECE', 'B.Tech in Electronics & Communication Engineering'],
-            'electronics' => ['BTECH-ECE', 'B.Tech in Electronics & Communication Engineering'],
-            'mech' => ['BTECH-MECH', 'B.Tech in Mechanical & Automation Engineering'],
-            'mechanical' => ['BTECH-MECH', 'B.Tech in Mechanical & Automation Engineering'],
-            'civil' => ['BTECH-CIVIL', 'B.Tech in Civil Engineering'],
-            'integrated' => ['INT-BTECH', 'Integrated 6-Year B.Tech Program (After 10th Class)'],
-            'mtech' => ['MTECH-CSE', 'M.Tech in Computer Science & Engineering'],
+            'icbt' => ['BTECH-CSE-ICBT', 'B.Tech CSE (IoT, Cyber Security Incl. Blockchain)'],
+            'blockchain' => ['BTECH-CSE-ICBT', 'B.Tech CSE (IoT, Cyber Security Incl. Blockchain)'],
+            'iot' => ['BTECH-CSE-ICBT', 'B.Tech CSE (IoT, Cyber Security Incl. Blockchain)'],
+            'cse icbt' => ['BTECH-CSE-ICBT', 'B.Tech CSE (IoT, Cyber Security Incl. Blockchain)'],
+            'robotics' => ['BTECH-ROBOTICS', 'B.Tech Robotics and Automation'],
+            'automation' => ['BTECH-ROBOTICS', 'B.Tech Robotics and Automation'],
+            'robotics and automation' => ['BTECH-ROBOTICS', 'B.Tech Robotics and Automation'],
+            'cyber security' => ['BTECH-CSE-CYBER', 'B.Tech CSE (Cyber Security)'],
+            'cyber' => ['BTECH-CSE-CYBER', 'B.Tech CSE (Cyber Security)'],
+            'cse cyber' => ['BTECH-CSE-CYBER', 'B.Tech CSE (Cyber Security)'],
+            'vlsi' => ['BTECH-ECE-VLSI', 'B.Tech Electronics Engineering (VLSI Design and Technology)'],
+            'vlsi design' => ['BTECH-ECE-VLSI', 'B.Tech Electronics Engineering (VLSI Design and Technology)'],
+            'electronics' => ['BTECH-ECE-VLSI', 'B.Tech Electronics Engineering (VLSI Design and Technology)'],
+            'ece' => ['BTECH-ECE-VLSI', 'B.Tech Electronics Engineering (VLSI Design and Technology)'],
+            'ee' => ['BTECH-EE', 'B.Tech Electrical Engineering'],
+            'electrical' => ['BTECH-EE', 'B.Tech Electrical Engineering'],
+            'integrated civil' => ['INT-CIVIL', 'B.Tech (Integrated) Civil Engineering'],
+            'integrated data science' => ['INT-CSE-DS', 'B.Tech (Integrated) CSE (Data Science)'],
+            'integrated ds' => ['INT-CSE-DS', 'B.Tech (Integrated) CSE (Data Science)'],
+            'data science' => ['INT-CSE-DS', 'B.Tech (Integrated) CSE (Data Science)'],
+            'integrated icbt' => ['INT-CSE-IOT', 'B.Tech (Integrated) CSE (IoT, Cyber Security Incl. Blockchain)'],
+            'integrated iot' => ['INT-CSE-IOT', 'B.Tech (Integrated) CSE (IoT, Cyber Security Incl. Blockchain)'],
+            'integrated robotics' => ['INT-ROBOTICS-AI', 'B.Tech (Integrated) Robotics and AI'],
+            'integrated ai' => ['INT-ROBOTICS-AI', 'B.Tech (Integrated) Robotics and AI'],
+            'dse civil' => ['DSE-CIVIL', 'B.Tech Direct 2nd Year - Civil Engineering'],
+            'dse data science' => ['DSE-CSE-DS', 'B.Tech Direct 2nd Year - CSE (Data Science)'],
+            'dse ds' => ['DSE-CSE-DS', 'B.Tech Direct 2nd Year - CSE (Data Science)'],
+            'dse icbt' => ['DSE-CSE-ICBT', 'B.Tech Direct 2nd Year - CSE (ICBT / Cyber)'],
+            'dse robotics' => ['DSE-ROBOTICS', 'B.Tech Direct 2nd Year - Robotics & AI'],
+            'fire service' => ['DIP-FIRE-ENG', 'Diploma in Fire Service Engineering'],
+            'industrial safety' => ['ADIP-IND-SAFETY', 'Advanced Diploma in Industrial Safety'],
+            'adis' => ['ADIP-IND-SAFETY', 'Advanced Diploma in Industrial Safety'],
+            'cse' => ['BTECH-CSE-ICBT', 'B.Tech CSE (IoT, Cyber Security Incl. Blockchain)'],
+            'computer science' => ['BTECH-CSE-ICBT', 'B.Tech CSE (IoT, Cyber Security Incl. Blockchain)'],
         ];
 
         $matchedCourse = null;
@@ -709,7 +945,7 @@ class DatabaseSearch
         // 2. Try code/name substring match
         if (!$matchedCourse) {
             foreach ($metrics as $m) {
-                if (mb_strpos($cleanQuery, mb_strtolower($m['course_code'])) !== false) {
+                if (mb_strpos($cleanQuery, mb_strtolower($m['course_code'])) !== false || mb_strpos($cleanQuery, mb_strtolower($m['course_name'])) !== false) {
                     $matchedCourse = $m;
                     break;
                 }
@@ -719,22 +955,23 @@ class DatabaseSearch
         // Case A: Specific course matched and found in database
         if ($matchedCourse) {
             $name = $matchedCourse['course_name'];
+            $code = $matchedCourse['course_code'];
             $intake = $matchedCourse['total_intake'];
             $filled = $matchedCourse['filled_seats'];
             $vacant = $matchedCourse['vacant_seats'];
             $updatedAt = $matchedCourse['last_updated'];
             $isOpen = ($matchedCourse['admission_status'] === 'OPEN' && $vacant > 0);
 
-            $isAdmissionOpenQuery = (preg_match('/(is admission open|admission open|can i take admission)/i', $cleanQuery) !== false);
-
             if ($isOpen) {
-                if (preg_match('/(is admission open|admission open)/i', $cleanQuery)) {
-                    $content = "Yes, admission for {$name} is currently open. There are {$vacant} vacant seats out of {$intake} total seats ({$filled} filled). Last updated: {$updatedAt}.";
-                } else {
-                    $content = "{$name} has {$vacant} vacant seats out of {$intake} total seats. {$filled} seats are currently filled. Admission status: Open (Last updated: {$updatedAt}).";
-                }
+                $content = "### 📊 Seat Status: {$name} ({$code})\n\n"
+                         . "• **Approved Intake Capacity**: **{$intake} Seats**\n"
+                         . "• **Currently Vacant**: **{$vacant} Seats**\n"
+                         . "• **Confirmed Admissions**: {$filled} Seats\n"
+                         . "• **Admission Status**: 🟢 **OPEN**\n"
+                         . "• **Last Updated**: {$updatedAt}\n\n"
+                         . "🔗 [Apply Online Now](/admissions.php)";
             } else {
-                $content = "Admissions for {$name} are currently CLOSED. Total intake: {$intake}, Filled: {$filled}, Vacant: 0. Last updated: {$updatedAt}.";
+                $content = "Admissions for **{$name} ({$code})** are currently CLOSED. Total intake: {$intake}, Filled: {$filled}, Vacant: 0.";
             }
 
             return [[
@@ -746,7 +983,7 @@ class DatabaseSearch
             ]];
         }
 
-        // Check if user asked for a non-existent course (e.g., Aeronautical, Chemical, Biotech)
+        // Check if user asked for a non-existent course
         $nonExistentCourses = ['aeronautical', 'aerospace', 'chemical', 'biotech', 'biotechnology', 'textile', 'marine', 'automobile', 'mining', 'petroleum', 'agriculture', 'pharmacy'];
         $requestedNonExistent = null;
         foreach ($nonExistentCourses as $nec) {
@@ -758,14 +995,9 @@ class DatabaseSearch
 
         // Case B: Requested non-existent course
         if ($requestedNonExistent) {
-            $availableList = [];
-            foreach ($metrics as $m) {
-                $statusBadge = ($m['admission_status'] === 'OPEN' && $m['vacant_seats'] > 0) ? 'Open' : 'Closed';
-                $availableList[] = "• **{$m['course_name']} ({$m['course_code']})**: Total Intake: {$m['total_intake']} | Filled: {$m['filled_seats']} | Vacant: {$m['vacant_seats']} | Admission: {$statusBadge}";
-            }
-            $listStr = implode("\n", $availableList);
-
-            $content = "We do not offer a degree program named **'{$requestedNonExistent}'**. Here are the official SOET degree programs and their real-time seat availability:\n\n{$listStr}";
+            $content = "SOET MGM University does not currently offer **'{$requestedNonExistent}'**.\n\n"
+                     . "We offer approved programs in **CSE (IoT & Cyber / Blockchain)**, **Robotics & Automation**, **CSE (Cyber Security)**, **Electronics Engineering (VLSI Design)**, **Electrical Engineering**, plus **Integrated 6-Year B.Tech** and **Direct 2nd Year Lateral Entry** programs.\n\n"
+                     . "🔗 [Explore All Available Programs](/courses.php)";
 
             return [[
                 'source_type' => 'seats_database',
@@ -777,15 +1009,44 @@ class DatabaseSearch
         }
 
         // Case C: General query about all seat availability
-        $allSeatsList = [];
+        $firstYearIntake = 0;
+        $dseIntake = 0;
+        $totalIntake = 0;
+
+        $regList = [];
+        $intList = [];
+        $dseList = [];
+        $dipList = [];
+
         foreach ($metrics as $m) {
+            $totalIntake += (int)$m['total_intake'];
             $statusBadge = ($m['admission_status'] === 'OPEN' && $m['vacant_seats'] > 0) ? 'Open' : 'Closed';
-            $allSeatsList[] = "• **{$m['course_name']} ({$m['course_code']})**: Intake: {$m['total_intake']} | Filled: {$m['filled_seats']} | Vacant: {$m['vacant_seats']} | Status: {$statusBadge}";
+            $item = "• **{$m['course_name']} ({$m['course_code']})**: Intake: {$m['total_intake']} | Vacant: {$m['vacant_seats']} | Status: {$statusBadge}";
+
+            if (str_starts_with($m['course_code'], 'BTECH-')) {
+                $regList[] = $item;
+                $firstYearIntake += (int)$m['total_intake'];
+            } elseif (str_starts_with($m['course_code'], 'INT-')) {
+                $intList[] = $item;
+                $firstYearIntake += (int)$m['total_intake'];
+            } elseif (str_starts_with($m['course_code'], 'DSE-')) {
+                $dseList[] = $item;
+                $dseIntake += (int)$m['total_intake'];
+            } else {
+                $dipList[] = $item;
+                $firstYearIntake += (int)$m['total_intake'];
+            }
         }
-        $summaryStr = implode("\n", $allSeatsList);
+
         $currentTime = date('d-M-Y, g:i A');
 
-        $content = "Here is the real-time seat availability across all SOET degree programs (Last updated: {$currentTime}):\n\n{$summaryStr}\n\nTo apply online, please visit our admissions portal or contact the admissions desk.";
+        $content = "### 📊 SOET Real-Time Seat Matrix & Intake (AY 2026-27)\n\n"
+                 . "**1. Regular B.Tech (4 Years - HSC Entry | 180 Seats):**\n" . implode("\n", $regList) . "\n\n"
+                 . "**2. Integrated B.Tech (6 Years - SSC 10th Entry | 180 Seats):**\n" . implode("\n", $intList) . "\n\n"
+                 . "**3. Direct Second Year Lateral Entry (3 Years - Diploma Entry | 40 Seats):**\n" . implode("\n", $dseList) . "\n\n"
+                 . "**4. Diploma & Advanced Diploma (20 Seats):**\n" . implode("\n", $dipList) . "\n\n"
+                 . "> ℹ️ **Intake Summary**: Approved First-Year Freshmen Intake is **{$firstYearIntake} seats** across 11 degree programs (Total Institutional Capacity: **{$totalIntake} seats**). Admissions are currently **OPEN**.\n\n"
+                 . "🔗 [Apply for Online Admission](/admissions.php) | [Contact Admission Desk](/contact.php)";
 
         return [[
             'source_type' => 'seats_database',
@@ -796,9 +1057,155 @@ class DatabaseSearch
         ]];
     }
 
+    public function searchDocuments(string $query): array
+    {
+        $cms = new ContentManager();
+        $docs = $cms->getOfficialDocuments();
+        if (empty($docs)) {
+            return [];
+        }
+
+        $cleanQuery = mb_strtolower(trim($query));
+        $matches = [];
+        $list = [];
+
+        foreach ($docs as $d) {
+            $url = APP_URL . '/' . ltrim($d['file_path'], '/');
+            $sizeStr = !empty($d['file_size']) ? $d['file_size'] : 'PDF Document';
+            $itemStr = "• **{$d['title']}** (" . ucfirst($d['category']) . ", {$sizeStr}) — [📄 Download PDF]({$url})";
+            $list[] = $itemStr;
+
+            $text = mb_strtolower($d['title'] . ' ' . $d['category'] . ' ' . ($d['description'] ?? ''));
+            $score = $this->calculateScore($cleanQuery, explode(' ', $cleanQuery), $text);
+            if ($score > 0) {
+                $matches[] = [
+                    'source_type' => 'document',
+                    'title' => $d['title'],
+                    'content' => "### 📄 Official Document: {$d['title']}\n\n**Category**: " . ucfirst($d['category']) . "\n**File Size**: {$sizeStr}\n**Description**: {$d['description']}\n\n🔗 [Download Official PDF]({$url})",
+                    'source_url' => $url,
+                    'score' => $score + 15
+                ];
+            }
+        }
+
+        if (!empty($matches)) {
+            usort($matches, fn($a, $b) => $b['score'] <=> $a['score']);
+            return $matches;
+        }
+
+        $content = "### 📚 Official SOET Booklets, Leaflets & Brochures\n\nHere are the official institutional PDF documents available for direct download:\n\n" . implode("\n", $list);
+
+        return [[
+            'source_type' => 'document',
+            'title' => "SOET Official Documents & Booklets",
+            'content' => $content,
+            'source_url' => '/courses.php',
+            'score' => 95
+        ]];
+    }
+
+    public function searchFacilities(string $query): array
+    {
+        $clean = mb_strtolower(trim($query));
+        $cms = new ContentManager();
+        $dbFacilities = $cms->getFacilities(true);
+
+        if (!empty($dbFacilities)) {
+            // Check for specific facility matches in database
+            foreach ($dbFacilities as $f) {
+                $fName = $f['title'] ?? ($f['name'] ?? 'Facility');
+                $fTitle = mb_strtolower($fName);
+                $fDesc = mb_strtolower($f['description'] ?? '');
+                $fCat = mb_strtolower($f['category'] ?? '');
+                if (mb_strpos($clean, $fTitle) !== false || (!empty($fCat) && mb_strpos($clean, $fCat) !== false)) {
+                    return [[
+                        'source_type' => 'facility',
+                        'title' => $fName,
+                        'content' => "### 🏛️ {$fName} (" . ucfirst($f['category'] ?? 'Campus Facility') . ")\n\n{$f['description']}\n\n🔗 [Explore Campus Life](/about.php)",
+                        'source_url' => '/about.php',
+                        'score' => 100
+                    ]];
+                }
+            }
+
+            // Return combined list of active facilities from database
+            $list = [];
+            foreach (array_slice($dbFacilities, 0, 8) as $f) {
+                $fName = $f['title'] ?? ($f['name'] ?? 'Facility');
+                $list[] = "• **{$fName}** (" . ucfirst($f['category'] ?? 'Facility') . "): {$f['description']}";
+            }
+            $allDesc = "### 🏛️ SOET Campus Infrastructure & Facilities\n\n"
+                     . "SOET MGM University provides world-class campus infrastructure:\n\n"
+                     . implode("\n", $list) . "\n\n"
+                     . "🔗 [Explore Campus Life](/about.php)";
+
+            return [[
+                'source_type' => 'facility',
+                'title' => "SOET Campus Infrastructure & Facilities",
+                'content' => $allDesc,
+                'source_url' => '/about.php',
+                'score' => 95
+            ]];
+        }
+        
+        $facilities = [
+            'labs' => [
+                'title' => '🔬 Advanced Specialized Laboratories',
+                'desc' => 'SOET features state-of-the-art research labs including: IoT & Embedded Systems Lab, Robotics & AI Lab, VLSI Design & Simulation Lab, AI/ML Supercomputing Lab, Cloud & Network Security Lab, CAD/CAM Center, Materials & Structures Lab, and Environmental Engineering Lab.'
+            ],
+            'hostel' => [
+                'title' => '🏢 In-Campus Hostels & Accommodation',
+                'desc' => 'Separate, secure in-campus hostels for boys and girls with 24/7 security, high-speed Wi-Fi, reading rooms, gym, water purifiers, and hygienic dining mess.'
+            ],
+            'sports' => [
+                'title' => '⚽ Olympic-Standard Sports Complex',
+                'desc' => 'MGM University campus features an international cricket stadium, football ground, synthetic basketball courts, indoor badminton courts, lawn tennis, Olympic swimming pool, and fully equipped fitness gymnasium.'
+            ],
+            'library' => [
+                'title' => '📚 Central Library & Digital Knowledge Repository',
+                'desc' => 'Over 50,000+ technical volumes, 100+ national & international journals, IEEE Xplore digital library access, DELNET subscription, and air-conditioned digital reading hall.'
+            ],
+            'canteen' => [
+                'title' => '☕ Food Court & Cafeteria',
+                'desc' => 'Hygienic campus cafeteria serving multi-cuisine vegetarian meals, snacks, fresh juices, and beverages from 8:00 AM to 8:00 PM.'
+            ]
+        ];
+
+        foreach ($facilities as $key => $f) {
+            if (mb_strpos($clean, $key) !== false || ($key === 'labs' && (mb_strpos($clean, 'lab') !== false || mb_strpos($clean, 'laborator') !== false))) {
+                return [[
+                    'source_type' => 'facility',
+                    'title' => $f['title'],
+                    'content' => "### {$f['title']}\n\n{$f['desc']}\n\n🔗 [Explore Campus Life](/about.php)",
+                    'source_url' => '/about.php',
+                    'score' => 100
+                ]];
+            }
+        }
+
+        $allDesc = "### 🏛️ SOET Campus Infrastructure & Facilities\n\n"
+                 . "SOET MGM University provides world-class campus infrastructure:\n\n"
+                 . "• **Advanced Research Labs**: IoT, Robotics & AI, VLSI Design, Cloud Security & CAD/CAM Centers.\n"
+                 . "• **In-Campus Hostels**: 24/7 security, Wi-Fi, study halls, and dining mess for boys & girls.\n"
+                 . "• **Central Library**: 50,000+ volumes, IEEE digital access & research repository.\n"
+                 . "• **MGM Sports Complex**: Olympic-size swimming pool, cricket stadium, indoor courts & gymnasium.\n"
+                 . "• **Wi-Fi Campus & Smart Classrooms**: High-speed fiber-optic network and ICT-enabled auditoriums.\n\n"
+                 . "🔗 [Explore Campus Life](/about.php)";
+
+        return [[
+            'source_type' => 'facility',
+            'title' => "SOET Campus Infrastructure & Facilities",
+            'content' => $allDesc,
+            'source_url' => '/about.php',
+            'score' => 90
+        ]];
+    }
+
     private function searchCourseFees(string $query): array
     {
-        $courses = $this->db->fetchAll("SELECT * FROM courses WHERE is_active = 1");
+        $cms = new ContentManager();
+        $activeAY = $cms->getActiveAcademicYear();
+        $courses = $this->db->fetchAll("SELECT * FROM courses WHERE is_active = 1 ORDER BY sort_order ASC, name ASC");
         $cleanQuery = mb_strtolower(trim($query));
         $matches = [];
 
@@ -807,40 +1214,85 @@ class DatabaseSearch
             $name = mb_strtolower($c['name']);
 
             // Match course code or name substring
-            if (mb_strpos($cleanQuery, $code) !== false || (mb_strpos($cleanQuery, 'cse') !== false && mb_strpos($code, 'cse') !== false) || (mb_strpos($cleanQuery, 'ece') !== false && mb_strpos($code, 'ece') !== false) || (mb_strpos($cleanQuery, 'civil') !== false && mb_strpos($code, 'civil') !== false) || (mb_strpos($cleanQuery, 'mech') !== false && mb_strpos($code, 'mech') !== false) || (mb_strpos($cleanQuery, 'aiml') !== false && mb_strpos($code, 'aiml') !== false)) {
+            if (mb_strpos($cleanQuery, $code) !== false || 
+               (mb_strpos($cleanQuery, 'icbt') !== false && mb_strpos($code, 'icbt') !== false) || 
+               (mb_strpos($cleanQuery, 'vlsi') !== false && mb_strpos($code, 'vlsi') !== false) || 
+               (mb_strpos($cleanQuery, 'cyber') !== false && mb_strpos($code, 'cyber') !== false) || 
+               (mb_strpos($cleanQuery, 'robotics') !== false && mb_strpos($code, 'robotics') !== false) || 
+               (mb_strpos($cleanQuery, 'data science') !== false && mb_strpos($name, 'data science') !== false) || 
+               (mb_strpos($cleanQuery, 'civil') !== false && mb_strpos($code, 'civil') !== false) || 
+               (mb_strpos($cleanQuery, 'fire') !== false && mb_strpos($code, 'fire') !== false) || 
+               (mb_strpos($cleanQuery, 'safety') !== false && mb_strpos($code, 'safety') !== false) || 
+               (mb_strpos($cleanQuery, 'adis') !== false && mb_strpos($code, 'safety') !== false) || 
+               (mb_strpos($cleanQuery, 'electrical') !== false && mb_strpos($code, 'ee') !== false)) {
                 
-                $y1 = number_format($c['fee_year_1']);
-                $total = number_format($c['fee_year_1'] + $c['fee_year_2'] + $c['fee_year_3'] + $c['fee_year_4']);
+                $ywFees = $cms->getCourseYearWiseFees((int)$c['id'], $activeAY);
+                $yearLines = [];
+                $totalCost = 0;
 
-                $content = "The current {$c['name']} ({$c['code']}) tuition fee is ₹{$y1} per academic year (Total 4-Year Tuition Fee: ₹{$total}). Government SC/ST/OBC and MGM Merit Scholarships are available.";
+                if (!empty($ywFees)) {
+                    foreach ($ywFees as $yf) {
+                        $totalCost += (float)$yf['total_fee'];
+                        $yearLines[] = "• **{$yf['year_name']}** ({$yf['semesters_included']}): ₹" . number_format($yf['total_fee']) . " (Tuition: ₹" . number_format($yf['tuition_fee']) . " | Dev: ₹" . number_format($yf['development_fee']) . " | Exam/Other: ₹" . number_format($yf['exam_fee'] + $yf['other_fee']) . ")";
+                    }
+                } else {
+                    $duration = (int)($c['duration_years'] ?: 4);
+                    for ($y = 1; $y <= $duration; $y++) {
+                        $feeVal = (float)($c["fee_year_{$y}"] ?? $c['fee_year_1']);
+                        $totalCost += $feeVal;
+                        $yearLines[] = "• **Year {$y}**: ₹" . number_format($feeVal) . " / year";
+                    }
+                }
+
+                $content = "### 💳 Official Year-Wise Fee Structure: {$c['name']} ({$c['code']})\n\n"
+                         . "**Academic Session**: {$activeAY}\n"
+                         . "**Duration**: {$c['duration_years']} Years ({$c['semester_count']} Semesters)\n\n"
+                         . "**Year-Wise Breakdown:**\n" . implode("\n", $yearLines) . "\n\n"
+                         . "💰 **Total Multi-Year Degree Fee**: **₹" . number_format($totalCost) . "**\n\n"
+                         . "> ℹ️ *Includes Tuition Fee, Development Fee, and Examination Fee (₹2,500/semester). Government SC/ST/OBC and MGM Merit Scholarships apply.*\n\n"
+                         . "🔗 [View Full Programs & Fee Breakdown](/courses.php) | [Apply Online](/admissions.php)";
 
                 $matches[] = [
                     'source_type' => 'fee_database',
                     'title' => "Fee Structure - {$c['name']}",
                     'content' => $content,
                     'source_url' => '/courses.php',
-                    'score' => 98
+                    'score' => 100
                 ];
                 break;
             }
         }
 
         if (empty($matches)) {
-            $feeList = [];
-            foreach ($courses as $c) {
-                $y1 = number_format($c['fee_year_1']);
-                $feeList[] = "• **{$c['name']} ({$c['code']})**: ₹{$y1} / year";
-            }
-            $listStr = implode("\n", $feeList);
+            $regList = [];
+            $intList = [];
+            $dseList = [];
+            $dipList = [];
 
-            $content = "Here is the annual tuition fee breakdown for SOET degree programs:\n\n{$listStr}\n\nGovernment SC/ST/OBC scholarships and MGM Merit Scholarships are available.";
+            foreach ($courses as $c) {
+                $pType = strtolower($c['program_type']);
+                $feeStr = "₹" . number_format($c['fee_year_1']) . "/yr";
+                $item = "• **{$c['name']} ({$c['code']})**: {$feeStr} ({$c['duration_years']} Yrs)";
+                if ($pType === 'regular') $regList[] = $item;
+                elseif ($pType === 'integrated') $intList[] = $item;
+                elseif ($pType === 'lateral_entry') $dseList[] = $item;
+                else $dipList[] = $item;
+            }
+
+            $content = "### 💳 SOET Year-Wise Annual Fee Matrix (A.Y. {$activeAY})\n\n"
+                     . "**1. Regular 4-Year B.Tech Programs (After 12th HSC):**\n" . implode("\n", $regList) . "\n\n"
+                     . "**2. Integrated 6-Year B.Tech Programs (After 10th SSC):**\n" . implode("\n", $intList) . "\n\n"
+                     . "**3. Direct Second Year Lateral Entry (3 Years - After Diploma):**\n" . implode("\n", $dseList) . "\n\n"
+                     . "**4. Diploma & Advanced Diploma Programs:**\n" . implode("\n", $dipList) . "\n\n"
+                     . "> ℹ️ *Government SC/ST/OBC/EBC scholarships and MGM Merit Scholarships (10% to 30% tuition fee waiver) are available for eligible students.*\n\n"
+                     . "🔗 [View Complete Fee Details](/courses.php) | [Scholarship Calculator](/admissions.php)";
 
             $matches[] = [
                 'source_type' => 'fee_database',
                 'title' => "SOET Annual Tuition Fee Structure",
                 'content' => $content,
                 'source_url' => '/courses.php',
-                'score' => 85
+                'score' => 90
             ];
         }
 
@@ -913,4 +1365,68 @@ class DatabaseSearch
             'score' => 100
         ]];
     }
+
+    public function searchSyllabus(string $query): array
+    {
+        $courses = $this->db->fetchAll("SELECT c.*, d.name as dept_name FROM courses c JOIN departments d ON c.department_id = d.id WHERE c.is_active = 1");
+        $cleanQuery = mb_strtolower(trim($query));
+        $matches = [];
+
+        foreach ($courses as $c) {
+            $code = mb_strtolower($c['code']);
+            $name = mb_strtolower($c['name']);
+
+            if (mb_strpos($cleanQuery, $code) !== false ||
+                (mb_strpos($cleanQuery, 'cse') !== false && mb_strpos($code, 'cse') !== false) ||
+                (mb_strpos($cleanQuery, 'civil') !== false && mb_strpos($code, 'civil') !== false) ||
+                (mb_strpos($cleanQuery, 'mech') !== false && mb_strpos($code, 'mech') !== false) ||
+                (mb_strpos($cleanQuery, 'ece') !== false && mb_strpos($code, 'ece') !== false) ||
+                (mb_strpos($cleanQuery, 'ee') !== false && mb_strpos($code, 'ee') !== false) ||
+                (mb_strpos($cleanQuery, 'robotics') !== false && mb_strpos($name, 'robotics') !== false) ||
+                (mb_strpos($cleanQuery, 'vlsi') !== false && mb_strpos($name, 'vlsi') !== false)) {
+
+                $pdfLinks = [];
+                for ($yr = 1; $yr <= (int)$c['duration_years']; $yr++) {
+                    $col = "syllabus_pdf_year_{$yr}";
+                    if (!empty($c[$col])) {
+                        $pdfUrl = uploadUrl('syllabus', $c[$col]);
+                        $pdfLinks[] = "• **Year {$yr} Syllabus**: [📄 Download PDF]({$pdfUrl})";
+                    }
+                }
+
+                $pdfList = !empty($pdfLinks) ? implode("\n", $pdfLinks) : "• Official course syllabi are available on the [Departments & Programs](/departments.php) page.";
+
+                $content = "### 📚 Official Syllabus — {$c['name']} ({$c['code']})\n\n"
+                         . "The curriculum is structured across {$c['duration_years']} Years ({$c['semester_count']} Semesters) aligned with NEP 2020 guidelines:\n\n"
+                         . "{$pdfList}\n\n"
+                         . "🔗 [View Departments & Programs Details](/departments.php) | [Fee Structure](/courses.php)";
+
+                $matches[] = [
+                    'source_type' => 'syllabus_database',
+                    'title'       => "Syllabus - {$c['name']}",
+                    'content'     => $content,
+                    'source_url'  => '/departments.php',
+                    'score'       => 100
+                ];
+                break;
+            }
+        }
+
+        if (empty($matches)) {
+            $content = "### 📚 SOET Academic Curriculum & Syllabi\n\n"
+                     . "All SOET B.Tech engineering programs follow the AICTE & NEP 2020 aligned semester curriculum with dedicated practical labs, industry internships, and minor specializations.\n\n"
+                     . "You can download year-wise syllabus PDFs for all 18 engineering programs directly on our [Departments & Programs](/departments.php) page.";
+
+            $matches[] = [
+                'source_type' => 'syllabus_database',
+                'title'       => "SOET Academic Syllabi",
+                'content'     => $content,
+                'source_url'  => '/departments.php',
+                'score'       => 85
+            ];
+        }
+
+        return $matches;
+    }
 }
+

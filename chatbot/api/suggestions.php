@@ -1,6 +1,18 @@
 <?php
 /**
  * Chatbot Public API - Quick Suggestions & Live Autocomplete Endpoint
+ *
+ * Powers real-time search chips and input suggestions in the chatbot widget UI,
+ * returning matches from FAQs, Knowledge Base titles, and Course catalogs.
+ *
+ * @endpoint GET /chatbot/api/suggestions.php?q={searchTerm}
+ * @response JSON {
+ *     "success": bool,
+ *     "suggestions": array<["label": string, "query": string]>
+ * }
+ *
+ * @package SOET_College_Project
+ * @subpackage Chatbot_API
  */
 
 header('Content-Type: application/json');
