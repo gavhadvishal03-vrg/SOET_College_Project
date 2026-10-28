@@ -114,7 +114,7 @@ foreach ($faculty_list as $fac) {
                                         <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle shadow-xs" 
                                              style="width: <?php echo $isDirector ? '130px' : '110px'; ?>; height: <?php echo $isDirector ? '130px' : '110px'; ?>; overflow: hidden; border: <?php echo $isDirector ? '4px solid var(--accent)' : '3px solid #e2e8f0'; ?>;">
                                             <?php if (!empty($fac['image_path'])): ?>
-                                                <img src="<?php echo uploadUrl('faculty', $fac['image_path']); ?>" alt="<?php echo htmlspecialchars($fac['name']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                                <img src="<?php echo uploadUrl('faculty', $fac['image_path']); ?>" alt="<?php echo htmlspecialchars($fac['name']); ?>" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" decoding="async">
                                             <?php else: ?>
                                                 <i class="fa-solid fa-user-tie text-secondary fa-3x"></i>
                                             <?php endif; ?>

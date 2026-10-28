@@ -52,7 +52,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const alt = (img.getAttribute('alt') || '').toLowerCase();
         const className = (img.className || '').toLowerCase();
 
-        const appUrl = (typeof window.APP_URL !== 'undefined') ? window.APP_URL : (window.location.origin + '/project');
+        const appUrl = (typeof window.APP_URL !== 'undefined' && window.APP_URL)
+            ? window.APP_URL.replace(/\/$/, '')
+            : (window.location.origin + (window.location.pathname.startsWith('/project') ? '/project' : ''));
 
         if (src.includes('faculty') || alt.includes('faculty') || alt.includes('director') || alt.includes('student') || className.includes('rounded-circle')) {
             img.src = appUrl + '/assets/images/default_avatar.svg';

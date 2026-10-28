@@ -90,7 +90,14 @@ class ResponseFormatter
         $clean = preg_replace('/`([^`]+)`/', '<code class="bg-light text-danger px-1 py-0.5 rounded font-monospace small">$1</code>', $clean);
 
         // 7. Process Markdown Links [text](url)
-        $clean = preg_replace('/\[([^\]]+)\]\(([^)]+)\)/', '<a href="$2" target="_blank" rel="noopener" class="text-primary font-semibold">$1 <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 14px;"></i></a>', $clean);
+        $clean = preg_replace_callback('/\[([^\]]+)\]\(([^)]+)\)/', function($matches) {
+            $text = $matches[1];
+            $url = $matches[2];
+            if (str_starts_with($url, '/') && !str_starts_with($url, '//')) {
+                $url = APP_URL . $url;
+            }
+            return '<a href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '" target="_blank" rel="noopener" class="text-primary font-semibold">' . $text . ' <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 14px;"></i></a>';
+        }, $clean);
 
         // 8. Process Bullet Lists (* or -)
         $clean = preg_replace_callback('/((?:^[•\*\-]\s+.*$\n?)+)/m', function ($matches) {
@@ -142,7 +149,8 @@ class ResponseFormatter
         // 11. Navigation Link (Clean, no internal database queries/AI models mentioned)
         $footer = "";
         if (!empty($sourceUrl)) {
-            $footer = "<div class='mt-2 pt-1 border-top border-light text-end'><a href='" . APP_URL . $sourceUrl . "' class='text-primary small text-decoration-none fw-semibold' target='_blank'>View Details <i class='fa-solid fa-arrow-up-right-from-square ms-1' style='font-size: 14px;'></i></a></div>";
+            $targetUrl = (strpos($sourceUrl, 'http') === 0) ? $sourceUrl : (APP_URL . '/' . ltrim($sourceUrl, '/'));
+            $footer = "<div class='mt-2 pt-1 border-top border-light text-end'><a href='" . htmlspecialchars($targetUrl, ENT_QUOTES, 'UTF-8') . "' class='text-primary small text-decoration-none fw-semibold' target='_blank'>View Details <i class='fa-solid fa-arrow-up-right-from-square ms-1' style='font-size: 14px;'></i></a></div>";
         }
 
         return $formattedHtml . $footer;

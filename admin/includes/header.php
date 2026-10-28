@@ -34,6 +34,9 @@ $current_admin_page = basename($_SERVER['PHP_SELF']);
     <!-- Custom stylesheet -->
     <link href="<?php echo APP_URL; ?>/assets/css/style.css" rel="stylesheet">
     <link href="<?php echo APP_URL; ?>/assets/css/admin.css" rel="stylesheet">
+    <script>
+        window.APP_URL = "<?php echo APP_URL; ?>";
+    </script>
 </head>
 <body class="bg-light">
 

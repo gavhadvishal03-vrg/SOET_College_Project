@@ -35,7 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
             'max_tokens',
             'fallback_message',
             'enable_openai',
-            'system_prompt'
+            'system_prompt',
+            'ai_engine_mode'
         ];
 
         // Upsert setting keys into the chatbot_settings database table
@@ -129,8 +130,20 @@ foreach ($settingsRaw as $s) {
                         </div>
                     </div>
 
+                    <div class="col-12">
+                        <label class="form-label font-semibold small text-secondary">Primary AI Model Engine Architecture</label>
+                        <select name="ai_engine_mode" class="form-select rounded-3 font-semibold bg-light">
+                            <option value="campus_ai" <?php echo ($settings['ai_engine_mode'] ?? '') === 'campus_ai' ? 'selected' : ''; ?>>⚡ CampusAI Native Neural Model (Self-Hosted / Own Model — 100% Free &amp; Offline)</option>
+                            <option value="hybrid" <?php echo ($settings['ai_engine_mode'] ?? 'hybrid') === 'hybrid' ? 'selected' : ''; ?>>🔄 Hybrid Adaptive Router (OpenAI Cloud + CampusAI Native Fallback)</option>
+                            <option value="openai" <?php echo ($settings['ai_engine_mode'] ?? '') === 'openai' ? 'selected' : ''; ?>>☁️ OpenAI Cloud API Only</option>
+                        </select>
+                        <div class="form-text text-xs text-muted mt-1">
+                            Choose between our autonomous in-house <strong>CampusAI Neural Model</strong>, external OpenAI cloud completions, or automatic hybrid routing.
+                        </div>
+                    </div>
+
                     <div class="col-md-6">
-                        <label class="form-label font-semibold small text-secondary">Model Selection</label>
+                        <label class="form-label font-semibold small text-secondary">OpenAI Model Selection</label>
                         <select name="openai_model" class="form-select rounded-3 font-medium">
                             <option value="gpt-4o-mini" <?php echo ($settings['openai_model'] ?? '') === 'gpt-4o-mini' ? 'selected' : ''; ?>>gpt-4o-mini (Fast &amp; Recommended)</option>
                             <option value="gpt-4o" <?php echo ($settings['openai_model'] ?? '') === 'gpt-4o' ? 'selected' : ''; ?>>gpt-4o (High Intelligence)</option>
@@ -141,8 +154,8 @@ foreach ($settingsRaw as $s) {
                     <div class="col-md-6">
                         <label class="form-label font-semibold small text-secondary">API Cloud Integration</label>
                         <select name="enable_openai" class="form-select rounded-3 font-medium">
-                            <option value="1" <?php echo ($settings['enable_openai'] ?? '1') === '1' ? 'selected' : ''; ?>>Enabled (Hybrid AI Routing)</option>
-                            <option value="0" <?php echo ($settings['enable_openai'] ?? '') === '0' ? 'selected' : ''; ?>>Disabled (Local DB &amp; Built-in Only)</option>
+                            <option value="1" <?php echo ($settings['enable_openai'] ?? '1') === '1' ? 'selected' : ''; ?>>Enabled (Allow Cloud API)</option>
+                            <option value="0" <?php echo ($settings['enable_openai'] ?? '') === '0' ? 'selected' : ''; ?>>Disabled (Native Model Only)</option>
                         </select>
                     </div>
 

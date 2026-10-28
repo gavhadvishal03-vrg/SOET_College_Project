@@ -503,10 +503,20 @@ $deptColors = [
                                                     <span class="fw-bold font-display text-primary-color d-block" style="font-size: 14.5px; line-height: 1.35;">
                                                         <?php echo htmlspecialchars($course['name']); ?>
                                                     </span>
+                                                    <?php
+                                                    $courseVer = !empty($course['updated_at']) ? strtotime($course['updated_at']) : (!empty($course['created_at']) ? strtotime($course['created_at']) : time());
+                                                    $brochureUrl = !empty($course['brochure_document']) ? (APP_URL . '/' . ltrim($course['brochure_document'], '/') . '?v=' . $courseVer) : '';
+                                                    $hasAnySyllabusPdf = !empty($brochureUrl) || !empty($course['syllabus_pdf_year_1']) || !empty($course['syllabus_pdf_year_2']) || !empty($course['syllabus_pdf_year_3']) || !empty($course['syllabus_pdf_year_4']);
+                                                    ?>
                                                     <div class="d-flex flex-wrap gap-2 align-items-center mt-1">
                                                         <span class="badge bg-secondary text-uppercase" style="font-size: 14px;"><?php echo htmlspecialchars($course['code']); ?></span>
                                                         <span class="text-muted" style="font-size: 14px;"><i class="fa-regular fa-clock me-1 text-warning" style="font-size: 14px;"></i><?php echo $duration; ?> Years &middot; <?php echo $semCount; ?> Sems</span>
                                                         <span class="text-muted" style="font-size: 14px;"><i class="fa-solid fa-users me-1 text-primary" style="font-size: 14px;"></i>Intake: <?php echo $intakeCap; ?></span>
+                                                        <?php if ($hasAnySyllabusPdf): ?>
+                                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill" style="font-size: 12px;">
+                                                                <i class="fa-solid fa-file-pdf me-1"></i>Syllabus PDF Available
+                                                            </span>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </div>
                                                 <!-- Seat status badge -->
@@ -625,6 +635,50 @@ $deptColors = [
                                                         <?php endif; ?>
                                                     </div>
 
+                                                    <!-- Core Courses & Career Opportunities -->
+                                                    <?php if (!empty($course['core_courses']) || !empty($course['career_opportunities'])): ?>
+                                                        <div class="row g-3 mb-4">
+                                                            <?php if (!empty($course['core_courses'])): 
+                                                                $coreList = array_filter(array_map('trim', explode("\n", $course['core_courses'])));
+                                                            ?>
+                                                                <div class="col-md-6">
+                                                                    <div class="p-3 bg-white rounded-3 border h-100">
+                                                                        <h6 class="fw-bold text-primary-color mb-2 font-display" style="font-size: 14px;">
+                                                                            <i class="fa-solid fa-book-open-reader text-warning me-2"></i>Core Courses &amp; Subjects
+                                                                        </h6>
+                                                                        <ul class="list-unstyled mb-0 d-flex flex-column gap-1.5 small text-muted">
+                                                                            <?php foreach ($coreList as $cItem): ?>
+                                                                                <li class="d-flex align-items-start gap-2">
+                                                                                    <i class="fa-solid fa-check text-primary mt-1 flex-shrink-0" style="font-size: 12px;"></i>
+                                                                                    <span><?php echo htmlspecialchars($cItem); ?></span>
+                                                                                </li>
+                                                                            <?php endforeach; ?>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            <?php endif; ?>
+                                                            <?php if (!empty($course['career_opportunities'])): 
+                                                                $careerList = array_filter(array_map('trim', explode("\n", $course['career_opportunities'])));
+                                                            ?>
+                                                                <div class="col-md-6">
+                                                                    <div class="p-3 bg-white rounded-3 border h-100">
+                                                                        <h6 class="fw-bold text-primary-color mb-2 font-display" style="font-size: 14px;">
+                                                                            <i class="fa-solid fa-briefcase text-success me-2"></i>Career Opportunities &amp; Roles
+                                                                        </h6>
+                                                                        <ul class="list-unstyled mb-0 d-flex flex-column gap-1.5 small text-muted">
+                                                                            <?php foreach ($careerList as $carItem): ?>
+                                                                                <li class="d-flex align-items-start gap-2">
+                                                                                    <i class="fa-solid fa-arrow-trend-up text-success mt-1 flex-shrink-0" style="font-size: 12px;"></i>
+                                                                                    <span><?php echo htmlspecialchars($carItem); ?></span>
+                                                                                </li>
+                                                                            <?php endforeach; ?>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    <?php endif; ?>
+
                                                     <!-- Curriculum Overview -->
                                                     <?php if (!empty($course['curriculum_overview'])): ?>
                                                         <div class="p-3 bg-light rounded-3 border mb-4">
@@ -673,11 +727,18 @@ $deptColors = [
                                                     </div>
 
                                                     <!-- Syllabus PDF Section -->
-                                                    <h6 class="fw-bold text-primary-color mb-3 border-bottom pb-2 font-display" style="font-size: 14px;">
-                                                        <i class="fa-solid fa-file-pdf text-danger me-2"></i>Year-Wise Official Syllabus Curriculum
-                                                    </h6>
+                                                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2 flex-wrap gap-2">
+                                                        <h6 class="fw-bold text-primary-color mb-0 font-display" style="font-size: 14px;">
+                                                            <i class="fa-solid fa-file-pdf text-danger me-2"></i>Year-Wise Official Syllabus Curriculum
+                                                        </h6>
+                                                        <?php if ($brochureUrl): ?>
+                                                            <a href="<?php echo htmlspecialchars($brochureUrl); ?>" target="_blank" class="badge bg-warning text-dark text-decoration-none rounded-pill px-3 py-1.5 fw-bold shadow-xs" style="font-size: 12.5px;">
+                                                                <i class="fa-solid fa-book-open me-1"></i> Official Curriculum Booklet PDF
+                                                            </a>
+                                                        <?php endif; ?>
+                                                    </div>
                                                     <div class="row g-2 mb-4">
-                                                        <?php for ($y = 1; $y <= min($duration, 6); $y++):
+                                                        <?php for ($y = 1; $y <= min($duration, 4); $y++):
                                                             $pdfKey = "syllabus_pdf_year_{$y}"; ?>
                                                             <div class="col-sm-6">
                                                                 <div class="d-flex align-items-center justify-content-between p-3 bg-white border rounded-3" style="font-size: 14px;">
@@ -687,11 +748,18 @@ $deptColors = [
                                                                         <small class="text-muted d-block ms-4" style="font-size: 14px;">Sem <?php echo ($y*2-1); ?> &amp; <?php echo ($y*2); ?></small>
                                                                     </div>
                                                                     <?php if (!empty($course[$pdfKey])): ?>
-                                                                        <a href="<?php echo uploadUrl('courses', $course[$pdfKey]); ?>"
+                                                                        <a href="<?php echo uploadUrl('courses', $course[$pdfKey]) . '?v=' . $courseVer; ?>"
                                                                            target="_blank"
                                                                            class="btn btn-danger btn-xs rounded-pill fw-bold"
                                                                            aria-label="Download Year <?php echo $y; ?> Syllabus PDF">
                                                                             <i class="fa-solid fa-download me-1"></i> PDF
+                                                                        </a>
+                                                                    <?php elseif ($brochureUrl): ?>
+                                                                        <a href="<?php echo htmlspecialchars($brochureUrl); ?>"
+                                                                           target="_blank"
+                                                                           class="btn btn-outline-primary btn-xs rounded-pill fw-semibold"
+                                                                           aria-label="View Curriculum Booklet PDF">
+                                                                            <i class="fa-solid fa-file-pdf me-1"></i> Booklet PDF
                                                                         </a>
                                                                     <?php else: ?>
                                                                         <span class="badge bg-secondary bg-opacity-20 text-secondary rounded-pill" style="font-size: 14px;">Available Soon</span>
@@ -709,6 +777,14 @@ $deptColors = [
                                                                style="font-size: 14px;">
                                                                 <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> View Full Details
                                                             </a>
+                                                            <?php if ($brochureUrl): ?>
+                                                                <a href="<?php echo htmlspecialchars($brochureUrl); ?>"
+                                                                   target="_blank"
+                                                                   class="btn btn-sm btn-outline-primary rounded-pill fw-semibold"
+                                                                   style="font-size: 14px;">
+                                                                    <i class="fa-solid fa-file-pdf me-1"></i> Curriculum Booklet
+                                                                </a>
+                                                            <?php endif; ?>
                                                         </div>
                                                         <a href="admissions.php?course_id=<?php echo $course['id']; ?>"
                                                            class="btn btn-sm btn-warning fw-bold rounded-pill text-dark"
@@ -728,6 +804,43 @@ $deptColors = [
                         <?php endforeach; ?>
                     </div><!-- /program-types-container -->
 
+                    <?php elseif ($dept['code'] === 'ASH' || stripos($dept['name'], 'Applied Science') !== false): ?>
+                        <div class="p-4 bg-white rounded-4 border shadow-xs mb-3">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 fw-bold" style="font-size: 13px;">
+                                    <i class="fa-solid fa-flask me-1"></i> First-Year (F.Y. B.Tech) Common Engineering Foundation
+                                </span>
+                            </div>
+                            <p class="text-muted small mb-3">
+                                The Department of Applied Science forms the academic bedrock for all B.Tech engineering disciplines during the first year, imparting core analytical, scientific, and communication competencies.
+                            </p>
+                            <div class="row g-2 small">
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="p-2.5 bg-light rounded-3 border h-100">
+                                        <strong class="text-dark d-block"><i class="fa-solid fa-atom text-primary me-1"></i> Engineering Physics</strong>
+                                        <span class="text-muted" style="font-size: 13px;">Quantum mechanics, optics, lasers &amp; semiconductor physics</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="p-2.5 bg-light rounded-3 border h-100">
+                                        <strong class="text-dark d-block"><i class="fa-solid fa-vial text-success me-1"></i> Engineering Chemistry</strong>
+                                        <span class="text-muted" style="font-size: 13px;">Physical chemistry, nanomaterials, polymers &amp; green energy</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="p-2.5 bg-light rounded-3 border h-100">
+                                        <strong class="text-dark d-block"><i class="fa-solid fa-square-root-variable text-warning me-1"></i> Engineering Mathematics</strong>
+                                        <span class="text-muted" style="font-size: 13px;">Calculus, differential equations, linear algebra &amp; statistics</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <div class="p-2.5 bg-light rounded-3 border h-100">
+                                        <strong class="text-dark d-block"><i class="fa-solid fa-comments text-info me-1"></i> Communication Skills</strong>
+                                        <span class="text-muted" style="font-size: 13px;">Technical writing, corporate presentation &amp; ethics</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     <?php else: ?>
                         <div class="p-4 bg-light rounded-3 text-center text-muted border mb-3" style="font-size: 14px;">
                             <i class="fa-solid fa-info-circle me-2"></i> No programs listed for this department yet.

@@ -39,20 +39,37 @@ define('APP_TIMEZONE', getenv('APP_TIMEZONE') ?: 'Asia/Kolkata');
 // -------------------------------------------------------------------------
 // 3. Dynamic Application URL Detection
 // -------------------------------------------------------------------------
-if (isset($_SERVER['HTTP_HOST'])) {
-    $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-    $appUrl = $scheme . '://' . $_SERVER['HTTP_HOST'];
+if (isset($_SERVER['HTTP_HOST']) || isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+    // Detect HTTPS directly or when forwarded by reverse proxy / VS Code Port Forwarding tunnel
+    $isHttps = (
+        (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') ||
+        (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') ||
+        (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) === 'on') ||
+        (!empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) === 'on') ||
+        (!empty($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443) ||
+        (!empty($_SERVER['HTTP_X_FORWARDED_PORT']) && (int)$_SERVER['HTTP_X_FORWARDED_PORT'] === 443)
+    );
+    $scheme = $isHttps ? 'https' : 'http';
+
+    // VS Code Port Forwarding (Dev Tunnels) sends the public tunnel hostname in HTTP_X_FORWARDED_HOST
+    $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? 'localhost:8000';
+    if (str_contains($host, ',')) {
+        $host = trim(explode(',', $host)[0]);
+    }
+
+    $appUrl = $scheme . '://' . $host;
     $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
     
-    // Strip script filename and /admin or /api subfolders to get project root URL
-    $scriptDir = dirname($scriptName);
-    if ($scriptDir !== '/' && $scriptDir !== '.') {
-        $baseDir = preg_replace('#/(admin|api)(/.*)?$#i', '', $scriptDir);
-        if ($baseDir !== '/' && $baseDir !== '') {
+    // Normalize script directory across Windows (\) and Unix (/) paths
+    $scriptDir = str_replace('\\', '/', dirname($scriptName));
+    if ($scriptDir !== '/' && $scriptDir !== '.' && $scriptDir !== '') {
+        $baseDir = preg_replace('#/(admin|api|chatbot|tests|includes|core)(/.*)?$#i', '', $scriptDir);
+        $baseDir = rtrim($baseDir, '/');
+        if ($baseDir !== '' && $baseDir !== '/') {
             $appUrl .= $baseDir;
         }
     }
-    define('APP_URL', rtrim($appUrl, '/'));
+    define('APP_URL', rtrim($appUrl, '/\\'));
 } else {
     define('APP_URL', getenv('APP_URL') ?: 'http://localhost:8000');
 }
@@ -69,9 +86,16 @@ define('ASSETS_URL', APP_URL . '/assets/');
 define('DOCS_PATH', dirname(__DIR__) . '/docs/');
 define('DOCS_URL', APP_URL . '/docs/');
 
-define('MAX_UPLOAD_SIZE', 5 * 1024 * 1024); // 5MB maximum file size
+define('MAX_UPLOAD_SIZE', 40 * 1024 * 1024); // 40MB maximum file size (matches PHP upload_max_filesize)
 define('ALLOWED_IMAGE_TYPES', ['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
-define('ALLOWED_DOC_TYPES', ['application/pdf', 'image/jpeg', 'image/png']);
+define('ALLOWED_DOC_TYPES', [
+    'application/pdf',
+    'application/x-pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'image/jpeg',
+    'image/png'
+]);
 
 // -------------------------------------------------------------------------
 // 5. Session & Security Constants

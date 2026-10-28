@@ -25,12 +25,16 @@
     color: #ffffff;
     border: 3px solid #ffffff;
     box-shadow: 0 10px 25px rgba(30, 58, 138, 0.4);
-    cursor: pointer;
-    display: flex;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     font-size: 26px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 #soet-chatbot-trigger:hover {
@@ -643,5 +647,273 @@
 }
 #soet-chatbot-window.dark-mode .cb-fallback-text {
     color: #f1f5f9;
+}
+
+/* === CampusAI v3 UI & Feature Additions === */
+
+/* Offline Alert Banner */
+.soet-cb-offline-banner {
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    padding: 6px 12px;
+    letter-spacing: 0.3px;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+}
+
+/* In-Drawer Search Bar */
+.soet-cb-search-bar {
+    display: flex;
+    align-items: center;
+    padding: 8px 14px;
+    background: #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
+    gap: 6px;
+    animation: fadeInMsg 0.2s ease-out;
+}
+
+.soet-cb-search-bar input {
+    flex: 1;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 4px 10px;
+    font-size: 13px;
+    outline: none;
+    background: #ffffff;
+    color: #1e293b;
+}
+
+.soet-cb-search-bar input:focus {
+    border-color: var(--cb-primary);
+}
+
+.soet-cb-search-nav {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.soet-cb-search-nav:hover {
+    background: #e2e8f0;
+    color: var(--cb-primary);
+}
+
+.cb-search-highlight {
+    background-color: #fef08a !important;
+    color: #000000 !important;
+    border-radius: 2px;
+    padding: 0 1px;
+}
+
+.cb-search-highlight.active {
+    background-color: #f59e0b !important;
+    color: #ffffff !important;
+    font-weight: bold;
+}
+
+/* Scroll-to-Bottom FAB */
+.soet-cb-scroll-fab {
+    position: absolute;
+    bottom: 130px;
+    right: 18px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: var(--cb-primary);
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+}
+
+.soet-cb-scroll-fab:hover {
+    background: var(--cb-primary);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.soet-cb-fab-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 10px;
+    height: 10px;
+    background: #ef4444;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+}
+
+/* Quick Actions Toolbar */
+.soet-cb-quick-actions {
+    display: flex;
+    gap: 6px;
+    padding: 6px 14px;
+    background: #ffffff;
+    border-top: 1px solid #f1f5f9;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.soet-cb-quick-actions::-webkit-scrollbar {
+    display: none;
+}
+
+.cb-qa-btn {
+    white-space: nowrap;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+}
+
+.cb-qa-btn:hover {
+    background: #e0e7ff;
+    border-color: #93c5fd;
+    color: var(--cb-primary);
+    transform: translateY(-1px);
+}
+
+/* Reply Preview Quote */
+.soet-cb-reply-preview {
+    background: #f1f5f9;
+    border-left: 3px solid var(--cb-primary);
+    padding: 6px 12px;
+    margin: 0;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Input Sub-status & Character Counter */
+.soet-cb-input-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 16px 6px;
+    background: #ffffff;
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.soet-cb-status-indicator {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+}
+
+.soet-cb-char-count {
+    font-family: monospace;
+    font-size: 11px;
+}
+
+/* Topic / Model Tag Badge on Bot Bubbles */
+.cb-topic-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+}
+
+/* Read Receipts */
+.cb-read-receipt {
+    color: #3b82f6;
+    font-size: 11px;
+    margin-left: 4px;
+}
+
+/* Dark Mode Overrides for v3 Elements */
+#soet-chatbot-window.dark-mode .soet-cb-search-bar {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+#soet-chatbot-window.dark-mode .soet-cb-search-bar input {
+    background: #0f172a;
+    border-color: #475569;
+    color: #f1f5f9;
+}
+
+#soet-chatbot-window.dark-mode .soet-cb-search-nav {
+    color: #94a3b8;
+}
+
+#soet-chatbot-window.dark-mode .soet-cb-search-nav:hover {
+    background: #334155;
+    color: #ffffff;
+}
+
+#soet-chatbot-window.dark-mode .soet-cb-scroll-fab {
+    background: #1e293b;
+    color: #93c5fd;
+    border-color: #475569;
+}
+
+#soet-chatbot-window.dark-mode .soet-cb-scroll-fab:hover {
+    background: var(--cb-primary);
+    color: #ffffff;
+}
+
+#soet-chatbot-window.dark-mode .soet-cb-quick-actions {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+#soet-chatbot-window.dark-mode .cb-qa-btn {
+    background: #1e293b;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+
+#soet-chatbot-window.dark-mode .cb-qa-btn:hover {
+    background: #334155;
+    color: #ffffff;
+    border-color: #475569;
+}
+
+#soet-chatbot-window.dark-mode .soet-cb-reply-preview {
+    background: #1e293b;
+    border-color: #3b82f6;
+}
+
+#soet-chatbot-window.dark-mode .soet-cb-input-status {
+    background: #0f172a;
+    color: #64748b;
+}
+
+#soet-chatbot-window.dark-mode .cb-topic-badge {
+    background: #1e293b;
+    color: #93c5fd;
+    border-color: #3b82f6;
 }
 

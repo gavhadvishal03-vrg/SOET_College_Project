@@ -107,9 +107,10 @@ $logo_src = !empty($settings['site_logo']) ? uploadUrl('settings', $settings['si
 
 <?php
 $visitorTracker = new Visitor();
-$totalVisitors = $visitorTracker->getTotalVisitors();
-$todayVisitors = $visitorTracker->getTodayVisitors();
-$totalViews = $visitorTracker->getTotalPageViews();
+$footerStats = $visitorTracker->getFooterStats();
+$totalVisitors = $footerStats['total_visitors'];
+$todayVisitors = $footerStats['today_visitors'];
+$totalViews = $footerStats['total_views'];
 ?>
         <div class="footer-bottom d-flex flex-column flex-md-row align-items-center justify-content-between pt-4 mt-4 border-top border-secondary border-opacity-25">
             <p class="mb-2 mb-md-0 text-white-50 small">&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($col_name); ?>. All Rights Reserved.</p>
@@ -146,6 +147,6 @@ $totalViews = $visitorTracker->getTotalPageViews();
 <!-- Bootstrap 5 Bundle JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Custom JS -->
-<script src="<?php echo APP_URL; ?>/assets/js/main.js"></script>
+<script src="<?php echo APP_URL; ?>/assets/js/main.js" defer></script>
 </body>
 </html>

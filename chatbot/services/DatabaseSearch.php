@@ -1368,7 +1368,7 @@ class DatabaseSearch
 
     public function searchSyllabus(string $query): array
     {
-        $courses = $this->db->fetchAll("SELECT c.*, d.name as dept_name FROM courses c JOIN departments d ON c.department_id = d.id WHERE c.is_active = 1");
+        $courses = $this->db->fetchAll("SELECT c.*, d.name as dept_name FROM courses c JOIN departments d ON c.department_id = d.id WHERE c.is_active = 1 ORDER BY c.sort_order ASC, c.name ASC");
         $cleanQuery = mb_strtolower(trim($query));
         $matches = [];
 
@@ -1378,34 +1378,45 @@ class DatabaseSearch
 
             if (mb_strpos($cleanQuery, $code) !== false ||
                 (mb_strpos($cleanQuery, 'cse') !== false && mb_strpos($code, 'cse') !== false) ||
+                (mb_strpos($cleanQuery, 'icbt') !== false && mb_strpos($code, 'icbt') !== false) ||
+                (mb_strpos($cleanQuery, 'cyber') !== false && mb_strpos($code, 'cyber') !== false) ||
+                (mb_strpos($cleanQuery, 'data science') !== false && mb_strpos($name, 'data science') !== false) ||
                 (mb_strpos($cleanQuery, 'civil') !== false && mb_strpos($code, 'civil') !== false) ||
                 (mb_strpos($cleanQuery, 'mech') !== false && mb_strpos($code, 'mech') !== false) ||
                 (mb_strpos($cleanQuery, 'ece') !== false && mb_strpos($code, 'ece') !== false) ||
                 (mb_strpos($cleanQuery, 'ee') !== false && mb_strpos($code, 'ee') !== false) ||
+                (mb_strpos($cleanQuery, 'electrical') !== false && mb_strpos($code, 'ee') !== false) ||
                 (mb_strpos($cleanQuery, 'robotics') !== false && mb_strpos($name, 'robotics') !== false) ||
-                (mb_strpos($cleanQuery, 'vlsi') !== false && mb_strpos($name, 'vlsi') !== false)) {
+                (mb_strpos($cleanQuery, 'vlsi') !== false && mb_strpos($name, 'vlsi') !== false) ||
+                (mb_strpos($cleanQuery, 'fire') !== false && mb_strpos($code, 'fire') !== false) ||
+                (mb_strpos($cleanQuery, 'safety') !== false && mb_strpos($code, 'safety') !== false)) {
 
                 $pdfLinks = [];
-                for ($yr = 1; $yr <= (int)$c['duration_years']; $yr++) {
+                if (!empty($c['brochure_document'])) {
+                    $bookletUrl = APP_URL . '/' . ltrim($c['brochure_document'], '/');
+                    $pdfLinks[] = "• **Official Curriculum Booklet**: [📄 Download Booklet PDF]({$bookletUrl})";
+                }
+                for ($yr = 1; $yr <= min((int)$c['duration_years'], 4); $yr++) {
                     $col = "syllabus_pdf_year_{$yr}";
                     if (!empty($c[$col])) {
-                        $pdfUrl = uploadUrl('syllabus', $c[$col]);
+                        $pdfUrl = uploadUrl('courses', $c[$col]);
                         $pdfLinks[] = "• **Year {$yr} Syllabus**: [📄 Download PDF]({$pdfUrl})";
                     }
                 }
 
-                $pdfList = !empty($pdfLinks) ? implode("\n", $pdfLinks) : "• Official course syllabi are available on the [Departments & Programs](/departments.php) page.";
+                $pdfList = !empty($pdfLinks) ? implode("\n", $pdfLinks) : "• Official course syllabi are available on the [Programs & Fees](/courses.php) and [Departments & Programs](/departments.php) pages.";
+                $overviewText = !empty($c['curriculum_overview']) ? "\n\n**Curriculum Overview**: {$c['curriculum_overview']}" : "";
 
                 $content = "### 📚 Official Syllabus — {$c['name']} ({$c['code']})\n\n"
-                         . "The curriculum is structured across {$c['duration_years']} Years ({$c['semester_count']} Semesters) aligned with NEP 2020 guidelines:\n\n"
+                         . "The curriculum is structured across {$c['duration_years']} Years ({$c['semester_count']} Semesters) aligned with NEP 2020 guidelines:{$overviewText}\n\n"
                          . "{$pdfList}\n\n"
-                         . "🔗 [View Departments & Programs Details](/departments.php) | [Fee Structure](/courses.php)";
+                         . "🔗 [View Programs & Syllabus](/courses.php?course_id={$c['id']}) | [Departments & Programs](/departments.php)";
 
                 $matches[] = [
                     'source_type' => 'syllabus_database',
                     'title'       => "Syllabus - {$c['name']}",
                     'content'     => $content,
-                    'source_url'  => '/departments.php',
+                    'source_url'  => '/courses.php',
                     'score'       => 100
                 ];
                 break;
@@ -1413,15 +1424,38 @@ class DatabaseSearch
         }
 
         if (empty($matches)) {
+            $uploadedLines = [];
+            foreach ($courses as $c) {
+                $cLinks = [];
+                if (!empty($c['brochure_document'])) {
+                    $bUrl = APP_URL . '/' . ltrim($c['brochure_document'], '/');
+                    $cLinks[] = "[Booklet PDF]({$bUrl})";
+                }
+                for ($yr = 1; $yr <= 4; $yr++) {
+                    $col = "syllabus_pdf_year_{$yr}";
+                    if (!empty($c[$col])) {
+                        $pUrl = uploadUrl('courses', $c[$col]);
+                        $cLinks[] = "[Year {$yr} PDF]({$pUrl})";
+                    }
+                }
+                if (!empty($cLinks)) {
+                    $uploadedLines[] = "• **{$c['name']} ({$c['code']})**: " . implode(' | ', $cLinks);
+                }
+            }
+
+            $extraUploaded = !empty($uploadedLines)
+                ? "\n\n**Direct Syllabus & Booklet Downloads:**\n" . implode("\n", $uploadedLines)
+                : "";
+
             $content = "### 📚 SOET Academic Curriculum & Syllabi\n\n"
-                     . "All SOET B.Tech engineering programs follow the AICTE & NEP 2020 aligned semester curriculum with dedicated practical labs, industry internships, and minor specializations.\n\n"
-                     . "You can download year-wise syllabus PDFs for all 18 engineering programs directly on our [Departments & Programs](/departments.php) page.";
+                     . "All SOET B.Tech engineering programs follow the AICTE & NEP 2020 aligned semester curriculum with dedicated practical labs, industry internships, and minor specializations.{$extraUploaded}\n\n"
+                     . "You can view and download year-wise syllabus PDFs and curriculum booklets on our [Programs & Fees](/courses.php) and [Departments & Programs](/departments.php) pages.";
 
             $matches[] = [
                 'source_type' => 'syllabus_database',
                 'title'       => "SOET Academic Syllabi",
                 'content'     => $content,
-                'source_url'  => '/departments.php',
+                'source_url'  => '/courses.php',
                 'score'       => 85
             ];
         }

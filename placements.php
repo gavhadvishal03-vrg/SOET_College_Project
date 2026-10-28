@@ -130,7 +130,7 @@ $departments = $cms->getDepartments();
                     <div class="recruiter-logo-card">
                         <div class="recruiter-logo-stage">
                             <?php if (!empty($rec['logo_image'])): ?>
-                                <img src="<?php echo uploadUrl('recruiters', $rec['logo_image']); ?>" alt="<?php echo htmlspecialchars($rec['name']); ?>" class="recruiter-logo-img">
+                                <img src="<?php echo uploadUrl('recruiters', $rec['logo_image']); ?>" alt="<?php echo htmlspecialchars($rec['name']); ?>" class="recruiter-logo-img" loading="lazy" decoding="async">
                             <?php else: ?>
                                 <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 44px; height: 44px; background: rgba(30, 58, 138, 0.08); color: #1e3a8a; font-size: 18px;">
                                     <i class="<?php echo htmlspecialchars($rec['icon'] ?: 'fa-solid fa-briefcase'); ?>"></i>
@@ -320,7 +320,7 @@ $departments = $cms->getDepartments();
                                 <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle shadow-xs" 
                                      style="width: 110px; height: 110px; overflow: hidden; border: 3px solid #e2e8f0;">
                                     <?php if (!empty($pl['student_image'])): ?>
-                                        <img src="<?php echo uploadUrl('placements', $pl['student_image']); ?>" alt="<?php echo htmlspecialchars($pl['student_name']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                        <img src="<?php echo uploadUrl('placements', $pl['student_image']); ?>" alt="<?php echo htmlspecialchars($pl['student_name']); ?>" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" decoding="async">
                                     <?php else: ?>
                                         <div class="d-flex align-items-center justify-content-center w-100 h-100 bg-primary bg-opacity-10 text-primary fw-bold" style="font-size: 32px; font-family: 'Times New Roman', Times, serif;">
                                             <?php echo strtoupper(substr(trim($pl['student_name']), 0, 1)); ?>
@@ -620,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="collab-logo-card">
                         <div class="collab-logo-box">
                             <?php if (!empty($collab['logo'])): ?>
-                                <img src="<?php echo uploadUrl('collaborations', $collab['logo']); ?>" alt="<?php echo htmlspecialchars($collab['name']); ?>" class="collab-logo-img">
+                                <img src="<?php echo uploadUrl('collaborations', $collab['logo']); ?>" alt="<?php echo htmlspecialchars($collab['name']); ?>" class="collab-logo-img" loading="lazy" decoding="async">
                             <?php else: ?>
                                 <i class="<?php echo $collab['icon']; ?> text-primary" style="font-size: 22px;"></i>
                             <?php endif; ?>

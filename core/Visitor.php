@@ -53,6 +53,30 @@ class Visitor
     }
 
     /**
+     * Retrieves consolidated visitor metrics (total, today, and views) in a single fast query.
+     *
+     * @return array Array with total_visitors, today_visitors, and total_views
+     */
+    public function getFooterStats(): array
+    {
+        $today = date('Y-m-d');
+        $res = $this->db->fetchOne(
+            "SELECT 
+                COUNT(*) as total_visitors,
+                COALESCE(SUM(page_views), 0) as total_views,
+                COUNT(CASE WHEN visit_date = ? THEN 1 END) as today_visitors
+             FROM visitors",
+            [$today]
+        );
+
+        return [
+            'total_visitors' => (int)($res['total_visitors'] ?? 0),
+            'total_views'    => (int)($res['total_views'] ?? 0),
+            'today_visitors' => (int)($res['today_visitors'] ?? 0),
+        ];
+    }
+
+    /**
      * Counts the total number of recorded visitor sessions across all time.
      *
      * @return int Total visitor records

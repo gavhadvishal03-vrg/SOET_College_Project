@@ -85,16 +85,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_course'])) {
     $syl_pdf_3 = $existing_course ? ($existing_course['syllabus_pdf_year_3'] ?? null) : null;
     $syl_pdf_4 = $existing_course ? ($existing_course['syllabus_pdf_year_4'] ?? null) : null;
 
+    $upload_errors = [];
+
     // Upload Course Cover Image
-    if (isset($_FILES['course_image']) && $_FILES['course_image']['error'] === UPLOAD_ERR_OK) {
-        $file_errors = Security::validateUpload($_FILES['course_image'], ALLOWED_IMAGE_TYPES);
-        if (empty($file_errors)) {
-            $uploaded = Security::uploadFile($_FILES['course_image'], 'courses', 'course_');
-            if ($uploaded) {
-                $image_path = $uploaded;
+    if (isset($_FILES['course_image']) && $_FILES['course_image']['error'] !== UPLOAD_ERR_NO_FILE) {
+        if ($_FILES['course_image']['error'] === UPLOAD_ERR_OK) {
+            $file_errors = Security::validateUpload($_FILES['course_image'], ALLOWED_IMAGE_TYPES);
+            if (empty($file_errors)) {
+                $uploaded = Security::uploadFile($_FILES['course_image'], 'courses', 'course_');
+                if ($uploaded) {
+                    $image_path = $uploaded;
+                } else {
+                    $upload_errors[] = 'Failed to save course cover image.';
+                }
+            } else {
+                $upload_errors[] = 'Course Image: ' . implode(' ', $file_errors);
             }
         } else {
-            setFlash('danger', implode(' ', $file_errors));
+            $upload_errors[] = 'Course Image upload error (code ' . (int)$_FILES['course_image']['error'] . ').';
         }
     }
 
@@ -107,73 +115,102 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_course'])) {
     ];
 
     foreach ($pdfFields as $inputName => &$varRef) {
-        if (isset($_FILES[$inputName]) && $_FILES[$inputName]['error'] === UPLOAD_ERR_OK) {
-            $pdf_errors = Security::validateUpload($_FILES[$inputName], ALLOWED_DOC_TYPES);
-            if (empty($pdf_errors)) {
-                $uploadedPdf = Security::uploadFile($_FILES[$inputName], 'courses', "syl_{$inputName}_");
-                if ($uploadedPdf) {
-                    $varRef = $uploadedPdf;
+        if (isset($_FILES[$inputName]) && $_FILES[$inputName]['error'] !== UPLOAD_ERR_NO_FILE) {
+            $yrNum = substr($inputName, -1);
+            if ($_FILES[$inputName]['error'] === UPLOAD_ERR_OK) {
+                $pdf_errors = Security::validateUpload($_FILES[$inputName], ALLOWED_DOC_TYPES);
+                if (empty($pdf_errors)) {
+                    $uploadedPdf = Security::uploadFile($_FILES[$inputName], 'courses', "syl_{$inputName}_");
+                    if ($uploadedPdf) {
+                        $varRef = $uploadedPdf;
+                    } else {
+                        $upload_errors[] = "Failed to save Year {$yrNum} Syllabus PDF.";
+                    }
+                } else {
+                    $upload_errors[] = "Year {$yrNum} Syllabus PDF: " . implode(' ', $pdf_errors);
                 }
             } else {
-                setFlash('danger', implode(' ', $pdf_errors));
+                $upload_errors[] = "Year {$yrNum} Syllabus PDF upload failed (file may exceed maximum upload size).";
             }
         }
     }
+    unset($varRef);
 
-        $program_type = trim($_POST['program_type'] ?? 'Regular');
-        $brochure_doc = trim($_POST['brochure_document'] ?? '');
-        $curriculum_overview = trim($_POST['curriculum_overview'] ?? '');
-        $admission_info = trim($_POST['admission_info'] ?? '');
-        $sort_order = (int)($_POST['sort_order'] ?? 0);
+    $program_type = trim($_POST['program_type'] ?? 'Regular');
+    $brochure_doc = trim($_POST['brochure_document'] ?? ($existing_course['brochure_document'] ?? ''));
+    $curriculum_overview = trim($_POST['curriculum_overview'] ?? '');
+    $core_courses = trim($_POST['core_courses'] ?? ($existing_course['core_courses'] ?? ''));
+    $career_opportunities = trim($_POST['career_opportunities'] ?? ($existing_course['career_opportunities'] ?? ''));
+    $eligibility = trim($_POST['eligibility'] ?? ($existing_course['eligibility'] ?? ''));
+    $admission_info = trim($_POST['admission_info'] ?? '');
+    $sort_order = (int)($_POST['sort_order'] ?? 0);
 
-        // Upload Course Booklet Document
-        if (isset($_FILES['brochure_file']) && $_FILES['brochure_file']['error'] === UPLOAD_ERR_OK) {
+    // Upload Course Booklet Document
+    if (isset($_FILES['brochure_file']) && $_FILES['brochure_file']['error'] !== UPLOAD_ERR_NO_FILE) {
+        if ($_FILES['brochure_file']['error'] === UPLOAD_ERR_OK) {
             $doc_errors = Security::validateUpload($_FILES['brochure_file'], ALLOWED_DOC_TYPES);
             if (empty($doc_errors)) {
                 $uploadedDoc = Security::uploadFile($_FILES['brochure_file'], 'documents', 'booklet_');
                 if ($uploadedDoc) {
                     $brochure_doc = 'uploads/documents/' . $uploadedDoc;
+                } else {
+                    $upload_errors[] = 'Failed to save Official Curriculum Booklet PDF.';
                 }
             } else {
-                setFlash('danger', implode(' ', $doc_errors));
+                $upload_errors[] = 'Curriculum Booklet PDF: ' . implode(' ', $doc_errors);
             }
-        }
-
-        if (!Security::validateCSRF($csrf)) {
-            setFlash('danger', 'CSRF validation failed.');
-        } elseif (empty($name) || empty($code) || empty($dept_id) || empty($duration)) {
-            setFlash('danger', 'Please enter all mandatory fields.');
         } else {
-            $data = [
-                'department_id' => $dept_id,
-                'name' => $name,
-                'code' => $code,
-                'program_type' => $program_type,
-                'description' => $description,
-                'curriculum_overview' => $curriculum_overview,
-                'admission_info' => $admission_info,
-                'duration_years' => $duration,
-                'semester_count' => $semesters,
-                'intake_capacity' => $capacity,
-                'fee_year_1' => $fee_year_1,
-                'fee_year_2' => $fee_year_2,
-                'fee_year_3' => $fee_year_3,
-                'fee_year_4' => $fee_year_4,
-                'image_path' => $image_path,
-                'brochure_document' => $brochure_doc,
-                'syllabus_pdf_year_1' => $syl_pdf_1,
-                'syllabus_pdf_year_2' => $syl_pdf_2,
-                'syllabus_pdf_year_3' => $syl_pdf_3,
-                'syllabus_pdf_year_4' => $syl_pdf_4,
-                'sort_order' => $sort_order,
-                'is_active' => $is_active
-            ];
+            $upload_errors[] = 'Curriculum Booklet PDF upload failed (file may exceed maximum upload size).';
+        }
+    }
+
+    if (!Security::validateCSRF($csrf)) {
+        setFlash('danger', 'CSRF validation failed.');
+    } elseif (empty($name) || empty($code) || empty($dept_id) || empty($duration)) {
+        setFlash('danger', 'Please enter all mandatory fields.');
+    } else {
+        $data = [
+            'department_id' => $dept_id,
+            'name' => $name,
+            'code' => $code,
+            'program_type' => $program_type,
+            'description' => $description,
+            'curriculum_overview' => $curriculum_overview,
+            'core_courses' => $core_courses,
+            'career_opportunities' => $career_opportunities,
+            'eligibility' => $eligibility,
+            'admission_info' => $admission_info,
+            'duration_years' => $duration,
+            'semester_count' => $semesters,
+            'intake_capacity' => $capacity,
+            'fee_year_1' => $fee_year_1,
+            'fee_year_2' => $fee_year_2,
+            'fee_year_3' => $fee_year_3,
+            'fee_year_4' => $fee_year_4,
+            'image_path' => $image_path,
+            'brochure_document' => $brochure_doc,
+            'syllabus_pdf_year_1' => $syl_pdf_1,
+            'syllabus_pdf_year_2' => $syl_pdf_2,
+            'syllabus_pdf_year_3' => $syl_pdf_3,
+            'syllabus_pdf_year_4' => $syl_pdf_4,
+            'sort_order' => $sort_order,
+            'is_active' => $is_active,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
 
         if ($course_id) {
             $db->update('courses', $data, 'id = ?', [$course_id]);
+            if (!empty($upload_errors)) {
+                setFlash('danger', 'Course details saved, but some file uploads failed: ' . implode(' | ', $upload_errors));
+                redirect("courses.php?action=edit&id={$course_id}");
+            }
             setFlash('success', 'Course details, year-wise fees, and syllabus PDFs updated successfully.');
         } else {
-            $db->insert('courses', $data);
+            $new_id = $db->insert('courses', $data);
+            if (!empty($upload_errors)) {
+                setFlash('danger', 'Course created, but some file uploads failed: ' . implode(' | ', $upload_errors));
+                redirect("courses.php?action=edit&id={$new_id}");
+            }
             setFlash('success', 'New course registered with complete curriculum and fees structure.');
         }
         redirect('courses.php');
@@ -305,20 +342,21 @@ $courses = $db->fetchAll(
                                 </td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
-                                        <?php if (!empty($c['brochure_document'])): ?>
-                                            <a href="<?php echo htmlspecialchars($c['brochure_document']); ?>" target="_blank" class="btn btn-outline-primary btn-xs py-0.5 px-2 rounded-pill font-semibold" title="Official Booklet" style="font-size: 14px;">
+                                        <?php $hasAnyPdf = false; ?>
+                                        <?php if (!empty($c['brochure_document'])): $hasAnyPdf = true; ?>
+                                            <a href="<?php echo APP_URL . '/' . ltrim($c['brochure_document'], '/'); ?>" target="_blank" class="btn btn-outline-primary btn-xs py-0.5 px-2 rounded-pill font-semibold" title="Official Booklet" style="font-size: 14px;">
                                                 <i class="fa-solid fa-file-pdf me-1"></i>Booklet
                                             </a>
                                         <?php endif; ?>
                                         <?php for ($y = 1; $y <= 4; $y++): ?>
                                             <?php $pdfKey = "syllabus_pdf_year_{$y}"; ?>
-                                            <?php if (!empty($c[$pdfKey])): ?>
+                                            <?php if (!empty($c[$pdfKey])): $hasAnyPdf = true; ?>
                                                 <a href="<?php echo uploadUrl('courses', $c[$pdfKey]); ?>" target="_blank" class="btn btn-outline-danger btn-xs py-0.5 px-2 rounded-pill font-semibold" title="Year <?php echo $y; ?> Syllabus PDF" style="font-size: 14px;">
                                                     <i class="fa-solid fa-file-lines me-1"></i>Y<?php echo $y; ?>
                                                 </a>
                                             <?php endif; ?>
                                         <?php endfor; ?>
-                                        <?php if (empty($c['brochure_document']) && empty($c['syllabus_pdf_year_1'])): ?>
+                                        <?php if (!$hasAnyPdf): ?>
                                             <span class="badge bg-light text-muted border rounded-pill" style="font-size: 14px;">No PDFs</span>
                                         <?php endif; ?>
                                     </div>
@@ -417,9 +455,9 @@ $courses = $db->fetchAll(
 
                         <div class="col-md-4">
                             <label class="form-label font-semibold">Official Curriculum Booklet PDF</label>
-                            <input type="file" name="brochure_file" class="form-control" accept=".pdf">
+                            <input type="file" name="brochure_file" class="form-control" accept=".pdf,.doc,.docx">
                             <?php if (!empty($edit_course['brochure_document'])): ?>
-                                <small class="text-muted d-block mt-1">Current: <a href="<?php echo htmlspecialchars($edit_course['brochure_document']); ?>" target="_blank" class="text-primary"><?php echo basename($edit_course['brochure_document']); ?></a></small>
+                                <small class="text-muted d-block mt-1">Current: <a href="<?php echo APP_URL . '/' . ltrim($edit_course['brochure_document'], '/'); ?>" target="_blank" class="text-primary"><?php echo htmlspecialchars(basename($edit_course['brochure_document'])); ?></a></small>
                                 <input type="hidden" name="brochure_document" value="<?php echo htmlspecialchars($edit_course['brochure_document']); ?>">
                             <?php endif; ?>
                         </div>
@@ -430,13 +468,28 @@ $courses = $db->fetchAll(
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label font-semibold">Curriculum &amp; Laboratory Overview</label>
+                            <label class="form-label font-semibold">Curriculum &amp; Laboratory Overview (Syllabus Summary)</label>
                             <textarea name="curriculum_overview" class="form-control" rows="3" placeholder="NEP 2020 structure, core subjects, specializations, practical labs..."><?php echo htmlspecialchars($edit_course['curriculum_overview'] ?? ''); ?></textarea>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label font-semibold">Admission Eligibility &amp; Selection Criteria</label>
                             <textarea name="admission_info" class="form-control" rows="3" placeholder="10+2 / HSC PCM min 45% (40% reserved) + JEE/MHT-CET score..."><?php echo htmlspecialchars($edit_course['admission_info'] ?? ''); ?></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label font-semibold">Core Courses &amp; Subjects (Syllabus Topics — One per line)</label>
+                            <textarea name="core_courses" class="form-control" rows="4" placeholder="Data Structures & Algorithms&#10;Operating Systems&#10;Machine Learning & Deep Learning..."><?php echo htmlspecialchars($edit_course['core_courses'] ?? ''); ?></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label font-semibold">Career Opportunities &amp; Roles (One per line)</label>
+                            <textarea name="career_opportunities" class="form-control" rows="4" placeholder="AI / Machine Learning Engineer&#10;Cyber Security Analyst&#10;Embedded Systems Architect..."><?php echo htmlspecialchars($edit_course['career_opportunities'] ?? ''); ?></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label font-semibold">Eligibility Requirements</label>
+                            <input type="text" name="eligibility" class="form-control" value="<?php echo htmlspecialchars($edit_course['eligibility'] ?? ''); ?>" placeholder="10+2 (HSC) PCM min 45% + Valid MHT-CET / JEE Main score">
                         </div>
 
                         <div class="col-md-6">

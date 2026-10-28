@@ -70,13 +70,16 @@ class OpenAIService
             ];
         }
 
-        if (empty($this->apiKey)) {
+        $engineMode = $this->db->fetchOne("SELECT setting_value FROM chatbot_settings WHERE setting_key = 'ai_engine_mode'");
+        $mode = $engineMode['setting_value'] ?? 'hybrid';
+
+        if ($mode === 'campus_ai' || empty($this->apiKey)) {
             // Free Built-in AI Knowledge Engine (Zero Cost & 100% Offline Reliable)
             $freeAnswer = GeneralKnowledgeEngine::resolve($userPrompt, $category);
             return [
                 'success' => true,
                 'response' => $freeAnswer,
-                'source' => 'openai'
+                'source' => 'CAMPUS_AI_MODEL'
             ];
         }
 

@@ -178,7 +178,7 @@ $documents = $db->fetchAll("SELECT * FROM documents ORDER BY is_featured DESC, c
                                                 <i class="fa-solid fa-file-pdf fa-lg"></i>
                                             </div>
                                             <div>
-                                                <a href="<?php echo htmlspecialchars($doc['file_path']); ?>" target="_blank" class="font-display fw-bold text-dark text-decoration-none hover-primary">
+                                                <a href="<?php echo APP_URL . '/' . ltrim($doc['file_path'], '/'); ?>" target="_blank" class="font-display fw-bold text-dark text-decoration-none hover-primary">
                                                     <?php echo htmlspecialchars($doc['title']); ?>
                                                 </a>
                                                 <small class="text-muted d-block text-truncate" style="max-width: 380px;"><?php echo htmlspecialchars($doc['description'] ?? ''); ?></small>
@@ -201,7 +201,7 @@ $documents = $db->fetchAll("SELECT * FROM documents ORDER BY is_featured DESC, c
                                     </td>
                                     <td class="text-center"><?php echo statusBadge($doc['is_active'] ? 'active' : 'inactive'); ?></td>
                                     <td class="text-end pe-4 text-nowrap">
-                                        <a href="<?php echo htmlspecialchars($doc['file_path']); ?>" target="_blank" class="btn btn-sm btn-outline-danger rounded-pill px-2.5 font-semibold me-1" title="View PDF">
+                                        <a href="<?php echo APP_URL . '/' . ltrim($doc['file_path'], '/'); ?>" target="_blank" class="btn btn-sm btn-outline-danger rounded-pill px-2.5 font-semibold me-1" title="View PDF">
                                             <i class="fa-solid fa-eye me-1"></i> View
                                         </a>
                                         <a href="documents.php?action=edit&id=<?php echo $doc['id']; ?>" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 font-semibold me-1">

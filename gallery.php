@@ -37,7 +37,7 @@ $gallery_bg = !empty($settings['gallery_hero_image']) ? uploadUrl('settings', $s
 
 <div class="container mb-5">
     <!-- Dynamic Category Filters -->
-    <div class="row mb-5">
+    <div class="row mb-5">   
         <div class="col-12 text-center">
             <div class="d-inline-flex gap-2 flex-wrap bg-white p-2 rounded-pill shadow-xs border">
                 <button class="btn btn-sm btn-primary rounded-pill px-4 gallery-filter-btn active font-semibold" data-filter="all"><i class="fa-solid fa-border-all me-1"></i> All Photos</button>
@@ -47,7 +47,7 @@ $gallery_bg = !empty($settings['gallery_hero_image']) ? uploadUrl('settings', $s
                 ?>
                     <button class="btn btn-sm btn-outline-secondary border-0 rounded-pill px-4 gallery-filter-btn font-semibold" data-filter="<?php echo htmlspecialchars($cSlug); ?>">
                         <?php echo htmlspecialchars($cName); ?>
-                    </button>
+                    </button>   
                 <?php endforeach; ?>
             </div>
         </div>
@@ -70,7 +70,7 @@ $gallery_bg = !empty($settings['gallery_hero_image']) ? uploadUrl('settings', $s
                 <div class="col-md-4 col-sm-6 gallery-item-col" data-cat="<?php echo $catSlug; ?>">
                     <div class="card border-0 shadow-sm overflow-hidden rounded-4 h-100 hover-lift transition-all">
                         <div class="overflow-hidden" style="height: 250px;">
-                            <img src="<?php echo uploadUrl('gallery', $img['image_path']); ?>" alt="<?php echo htmlspecialchars($img['title']); ?>" class="w-100 h-100 gallery-preview-img object-fit-cover cursor-pointer hover-zoom transition-all">
+                            <img src="<?php echo uploadUrl('gallery', $img['image_path']); ?>" alt="<?php echo htmlspecialchars($img['title']); ?>" class="w-100 h-100 gallery-preview-img object-fit-cover cursor-pointer hover-zoom transition-all" loading="lazy" decoding="async">
                         </div>
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-center mb-1">

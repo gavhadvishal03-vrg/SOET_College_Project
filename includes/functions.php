@@ -128,6 +128,8 @@ function statusBadge(string $status): string
  */
 function uploadUrl(string $directory, ?string $filename): string
 {
+    static $urlCache = [];
+
     $dirKey = strtolower(trim($directory));
     $defaultPlaceholder = match($dirKey) {
         'faculty', 'placements', 'users' => APP_URL . '/assets/images/default_avatar.svg',
@@ -143,19 +145,41 @@ function uploadUrl(string $directory, ?string $filename): string
         return $filename;
     }
 
+    $cacheKey = $dirKey . '|' . $filename;
+    if (isset($urlCache[$cacheKey])) {
+        return $urlCache[$cacheKey];
+    }
+
     $cleanName = basename($filename);
     $root = dirname(__DIR__);
 
-    // If filename was passed as a relative web path starting with uploads/, assets/, or docs/
+    // Direct fast-path check 1: Primary uploads directory
+    $primaryUploadRel = "uploads/{$directory}/{$cleanName}";
+    if (file_exists($root . '/' . $primaryUploadRel)) {
+        $resolved = UPLOAD_URL . "{$directory}/{$cleanName}";
+        $urlCache[$cacheKey] = $resolved;
+        return $resolved;
+    }
+
+    // Direct fast-path check 2: Relative web path starting with uploads/, assets/, or docs/
     $trimmed = ltrim($filename, '/');
     if (str_starts_with($trimmed, 'uploads/') || str_starts_with($trimmed, 'assets/') || str_starts_with($trimmed, 'docs/')) {
         if (file_exists($root . '/' . $trimmed)) {
-            return APP_URL . '/' . $trimmed;
+            $resolved = APP_URL . '/' . $trimmed;
+            $urlCache[$cacheKey] = $resolved;
+            return $resolved;
         }
     }
 
+    // Direct fast-path check 3: Primary assets directory
+    $primaryAssetRel = "assets/images/{$cleanName}";
+    if (file_exists($root . '/' . $primaryAssetRel)) {
+        $resolved = ASSETS_URL . "images/{$cleanName}";
+        $urlCache[$cacheKey] = $resolved;
+        return $resolved;
+    }
+
     $checkPaths = [
-        "uploads/{$directory}/{$cleanName}" => UPLOAD_URL . "{$directory}/{$cleanName}",
         "uploads/{$cleanName}" => UPLOAD_URL . "{$cleanName}",
         "uploads/settings/{$cleanName}" => UPLOAD_URL . "settings/{$cleanName}",
         "uploads/gallery/{$cleanName}" => UPLOAD_URL . "gallery/{$cleanName}",
@@ -170,14 +194,11 @@ function uploadUrl(string $directory, ?string $filename): string
         "uploads/placements/{$cleanName}" => UPLOAD_URL . "placements/{$cleanName}",
         "uploads/admissions/{$cleanName}" => UPLOAD_URL . "admissions/{$cleanName}",
         "uploads/documents/{$cleanName}" => UPLOAD_URL . "documents/{$cleanName}",
-        "assets/uploads/{$directory}/{$cleanName}" => APP_URL . "/assets/uploads/{$directory}/{$cleanName}",
-        "assets/uploads/{$cleanName}" => APP_URL . "/assets/uploads/{$cleanName}",
         "assets/images/branding/{$cleanName}" => APP_URL . "/assets/images/branding/{$cleanName}",
         "assets/images/placeholders/{$cleanName}" => APP_URL . "/assets/images/placeholders/{$cleanName}",
         "assets/images/facilities/{$cleanName}" => APP_URL . "/assets/images/facilities/{$cleanName}",
         "assets/images/recruiters/{$cleanName}" => APP_URL . "/assets/images/recruiters/{$cleanName}",
         "assets/images/{$directory}/{$cleanName}" => APP_URL . "/assets/images/{$directory}/{$cleanName}",
-        "assets/images/{$cleanName}" => APP_URL . "/assets/images/{$cleanName}",
         "assets/faculty/{$cleanName}" => APP_URL . "/assets/faculty/{$cleanName}",
         "assets/documents/{$cleanName}" => APP_URL . "/assets/documents/{$cleanName}",
         "docs/brochures/{$cleanName}" => APP_URL . "/docs/brochures/{$cleanName}",
@@ -186,11 +207,14 @@ function uploadUrl(string $directory, ?string $filename): string
 
     foreach ($checkPaths as $diskRel => $webUrl) {
         if (file_exists($root . '/' . $diskRel)) {
+            $urlCache[$cacheKey] = $webUrl;
             return $webUrl;
         }
     }
 
-    return UPLOAD_URL . "{$directory}/{$cleanName}";
+    $fallback = UPLOAD_URL . "{$directory}/{$cleanName}";
+    $urlCache[$cacheKey] = $fallback;
+    return $fallback;
 }
 
 /**

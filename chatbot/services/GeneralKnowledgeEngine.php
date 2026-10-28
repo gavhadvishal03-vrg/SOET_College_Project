@@ -307,8 +307,8 @@ class GeneralKnowledgeEngine
             return "I am CampusAI, an intelligent assistant that provides verified SOET MGM University information and answers general & technical questions.";
         }
 
-        // 2. Temporal Queries (Time, Date, Day, Year)
-        if (preg_match('/\b(date|today|time|current time|clock|what day|what year)\b/i', $cleanQuery)) {
+        // 2. Temporal Queries (Time, Date, Day, Year) - Specific checks that do not collide with 'time complexity'
+        if ((preg_match('/\b(what is the date|what is today\'?s date|today date|current date|current time|what time is it|what is the time|what day is today|what year is this|which year is this)\b/i', $cleanQuery) || preg_match('/^(date|today|time|clock)\??$/i', $cleanQuery)) && !preg_match('/\b(complexity|series|table|sharing|quantum)\b/i', $cleanQuery)) {
             $now = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
             if (preg_match('/\b(time|clock)\b/i', $cleanQuery)) {
                 return "The current time is " . $now->format('h:i:s A') . " IST (" . $now->format('l, F j, Y') . ").";
@@ -364,7 +364,16 @@ class GeneralKnowledgeEngine
             }
         }
 
-        // 6. If not in topic database, return empty string to allow fallback handling
+        // 6. Native Neural AI Model Inference (Own Model Engine)
+        if (file_exists(__DIR__ . '/../engine/CampusAIModel.php')) {
+            require_once __DIR__ . '/../engine/CampusAIModel.php';
+            $neuralResult = CampusAIModel::getInstance()->infer($query);
+            if ($neuralResult['success'] && !empty($neuralResult['text'])) {
+                return $neuralResult['text'];
+            }
+        }
+
+        // 7. If still not matched, return empty string to allow fallback handling
         return "";
     }
 }

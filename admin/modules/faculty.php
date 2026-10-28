@@ -17,7 +17,26 @@ Auth::requirePermission('manage_faculty');
 $db = Database::getInstance();
 $action = isset($_GET['action']) ? $_GET['action'] : 'list';
 $edit_fac = null;
-$depts = $db->fetchAll("SELECT * FROM departments WHERE is_active = 1 ORDER BY name");
+
+// Ensure Applied Science department exists and is active for faculty assignment
+$ashDept = $db->fetchOne("SELECT id, is_active FROM departments WHERE code = 'ASH' OR name LIKE '%Applied Science%'");
+if (!$ashDept) {
+    $db->insert('departments', [
+        'id' => 5,
+        'name' => 'Applied Science',
+        'code' => 'ASH',
+        'description' => 'Department of Applied Science offering foundational first-year engineering education in Engineering Physics, Engineering Chemistry, Engineering Mathematics, and Professional Communication.',
+        'image_path' => 'dept_ash.jpg',
+        'hod_name' => 'Dr. Patil Sanjeevani S.',
+        'hod_designation' => 'Assistant Professor',
+        'sort_order' => 99,
+        'is_active' => 1
+    ]);
+} elseif (!$ashDept['is_active']) {
+    $db->update('departments', ['is_active' => 1], 'id = ?', [$ashDept['id']]);
+}
+
+$depts = $db->fetchAll("SELECT * FROM departments WHERE is_active = 1 ORDER BY CASE WHEN code = 'ASH' OR name LIKE '%Applied Science%' THEN 1 ELSE 0 END ASC, name ASC");
 
 // Handle CSV Export
 if ($action === 'export_csv') {
@@ -25,8 +44,19 @@ if ($action === 'export_csv') {
         "SELECT f.name, f.designation, COALESCE(d.name, 'ALL') as department_name, f.qualification, f.email, f.phone, f.specialization, f.experience_years, f.is_active 
          FROM faculty f LEFT JOIN departments d ON f.department_id = d.id 
          ORDER BY 
-            CASE WHEN f.department_id IS NULL OR f.designation LIKE '%Director%' THEN 1 ELSE 2 END ASC,
-            d.name, f.name"
+            CASE 
+                WHEN f.department_id IS NULL OR f.department_id = 0 OR f.designation LIKE '%Director%' THEN 1 
+                WHEN d.code = 'ASH' OR d.name LIKE '%Applied Science%' THEN 3
+                ELSE 2 
+            END ASC,
+            d.sort_order ASC,
+            d.id ASC,
+            CASE 
+                WHEN f.designation LIKE '%Head%' OR f.designation LIKE '%HOD%' THEN 1
+                ELSE 2 
+            END ASC,
+            f.sort_order ASC,
+            f.id ASC"
     );
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename=SOET_Faculty_Directory_' . date('Y-m-d') . '.csv');
@@ -140,8 +170,19 @@ $faculty_list = $db->fetchAll(
     "SELECT f.*, COALESCE(d.name, 'ALL') as department_name, COALESCE(d.code, 'ALL') as department_code 
      FROM faculty f LEFT JOIN departments d ON f.department_id = d.id 
      ORDER BY 
-        CASE WHEN f.department_id IS NULL OR f.designation LIKE '%Director%' THEN 1 ELSE 2 END ASC,
-        d.name, f.name"
+        CASE 
+            WHEN f.department_id IS NULL OR f.department_id = 0 OR f.designation LIKE '%Director%' THEN 1 
+            WHEN d.code = 'ASH' OR d.name LIKE '%Applied Science%' THEN 3
+            ELSE 2 
+        END ASC,
+        d.sort_order ASC,
+        d.id ASC,
+        CASE 
+            WHEN f.designation LIKE '%Head%' OR f.designation LIKE '%HOD%' THEN 1
+            ELSE 2 
+        END ASC,
+        f.sort_order ASC,
+        f.id ASC"
 );
 ?>
 

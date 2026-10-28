@@ -21,7 +21,7 @@ $redirect_url = isset($_GET['redirect']) ? $_GET['redirect'] : '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = trim($_POST['password'] ?? '');
-    $csrf = $_POST[CSRF_TOKEN_NAME] ?? '';
+    $csrf = $_POST[CSRF_TOKEN_NAME] ?? $_POST['soet_csrf_token'] ?? $_POST['csrf_token'] ?? '';
 
     if (!Security::validateCSRF($csrf)) {
         $error_message = 'Security token validation failed.';
@@ -35,8 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (Auth::hasRole('Student')) {
                 setFlash('success', 'Logged in successfully as Student.');
                 redirect(APP_URL . '/submit-blog.php');
-            } elseif (!empty($redirect_url) && str_starts_with($redirect_url, APP_URL)) {
-                redirect($redirect_url);
+            } elseif (!empty($redirect_url) && (str_starts_with($redirect_url, APP_URL) || str_starts_with($redirect_url, '/admin/') || str_starts_with($redirect_url, 'admin/'))) {
+                $targetUrl = str_starts_with($redirect_url, 'http') ? $redirect_url : APP_URL . '/' . ltrim($redirect_url, '/');
+                redirect($targetUrl);
             } else {
                 redirect(APP_URL . '/admin/dashboard.php');
             }
@@ -119,19 +120,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php echo Security::csrfField(); ?>
                 
                 <div class="mb-3">
-                    <label class="form-label font-semibold text-dark small">Username</label>
+                    <label class="form-label font-semibold text-dark small" for="usernameInput">Username</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light text-muted border-end-0 rounded-start-3"><i class="fa-regular fa-user"></i></span>
-                        <input type="text" name="username" class="form-control border-start-0 ps-0 rounded-end-3" placeholder="Username or email" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly');">
+                        <input type="text" name="username" id="usernameInput" class="form-control border-start-0 ps-0 rounded-end-3" placeholder="Username or email" required autocomplete="username">
                     </div>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label font-semibold text-dark small">Password</label>
+                    <label class="form-label font-semibold text-dark small" for="passwordInput">Password</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light text-muted border-end-0 rounded-start-3"><i class="fa-solid fa-lock"></i></span>
-                        <input type="password" name="password" id="passwordInput" class="form-control border-start-0 ps-0 border-end-0" placeholder="Password" required autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');">
-                        <button class="btn btn-outline-secondary border-start-0 bg-white text-muted rounded-end-3" type="button" id="togglePassword" style="border: 1px solid #ced4da;">
+                        <input type="password" name="password" id="passwordInput" class="form-control border-start-0 ps-0 border-end-0" placeholder="Password" required autocomplete="current-password">
+                        <button class="btn btn-outline-secondary border-start-0 bg-white text-muted rounded-end-3" type="button" id="togglePassword" style="border: 1px solid #ced4da;" aria-label="Toggle password visibility">
                             <i class="fa-solid fa-eye" id="eyeIcon"></i>
                         </button>
                     </div>

@@ -16,10 +16,14 @@ class Security
     public static function generateCSRFToken(): string
     {
         Session::start();
-        if (!Session::has(CSRF_TOKEN_NAME)) {
-            Session::set(CSRF_TOKEN_NAME, bin2hex(random_bytes(32)));
+        $token = Session::get(CSRF_TOKEN_NAME) ?? Session::get('soet_csrf_token') ?? Session::get('csrf_token');
+        if (!$token) {
+            $token = bin2hex(random_bytes(32));
+            Session::set(CSRF_TOKEN_NAME, $token);
+            Session::set('soet_csrf_token', $token);
+            Session::set('csrf_token', $token);
         }
-        return Session::get(CSRF_TOKEN_NAME);
+        return $token;
     }
 
     /**
@@ -31,11 +35,13 @@ class Security
     public static function validateCSRF(?string $token): bool
     {
         Session::start();
-        $stored = Session::get(CSRF_TOKEN_NAME);
-        if (!$stored || !$token) {
+        $candidate = $token ?: ($_POST[CSRF_TOKEN_NAME] ?? $_POST['soet_csrf_token'] ?? $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null);
+        $stored = Session::get(CSRF_TOKEN_NAME) ?? Session::get('soet_csrf_token') ?? Session::get('csrf_token');
+        
+        if (!$stored || !$candidate) {
             return false;
         }
-        return hash_equals($stored, $token);
+        return hash_equals($stored, $candidate);
     }
 
     /**

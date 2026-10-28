@@ -209,9 +209,9 @@ $events_bg = !empty($settings['events_hero_image']) ? uploadUrl('settings', $set
                      data-venue="<?php echo strtolower(htmlspecialchars($event['venue'])); ?>">
                     <div class="card h-100 border-0 shadow-sm hover-lift overflow-hidden bg-white" style="border-radius: 16px; border: 1px solid #e2e8f0 !important;">
                         <?php if ($event['image_path']): ?>
-                            <img src="<?php echo uploadUrl('events', $event['image_path']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($event['title']); ?>" style="height: 190px; object-fit: cover;">
+                            <img src="<?php echo uploadUrl('events', $event['image_path']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($event['title']); ?>" style="height: 190px; object-fit: cover;" loading="lazy" decoding="async">
                         <?php else: ?>
-                            <img src="<?php echo uploadUrl('events', 'event_supernova_group.jpg'); ?>" class="card-img-top" alt="Event banner" style="height: 190px; object-fit: cover;">
+                            <img src="<?php echo uploadUrl('events', 'event_supernova_group.jpg'); ?>" class="card-img-top" alt="Event banner" style="height: 190px; object-fit: cover;" loading="lazy" decoding="async">
                         <?php endif; ?>
                         <div class="card-body d-flex flex-column p-4">
                             <div class="d-flex justify-content-between align-items-center mb-2">

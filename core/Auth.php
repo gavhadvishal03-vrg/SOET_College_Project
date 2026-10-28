@@ -160,9 +160,19 @@ class Auth
     public static function requireLogin(): void
     {
         if (!self::check()) {
-            $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+            $isHttps = (
+                (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') ||
+                (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') ||
+                (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) === 'on') ||
+                (!empty($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443)
+            );
+            $scheme = $isHttps ? 'https' : 'http';
+            $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? 'localhost';
+            if (str_contains($host, ',')) {
+                $host = trim(explode(',', $host)[0]);
+            }
             $uri = $_SERVER['REQUEST_URI'] ?? '/admin/dashboard.php';
-            $currentUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$host}{$uri}";
+            $currentUrl = "{$scheme}://{$host}{$uri}";
             header('Location: ' . APP_URL . '/admin/login.php?redirect=' . urlencode($currentUrl));
             exit;
         }

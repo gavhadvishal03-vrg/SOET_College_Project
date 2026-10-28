@@ -24,7 +24,7 @@ if ($action === 'export_csv') {
         "SELECT d.name, d.code, d.hod_name, d.hod_designation, d.contact_email, d.contact_phone, d.sort_order, d.is_active, 
                 (SELECT COUNT(*) FROM courses WHERE department_id = d.id) as course_count,
                 (SELECT COUNT(*) FROM faculty WHERE department_id = d.id) as faculty_count
-         FROM departments d ORDER BY d.sort_order ASC, d.name ASC"
+         FROM departments d ORDER BY CASE WHEN d.code = 'ASH' OR d.name LIKE '%Applied Science%' THEN 1 ELSE 0 END ASC, d.sort_order ASC, d.id ASC"
     );
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename=SOET_Departments_' . date('Y-m-d') . '.csv');
@@ -154,7 +154,7 @@ $departments = $db->fetchAll(
     "SELECT d.*, 
             (SELECT COUNT(*) FROM courses WHERE department_id = d.id) as course_count,
             (SELECT COUNT(*) FROM faculty WHERE department_id = d.id) as faculty_count
-     FROM departments d ORDER BY d.sort_order ASC, d.name ASC"
+     FROM departments d ORDER BY CASE WHEN d.code = 'ASH' OR d.name LIKE '%Applied Science%' THEN 1 ELSE 0 END ASC, d.sort_order ASC, d.id ASC"
 );
 ?>
 

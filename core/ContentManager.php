@@ -28,7 +28,7 @@ class ContentManager
     public function getDepartments(bool $activeOnly = true): array
     {
         $where = $activeOnly ? 'WHERE is_active = 1' : '';
-        return $this->db->fetchAll("SELECT * FROM departments {$where} ORDER BY sort_order ASC, name ASC");
+        return $this->db->fetchAll("SELECT * FROM departments {$where} ORDER BY CASE WHEN code = 'ASH' OR name LIKE '%Applied Science%' THEN 1 ELSE 0 END ASC, sort_order ASC, id ASC");
     }
 
     /**
@@ -181,14 +181,16 @@ class ContentManager
                 WHERE f.is_active = 1";
         $params = [];
         if ($departmentId) {
-            $sql .= " AND (f.department_id = ? OR f.department_id IS NULL OR f.department_id = 0)";
+            $sql .= " AND f.department_id = ?";
             $params[] = $departmentId;
         }
         $sql .= " ORDER BY 
                   CASE 
                       WHEN f.department_id IS NULL OR f.department_id = 0 OR d.code = 'ALL' OR d.code = 'DIRECTOR' OR f.designation LIKE '%Director%' OR f.designation LIKE '%Dean%' THEN 1 
+                      WHEN d.code = 'ASH' OR d.name LIKE '%Applied Science%' THEN 3
                       ELSE 2 
                   END ASC,
+                  d.sort_order ASC,
                   d.id ASC,
                   CASE 
                       WHEN f.designation LIKE '%Head%' OR f.designation LIKE '%HOD%' THEN 1
@@ -198,8 +200,7 @@ class ContentManager
                       ELSE 5 
                   END ASC,
                   f.sort_order ASC,
-                  f.experience_years DESC,
-                  f.name ASC";
+                  f.id ASC";
         return $this->db->fetchAll($sql, $params);
     }
 

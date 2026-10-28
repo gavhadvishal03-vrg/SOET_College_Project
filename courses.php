@@ -150,7 +150,7 @@ $selected_course_id = isset($_GET['course_id']) ? (int)$_GET['course_id'] : 0;
                         
                         <?php if (!empty($course['image_path'])): ?>
                             <div style="height: 180px; overflow: hidden; position: relative;">
-                                <img src="<?php echo uploadUrl('courses', $course['image_path']); ?>" alt="<?php echo htmlspecialchars($course['name']); ?>" class="w-100 h-100" style="object-fit: cover;">
+                                <img src="<?php echo uploadUrl('courses', $course['image_path']); ?>" alt="<?php echo htmlspecialchars($course['name']); ?>" class="w-100 h-100" style="object-fit: cover;" loading="lazy" decoding="async">
                                 <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(to top, rgba(0,0,0,0.35), transparent);"></div>
                             </div>
                         <?php endif; ?>
@@ -352,13 +352,62 @@ $selected_course_id = isset($_GET['course_id']) ? (int)$_GET['course_id'] : 0;
                                 <i class="fa-solid fa-circle-info text-primary me-1.5"></i> <strong>Official MGM University Fee Structure (A.Y. <?php echo htmlspecialchars($activeAY); ?>):</strong> Total fees include Tuition Fee, Development Fee, Examination Fees (₹2,500/semester), Student Activities, Library, Insurance, Deposit, and Welfare Funds. <em>Alumni Fee (Final Year): ₹2,000.</em>
                             </div>
 
+                            <!-- Year-Wise Official Syllabus Curriculum Section -->
+                            <?php 
+                            $courseVer = !empty($course['updated_at']) ? strtotime($course['updated_at']) : (!empty($course['created_at']) ? strtotime($course['created_at']) : time());
+                            $brochureUrl = !empty($course['brochure_document']) ? (APP_URL . '/' . ltrim($course['brochure_document'], '/') . '?v=' . $courseVer) : '';
+                            ?>
+                            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2 flex-wrap gap-2">
+                                <h5 class="fw-bold text-primary-color mb-0 font-display">
+                                    <i class="fa-solid fa-file-pdf text-danger me-2"></i>Year-Wise Official Syllabus Curriculum
+                                </h5>
+                                <?php if ($brochureUrl): ?>
+                                    <a href="<?php echo htmlspecialchars($brochureUrl); ?>" target="_blank" class="badge bg-warning text-dark text-decoration-none rounded-pill px-3 py-1.5 fw-bold shadow-xs">
+                                        <i class="fa-solid fa-book-open me-1"></i> Official Curriculum Booklet PDF
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                            <div class="row g-2 mb-4">
+                                <?php for ($y = 1; $y <= min($duration, 4); $y++): 
+                                    $pdfKey = "syllabus_pdf_year_{$y}";
+                                    $hasYearPdf = !empty($course[$pdfKey]);
+                                ?>
+                                    <div class="col-sm-6">
+                                        <div class="d-flex align-items-center justify-content-between p-3 bg-light border rounded-3">
+                                            <div>
+                                                <i class="fa-solid fa-file-lines me-2 text-danger"></i>
+                                                <strong class="text-dark">Year <?php echo $y; ?> Syllabus</strong>
+                                                <small class="text-muted d-block ms-4">Sem <?php echo ($y * 2 - 1); ?> &amp; Sem <?php echo ($y * 2); ?></small>
+                                            </div>
+                                            <?php if ($hasYearPdf): ?>
+                                                <a href="<?php echo uploadUrl('courses', $course[$pdfKey]) . '?v=' . $courseVer; ?>"
+                                                   target="_blank"
+                                                   class="btn btn-danger btn-xs rounded-pill fw-bold px-3 py-1"
+                                                   aria-label="Download Year <?php echo $y; ?> Syllabus PDF">
+                                                    <i class="fa-solid fa-download me-1"></i> View PDF
+                                                </a>
+                                            <?php elseif ($brochureUrl): ?>
+                                                <a href="<?php echo htmlspecialchars($brochureUrl); ?>"
+                                                   target="_blank"
+                                                   class="btn btn-outline-primary btn-xs rounded-pill fw-semibold px-2.5 py-1"
+                                                   aria-label="View Curriculum Booklet PDF">
+                                                    <i class="fa-solid fa-file-pdf me-1"></i> Booklet PDF
+                                                </a>
+                                            <?php else: ?>
+                                                <span class="badge bg-secondary bg-opacity-20 text-secondary rounded-pill" style="font-size: 13px;">Available Soon</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                <?php endfor; ?>
+                            </div>
+
                             <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
                                 <div class="d-flex gap-2 flex-wrap">
-                                    <a href="admissions.php" class="btn btn-primary btn-sm px-4 rounded-pill font-semibold">
+                                    <a href="admissions.php?course_id=<?php echo $course['id']; ?>" class="btn btn-primary btn-sm px-4 rounded-pill font-semibold">
                                         <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Apply for this Program
                                     </a>
-                                    <?php if (!empty($course['brochure_document'])): ?>
-                                        <a href="<?php echo APP_URL . '/' . ltrim($course['brochure_document'], '/'); ?>" target="_blank" class="btn btn-warning text-dark btn-sm px-3.5 rounded-pill font-bold shadow-xs">
+                                    <?php if ($brochureUrl): ?>
+                                        <a href="<?php echo htmlspecialchars($brochureUrl); ?>" target="_blank" class="btn btn-warning text-dark btn-sm px-3.5 rounded-pill font-bold shadow-xs">
                                             <i class="fa-solid fa-file-pdf me-1"></i> Curriculum Booklet
                                         </a>
                                     <?php endif; ?>

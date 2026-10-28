@@ -17,11 +17,37 @@ class Session
     public static function start(): void
     {
         if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
-            ini_set('session.cookie_httponly', 1);
+            $isHttps = (
+                (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') ||
+                (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') ||
+                (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) === 'on') ||
+                (!empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) === 'on')
+            );
+
+            // If accessing over plain http localhost, do not force secure
+            $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+            if (str_starts_with($host, 'localhost') || str_starts_with($host, '127.0.0.1')) {
+                if (empty($_SERVER['HTTPS']) || strtolower($_SERVER['HTTPS']) === 'off') {
+                    $isHttps = false;
+                }
+            }
+
             ini_set('session.use_strict_mode', 1);
-            ini_set('session.cookie_samesite', 'Strict');
+            ini_set('session.cookie_httponly', 1);
             ini_set('session.cookie_path', '/');
-            ini_set('session.gc_maxlifetime', 86400 * 365);
+
+            if (PHP_VERSION_ID >= 70300) {
+                session_set_cookie_params([
+                    'lifetime' => 86400 * 30, // 30 days
+                    'path' => '/',
+                    'secure' => $isHttps,
+                    'httponly' => true,
+                    'samesite' => 'Lax'
+                ]);
+            } else {
+                ini_set('session.cookie_secure', $isHttps ? '1' : '0');
+            }
+
             session_start();
         }
     }

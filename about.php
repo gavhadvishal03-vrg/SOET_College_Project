@@ -194,7 +194,7 @@ $director_img = !empty($settings['director_image']) ? uploadUrl('settings', $set
             <div class="card border-0 shadow-sm p-4 bg-white" style="border-radius: 18px; border: 1px solid #e2e8f0 !important;">
                 <div class="text-center mb-3">
                     <div class="d-inline-block p-1 bg-white rounded-circle shadow-xs border border-warning mb-3">
-                        <img src="<?php echo $director_img; ?>" alt="Director Profile" class="rounded-circle" style="width: 130px; height: 130px; object-fit: cover;">
+                        <img src="<?php echo $director_img; ?>" alt="Director Profile" class="rounded-circle" style="width: 130px; height: 130px; object-fit: cover;" loading="lazy" decoding="async">
                     </div>
                     <h5 class="fw-bold text-primary-color mb-1 font-display"><?php echo htmlspecialchars($settings['director_name'] ?? 'Dr. Parminder Kaur Dhingra'); ?></h5>
                     <small class="text-muted text-uppercase fw-semibold" style="font-size: 14px; letter-spacing: 0.5px;"><?php echo htmlspecialchars($settings['director_designation'] ?? 'Dean & Director, SOET MGM University'); ?></small>

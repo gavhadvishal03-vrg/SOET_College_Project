@@ -119,8 +119,8 @@ class QueryNormalizer
             $clean = preg_replace($pattern, $replacement, $clean);
         }
 
-        // Remove non-alphanumeric except basic symbols
-        $clean = preg_replace('/[^\w\s\+\#\-\.\']/u', ' ', $clean);
+        // Remove non-alphanumeric except basic symbols and arithmetic operators
+        $clean = preg_replace('/[^\w\s\+\#\-\.\*\/\%\^\?\']/u', ' ', $clean);
         $clean = preg_replace('/\s+/', ' ', $clean);
         $words = explode(' ', trim($clean));
 

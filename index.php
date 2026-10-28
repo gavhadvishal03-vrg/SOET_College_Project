@@ -311,7 +311,7 @@ foreach ($notices as $n) {
                 <div class="col-md-6 col-lg-4">
                     <div class="card border-0 shadow-xs h-100 overflow-hidden bg-white hover-lift rounded-4" style="border: 1px solid #e2e8f0 !important;">
                         <div style="height: 180px; overflow: hidden;">
-                            <img src="<?php echo uploadUrl('gallery', $act['image_path']); ?>" alt="<?php echo htmlspecialchars($act['title']); ?>" class="w-100 h-100 object-fit-cover">
+                            <img src="<?php echo uploadUrl('gallery', $act['image_path']); ?>" alt="<?php echo htmlspecialchars($act['title']); ?>" class="w-100 h-100 object-fit-cover" loading="lazy" decoding="async">
                         </div>
                         <div class="card-body p-4">
                             <div class="d-flex align-items-center justify-content-between mb-2">
@@ -339,7 +339,7 @@ foreach ($notices as $n) {
     </div>
     <div class="row g-4">
         <?php
-        $active_depts = $cms->db->fetchAll("SELECT * FROM departments WHERE is_active = 1 ORDER BY id");
+        $active_depts = $cms->getDepartments(true);
         if (empty($active_depts)):
         ?>
             <div class="col-12 text-center text-muted">

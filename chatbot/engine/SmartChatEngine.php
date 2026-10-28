@@ -22,6 +22,7 @@ require_once __DIR__ . '/ContextManager.php';
 require_once __DIR__ . '/HallucinationGuard.php';
 require_once __DIR__ . '/ContactRetriever.php';
 require_once __DIR__ . '/BlogNewsRetriever.php';
+require_once __DIR__ . '/CampusAIModel.php';
 
 class SmartChatEngine
 {
@@ -138,8 +139,14 @@ class SmartChatEngine
                 $res['status'] = 'fallback';
             }
 
-            $res['engine_version'] = 'v2';
+            // 7. Sentiment & User Frustration Detection (Auto-Escalation)
+            if (preg_match('/\b(useless|worst|terrible|bad bot|stupid|fake|rubbish|hate this|annoying|not helpful|waste of time)\b/i', $rawMessage)) {
+                $res['formatted_html'] .= '<div class="alert alert-warning border border-warning rounded-3 mt-2 p-2.5 small mb-0"><div class="d-flex align-items-center gap-2"><i class="fa-solid fa-headset text-warning fs-5"></i><div><strong>Need immediate personal help?</strong> Our admission counselor is available at <strong>+91 9371714253</strong> or <a href="contact.php" class="alert-link">contact.php</a>.</div></div></div>';
+            }
+
+            $res['engine_version'] = 'v3';
             $res['resolved_query'] = $workingQuery;
+            $res['model_engine'] = 'CampusAI Neural Engine v3';
 
             return $res;
 
@@ -147,7 +154,8 @@ class SmartChatEngine
             // Fallback gracefully to basic ChatService
             try {
                 $res = $this->chatService->processMessage($rawMessage, $sessionToken, $language);
-                $res['engine_version'] = 'v2_rescue';
+                $res['engine_version'] = 'v3_rescue';
+                $res['model_engine'] = 'CampusAI Fallback Engine';
                 return $res;
             } catch (Throwable $e2) {
                 return [
@@ -158,7 +166,8 @@ class SmartChatEngine
                     'raw_text'       => 'Temporary system error.',
                     'source'         => 'system',
                     'intent'         => 'GENERAL',
-                    'suggested_chips'=> []
+                    'suggested_chips'=> [],
+                    'engine_version' => 'v3_error'
                 ];
             }
         }

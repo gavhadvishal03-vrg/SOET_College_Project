@@ -10,7 +10,11 @@
  * - Automatic broken image detection with context-aware SVG fallback
  */
 
-if (typeof APP_URL === 'undefined') { var APP_URL = window.location.origin + '/project'; }
+if (typeof APP_URL === 'undefined') {
+    var APP_URL = (typeof window.APP_URL !== 'undefined' && window.APP_URL)
+        ? window.APP_URL.replace(/\/$/, '')
+        : (window.location.origin + (window.location.pathname.startsWith('/project') ? '/project' : ''));
+}
 document.addEventListener('DOMContentLoaded', function() {
     // Chatbot functionality
     const chatbotToggle = document.getElementById('chatbotToggle');
@@ -21,16 +25,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatbotMessages = document.getElementById('chatbotMessages');
     const promptButtons = document.querySelectorAll('.prompt-btn');
 
-    if (chatbotToggle && chatbotWindow) {
-        // Toggle chatbot window
-        chatbotToggle.addEventListener('click', function() {
-            chatbotWindow.classList.toggle('active');
-            if (chatbotWindow.classList.contains('active')) {
-                chatbotInput.focus();
-                // Scroll to bottom
-                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    if (chatbotToggle) {
+        chatbotToggle.addEventListener('click', function(e) {
+            if (window.toggleCampusAIChatbot) {
+                e.preventDefault();
+                window.toggleCampusAIChatbot();
+            } else if (chatbotWindow) {
+                chatbotWindow.classList.toggle('active');
+                if (chatbotWindow.classList.contains('active') && chatbotInput) {
+                    chatbotInput.focus();
+                    if (chatbotMessages) chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+                }
             }
         });
+    }
+
+    if (chatbotToggle && chatbotWindow) {
 
         // Close chatbot
         chatbotClose.addEventListener('click', function() {
